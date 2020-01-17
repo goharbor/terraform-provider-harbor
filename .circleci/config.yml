@@ -12,6 +12,11 @@ jobs:
       - image: circleci/golang:1.13
     steps:
       - checkout
+      - run: 
+          name: update n upgrade
+          command: |
+            sudo apt update
+            sudo apt upgrade -y
       - run: go get -v ./...
       - run:
           name: Build terraform provider for multiple platforms
@@ -66,7 +71,7 @@ jobs:
             do
               GH_ASSET="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$id/assets?name=$(basename $f)"
 
-              curl --data-binary $f -H "authorization: Basic $GH_TOKEN" -H "Content-Type: application/octet-stream" $GH_ASSET | jq
+              curl --data-binary @"$f" -H "authorization: Basic $GH_TOKEN" -H "Content-Type: application/octet-stream" $GH_ASSET | jq
             done
 
 workflows:
