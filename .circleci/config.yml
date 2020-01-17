@@ -68,12 +68,13 @@ jobs:
             done
 
 workflows:
+  version: 2
   build-n-release:
     jobs:
-    - build:
-        filters:
-          branches:
+      - build:
+          filters:
+            branches:
               only:
                 - master
-          tags:
-            only: /^v[0-9]+(\.[0-9]+)*(-.*)*$/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*(-.*)*$/
