@@ -35,9 +35,11 @@ jobs:
 
                 env GOOS=$GOOS GOARCH=$GOARCH go build -o $output_name
 
-                zip -v /tmp/terraform-harbor-provider-$GOOS-$GOARCH $output_name
+                zip -v terraform-harbor-provider-$GOOS-$GOARCH $output_name
                 rm $output_name
             done
+            cat /etc/*release
+            ls -lh
       
       - run:
           name: Create release
@@ -59,7 +61,7 @@ jobs:
           command: |
             id=$(curl https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/latest -H "authorization: Basic $GH_TOKEN" | jq '.id')
       
-            FILES=$(ls -l /tmp/terraform-harbor-provider* | awk '{print $9}')
+            FILES=$(ls -l terraform-harbor-provider* | awk '{print $9}')
             for f in $FILES
             do
               GH_ASSET="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$id/assets?name=$(basename $f)"
