@@ -38,7 +38,7 @@ jobs:
                     output_name+='.exe'
                 fi
 
-                env GOOS=$GOOS GOARCH=$GOARCH go build -o $output_name
+                env CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH go build -o $output_name
 
                 zip -v terraform-harbor-provider-$GOOS-$GOARCH $output_name
                 rm $output_name
