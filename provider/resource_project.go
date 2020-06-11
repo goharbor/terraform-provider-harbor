@@ -71,7 +71,7 @@ func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.SetId(randomString(15))
+	// d.SetId(randomString(15))
 	return resourceProjectRead(d, m)
 }
 
@@ -98,7 +98,15 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("[ERROR] JsonData is empty")
 	}
 
-	d.Set("project_id", jsonData[0].ProjectID)
+	for _, v := range jsonData {
+		if v.Name == d.Get("name").(string) {
+			d.SetId(strconv.Itoa(v.ProjectID))
+			d.Set("project_id", strconv.Itoa(v.ProjectID))
+		}
+
+	}
+
+	// d.Set("project_id", jsonData[0].ProjectID)
 	return nil
 }
 

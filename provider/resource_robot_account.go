@@ -99,7 +99,6 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("[ERROR] Unable to unmarshal: %s", err)
 	}
 
-	d.SetId(randomString(15))
 	d.Set("token", jsonData.Token)
 	return resourceRobotAccountRead(d, m)
 }
@@ -128,6 +127,7 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 
 	for _, v := range jsonData {
 		if v.Name == "robot$"+name {
+			d.SetId(strconv.Itoa(v.RobotID))
 			d.Set("robot_id", strconv.Itoa(v.RobotID))
 		}
 	}
