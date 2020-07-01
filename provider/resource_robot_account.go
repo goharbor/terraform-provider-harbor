@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-var pathRobot string = "/api/projects"
+var pathRobot string = "/projects"
 
 type robot struct {
 	Name        string   `json:"name"`

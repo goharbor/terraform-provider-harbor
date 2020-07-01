@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"strings"
+
 	"bitbucket.org/bestsellerit/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
@@ -27,6 +29,11 @@ func Provider() terraform.ResourceProvider {
 				Optional: true,
 				Default:  false,
 			},
+			"api_version": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  1,
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -44,10 +51,23 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+	var apiPath string
+
 	url := d.Get("url").(string)
 	username := d.Get("username").(string)
 	password := d.Get("password").(string)
 	insecure := d.Get("insecure").(bool)
+	apiVersion := d.Get("api_version").(int)
 
-	return client.NewClient(url, username, password, insecure), nil
+	if strings.HasSuffix(url, "/") {
+		url = strings.Trim(url, "/")
+	}
+
+	if apiVersion == 1 {
+		apiPath = "/api"
+	} else if apiVersion == 2 {
+		apiPath = "/api/v2.0"
+	}
+
+	return client.NewClient(url+apiPath, username, password, insecure), nil
 }

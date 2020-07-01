@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-var pathProjects = "/api/projects"
+var pathProjects = "/projects"
 
 type project struct {
 	ProjectName string   `json:"project_name"`

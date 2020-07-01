@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-var path = "/api/configurations"
+var pathConfig = "/configurations"
 
 type system struct {
 	ProjectCreationRestriction string `json:"project_creation_restriction"`
@@ -41,16 +41,21 @@ func resourceConfigSystem() *schema.Resource {
 	}
 }
 
+func days2mins(days int) int {
+	mins := days * 1440
+	return mins
+}
+
 func resourceConfigSystemCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	body := system{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(string),
-		RobotTokenDuration:         d.Get("robot_token_expiration").(int),
+		RobotTokenDuration:         days2mins(d.Get("robot_token_expiration").(int)),
 	}
 
-	_, err := apiClient.SendRequest("PUT", path, body, 0)
+	_, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
 	if err != nil {
 		return err
 	}
@@ -70,10 +75,10 @@ func resourceConfigSystemUpdate(d *schema.ResourceData, m interface{}) error {
 	body := system{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(string),
-		RobotTokenDuration:         d.Get("robot_token_expiration").(int),
+		RobotTokenDuration:         days2mins(d.Get("robot_token_expiration").(int)),
 	}
 
-	_, err := apiClient.SendRequest("PUT", path, body, 0)
+	_, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
 	if err != nil {
 		return err
 	}

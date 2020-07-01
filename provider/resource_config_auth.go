@@ -62,7 +62,7 @@ func resourceConfigAuth() *schema.Resource {
 
 func resourceConfigAuthCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient, body := newAPIClient(d, m)
-	_, err := apiClient.SendRequest("PUT", "/api/configurations", body, 200)
+	_, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func resourceConfigAuthRead(d *schema.ResourceData, m interface{}) error {
 func resourceConfigAuthUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient, body := newAPIClient(d, m)
 
-	_, err := apiClient.SendRequest("PUT", "/api/configurations", body, 200)
+	_, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
 	if err != nil {
 		return err
 	}
