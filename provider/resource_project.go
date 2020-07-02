@@ -11,19 +11,57 @@ import (
 
 var pathProjects = "/projects"
 
-type project struct {
-	ProjectName string   `json:"project_name"`
-	Metadata    metadata `json:"metadata"`
+type projectsRequest struct {
+	CountLimit   int    `json:"count_limit,omitempty"`
+	ProjectName  string `json:"project_name,omitempty"`
+	CveWhitelist struct {
+		Items []struct {
+			CveID string `json:"cve_id,omitempty"`
+		} `json:"items,omitempty"`
+		ProjectID int `json:"project_id,omitempty"`
+		ID        int `json:"id,omitempty"`
+		ExpiresAt int `json:"expires_at,omitempty"`
+	} `json:"cve_whitelist,omitempty"`
+	StorageLimit int `json:"storage_limit,omitempty"`
+	Metadata     struct {
+		EnableContentTrust   string `json:"enable_content_trust,omitempty"`
+		AutoScan             string `json:"auto_scan,omitempty"`
+		Severity             string `json:"severity,omitempty"`
+		ReuseSysCveWhitelist string `json:"reuse_sys_cve_whitelist,omitempty"`
+		Public               string `json:"public,omitempty"`
+		PreventVul           string `json:"prevent_vul,omitempty"`
+	} `json:"metadata,omitempty"`
 }
 
-type metadata struct {
-	AutoScan string `json:"auto_scan"`
-	Public   string `json:"public"`
-}
-
-type projects struct {
-	Name      string `json:"name"`
-	ProjectID int    `json:"project_id"`
+type projectsResponses struct {
+	UpdateTime         string `json:"update_time"`
+	OwnerName          string `json:"owner_name"`
+	Name               string `json:"name"`
+	Deleted            bool   `json:"deleted"`
+	OwnerID            int    `json:"owner_id"`
+	RepoCount          int    `json:"repo_count"`
+	CreationTime       string `json:"creation_time"`
+	Togglable          bool   `json:"togglable"`
+	ProjectID          int    `json:"project_id"`
+	CurrentUserRoleID  int    `json:"current_user_role_id"`
+	CurrentUserRoleIds []int  `json:"current_user_role_ids"`
+	ChartCount         int    `json:"chart_count"`
+	CveWhitelist       struct {
+		Items []struct {
+			CveID string `json:"cve_id"`
+		} `json:"items"`
+		ProjectID int `json:"project_id"`
+		ID        int `json:"id"`
+		ExpiresAt int `json:"expires_at"`
+	} `json:"cve_whitelist"`
+	Metadata struct {
+		EnableContentTrust   string `json:"enable_content_trust"`
+		AutoScan             string `json:"auto_scan"`
+		Severity             string `json:"severity"`
+		ReuseSysCveWhitelist string `json:"reuse_sys_cve_whitelist"`
+		Public               string `json:"public"`
+		PreventVul           string `json:"prevent_vul"`
+	} `json:"metadata"`
 }
 
 func resourceProject() *schema.Resource {
@@ -33,10 +71,6 @@ func resourceProject() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
-			},
-			"project_id": {
-				Type:     schema.TypeInt,
-				Computed: true,
 			},
 			"public": {
 				Type:     schema.TypeString,
@@ -57,38 +91,27 @@ func resourceProject() *schema.Resource {
 }
 
 func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(*client.Client)
-	body := project{
-		ProjectName: d.Get("name").(string),
-		Metadata: metadata{
-			AutoScan: d.Get("vulnerability_scanning").(string),
-			Public:   d.Get("public").(string),
-		},
-	}
+	apiClient, body := projectAPIClientRequest(d, m)
 
-	_, err := apiClient.SendRequest("POST", pathProjects, body, 0)
+	_, err := apiClient.SendRequest("POST", pathProjects, body, 201)
 	if err != nil {
 		return err
 	}
 
-	// d.SetId(randomString(15))
 	return resourceProjectRead(d, m)
 }
 
 func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := project{
-		ProjectName: d.Get("name").(string),
-	}
+	ProjectName := d.Get("name").(string)
 
-	resp, err := apiClient.SendRequest("GET", pathProjects+"?name="+body.ProjectName, nil, 0)
+	resp, err := apiClient.SendRequest("GET", pathProjects+"?name="+ProjectName, nil, 200)
 	if err != nil {
 		return err
 	}
 
-	var jsonData []projects
-
+	var jsonData []projectsResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
 		return fmt.Errorf("[ERROR] Unable to unmarchal: %s", err)
@@ -101,27 +124,18 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	for _, v := range jsonData {
 		if v.Name == d.Get("name").(string) {
 			d.SetId(strconv.Itoa(v.ProjectID))
-			d.Set("project_id", strconv.Itoa(v.ProjectID))
+
 		}
 
 	}
 
-	// d.Set("project_id", jsonData[0].ProjectID)
 	return nil
 }
 
 func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(*client.Client)
+	apiClient, body := projectAPIClientRequest(d, m)
 
-	body := project{
-		ProjectName: d.Get("name").(string),
-		Metadata: metadata{
-			AutoScan: d.Get("vulnerability_scanning").(string),
-			Public:   d.Get("public").(string),
-		},
-	}
-
-	_, err := apiClient.SendRequest("PUT", pathProjects, body, 0)
+	_, err := apiClient.SendRequest("PUT", pathProjects, body, 200)
 	if err != nil {
 		return err
 	}
@@ -131,8 +145,20 @@ func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceProjectDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	id := d.Get("project_id").(int)
+	id := d.Id()
 
-	apiClient.SendRequest("DELETE", pathProjects+"/"+strconv.Itoa(id), nil, 0)
+	apiClient.SendRequest("DELETE", pathProjects+"/"+id, nil, 200)
 	return nil
+}
+
+func projectAPIClientRequest(d *schema.ResourceData, m interface{}) (*client.Client, projectsRequest) {
+	apiClient := m.(*client.Client)
+
+	body := projectsRequest{
+		ProjectName: d.Get("name").(string),
+	}
+	body.Metadata.AutoScan = d.Get("vulnerability_scanning").(string)
+	body.Metadata.Public = d.Get("public").(string)
+
+	return apiClient, body
 }
