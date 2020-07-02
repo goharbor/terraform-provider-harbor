@@ -123,7 +123,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 
 	for _, v := range jsonData {
 		if v.Name == d.Get("name").(string) {
-			d.SetId(strconv.Itoa(v.ProjectID))
+			d.SetId(pathProjects + "/" + strconv.Itoa(v.ProjectID))
 
 		}
 
@@ -145,9 +145,8 @@ func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceProjectDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	id := d.Id()
 
-	apiClient.SendRequest("DELETE", pathProjects+"/"+id, nil, 200)
+	apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	return nil
 }
 

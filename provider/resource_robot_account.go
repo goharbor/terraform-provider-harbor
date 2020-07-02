@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"bitbucket.org/bestsellerit/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-var pathRobot string = "/projects"
+// var pathRobot string = "/projects"
 
 type robot struct {
 	Name        string   `json:"name"`
@@ -57,10 +58,10 @@ func resourceRobotAccount() *schema.Resource {
 				Computed:  true,
 				Sensitive: true,
 			},
-			"robot_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
+			// "robot_id": {
+			// 	Type:     schema.TypeString,
+			// 	Computed: true,
+			// },
 		},
 		Create: resourceRobotAccountCreate,
 		Read:   resourceRobotAccountRead,
@@ -73,8 +74,8 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	projectid := d.Get("project_id").(string)
 
-	url := pathRobot + "/" + projectid + "/robots"
-	resource := "/project/" + projectid + "/repository"
+	url := projectid + "/robots"
+	resource := strings.Replace(projectid, "s", "", +1) + "/repository"
 
 	body := robot{
 		Name:        d.Get("name").(string),
@@ -107,7 +108,7 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	projectid := d.Get("project_id").(string)
 	name := d.Get("name").(string)
-	url := pathRobot + "/" + projectid + "/robots"
+	url := projectid + "/robots"
 
 	resp, err := apiClient.SendRequest("GET", url, nil, 200)
 	if err != nil {
@@ -127,8 +128,8 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 
 	for _, v := range jsonData {
 		if v.Name == "robot$"+name {
-			d.SetId(strconv.Itoa(v.RobotID))
-			d.Set("robot_id", strconv.Itoa(v.RobotID))
+			d.SetId(url + "/" + strconv.Itoa(v.RobotID))
+			// d.Set("robot_id", strconv.Itoa(v.RobotID))
 		}
 	}
 	return nil
@@ -142,10 +143,10 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRobotAccountDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := d.Get("project_id").(string)
-	robotid := d.Get("robot_id").(string)
-	url := pathRobot + "/" + projectid + "/robots/" + robotid
-	apiClient.SendRequest("DELETE", url, nil, 0)
+	// projectid := d.Get("project_id").(string)
+	// robotid := d.Id()
+
+	apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 
 	return nil
 }
