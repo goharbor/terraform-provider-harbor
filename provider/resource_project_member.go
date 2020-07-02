@@ -30,7 +30,7 @@ func resourceMembers() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"project_id": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
@@ -39,10 +39,10 @@ func resourceMembers() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"member_id": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
+			// "member_id": {
+			// 	Type:     schema.TypeInt,
+			// 	Computed: true,
+			// },
 			"role": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -85,6 +85,20 @@ func groupType(group string) (x int) {
 	return x
 }
 
+func roleTypeNumber(role int) (x string) {
+	switch role {
+	case 1:
+		x = "projectadmin"
+	case 2:
+		x = "developer"
+	case 3:
+		x = "guest"
+	case 4:
+		x = "master"
+	}
+	return x
+}
+
 func roleType(role string) (x int) {
 	switch role {
 	case "projectadmin":
@@ -101,7 +115,8 @@ func roleType(role string) (x int) {
 
 func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	path := pathProjects + "/" + strconv.Itoa(d.Get("project_id").(int)) + "/members"
+	projectid := d.Get("project_id").(string)
+	path := projectid + "/members"
 
 	body := members{
 		RoleID: roleType(d.Get("role").(string)),
@@ -116,13 +131,14 @@ func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.SetId(randomString(15))
+	// d.SetId(randomString(15))
 	return resourceMembersRead(d, m)
 }
 
 func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	path := pathProjects + "/" + strconv.Itoa(d.Get("project_id").(int)) + "/members?entityname=" + d.Get("name").(string)
+	projectid := d.Get("project_id").(string)
+	path := projectid + "/members?entityname=" + d.Get("name").(string)
 
 	resp, err := apiClient.SendRequest("GET", path, nil, 200)
 	if err != nil {
@@ -134,18 +150,23 @@ func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return fmt.Errorf("[ERROR] Unable to unmarshal: %s", err)
 	}
-	fmt.Printf("%v", entityData)
 
-	d.Set("member_id", entityData[0].ID)
-	// d.Set("")
+	d.SetId(projectid + "/members/" + strconv.Itoa(entityData[0].ID))
+
+	d.Set("role", roleTypeNumber(entityData[0].RoleID))
 	return nil
 }
 
 func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	path := pathProjects + "/" + strconv.Itoa(d.Get("project_id").(int)) + "/members/" + strconv.Itoa(d.Get("member_id").(int))
+	// projectid := d.Get("project_id").(string)
+	// path := d.Id()
+	// path := projectid + "/members/" + strconv.Itoa(d.Get("member_id").(int))
+	body := members{
+		RoleID: roleType(d.Get("role").(string)),
+	}
 
-	_, err := apiClient.SendRequest("GET", path, nil, 200)
+	_, err := apiClient.SendRequest("GET", d.Id(), body, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -155,9 +176,9 @@ func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceMembersDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	path := pathProjects + "/" + strconv.Itoa(d.Get("project_id").(int)) + "/members/" + strconv.Itoa(d.Get("member_id").(int))
+	// path := pathProjects + "/" + strconv.Itoa(d.Get("project_id").(int)) + "/members/" + strconv.Itoa(d.Get("member_id").(int))
 
-	_, err := apiClient.SendRequest("DELETE", path, nil, 200)
+	_, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
