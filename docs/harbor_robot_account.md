@@ -9,7 +9,7 @@ resource "haror_project" "main" {
 resource "harbor_robot_account" "account" {
   name        = "${harbor_project.main.name}"
   description = "Robot account used to push images to harbor"
-  project_id  = harbor_project.main.project_id
+  project_id  = harbor_project.main.id
   action      = "push"
 }
 ```

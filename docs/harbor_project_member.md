@@ -7,7 +7,7 @@ resource "haror_project" "main" {
 }
 
 resource "harbor_project_member" "main" {
-  project_id    = harbor_project.main.project_id
+  project_id    = harbor_project.main.id
   name          = "testing1"
   role          = "master"
   type          = "oidc"
