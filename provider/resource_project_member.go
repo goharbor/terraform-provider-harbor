@@ -9,8 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-// var pathProjects = "/api/projects"
-
 type members struct {
 	RoleID      int   `json:"role_id"`
 	GroupMember group `json:"member_group"`
@@ -39,10 +37,10 @@ func resourceMembers() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			// "member_id": {
-			// 	Type:     schema.TypeInt,
-			// 	Computed: true,
-			// },
+			"member_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"role": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -115,7 +113,7 @@ func roleType(role string) (x int) {
 
 func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := d.Get("project_id").(string)
+	projectid := checkProjectid(d.Get("project_id").(string))
 	path := projectid + "/members"
 
 	body := members{
@@ -131,13 +129,12 @@ func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	// d.SetId(randomString(15))
 	return resourceMembersRead(d, m)
 }
 
 func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := d.Get("project_id").(string)
+	projectid := checkProjectid(d.Get("project_id").(string))
 	path := projectid + "/members?entityname=" + d.Get("name").(string)
 
 	resp, err := apiClient.SendRequest("GET", path, nil, 200)
@@ -152,16 +149,14 @@ func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(projectid + "/members/" + strconv.Itoa(entityData[0].ID))
-
+	d.Set("member_id", entityData[0].ID)
 	d.Set("role", roleTypeNumber(entityData[0].RoleID))
 	return nil
 }
 
 func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	// projectid := d.Get("project_id").(string)
-	// path := d.Id()
-	// path := projectid + "/members/" + strconv.Itoa(d.Get("member_id").(int))
+
 	body := members{
 		RoleID: roleType(d.Get("role").(string)),
 	}
@@ -176,7 +171,6 @@ func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceMembersDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	// path := pathProjects + "/" + strconv.Itoa(d.Get("project_id").(int)) + "/members/" + strconv.Itoa(d.Get("member_id").(int))
 
 	_, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {

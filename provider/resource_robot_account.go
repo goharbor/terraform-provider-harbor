@@ -12,21 +12,25 @@ import (
 
 // var pathRobot string = "/projects"
 
-type robot struct {
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Access      []access `json:"access"`
+type robotRequest struct {
+	Access      []access `json:"access,omitempty"`
+	Name        string   `json:"name,omitempty"`
+	ExpiresAt   int      `json:"expires_at,omitempty"`
+	Description string   `json:"description,omitempty"`
 }
-
 type access struct {
-	Action   string `json:"action"`
-	Resource string `json:"resource"`
+	Action   string `json:"action,omitempty"`
+	Resource string `json:"resource,omitempty"`
 }
 
-type robotAccount struct {
-	Token   string `json:"token,omitempty"`
-	RobotID int    `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
+type robotRepones struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Token       string `json:"token"`
+	Description string `json:"description"`
+	ProjectID   int    `json:"project_id"`
+	ExpiresAt   int    `json:"expires_at"`
+	Disabled    bool   `json:"disabled"`
 }
 
 func resourceRobotAccount() *schema.Resource {
@@ -58,30 +62,62 @@ func resourceRobotAccount() *schema.Resource {
 				Computed:  true,
 				Sensitive: true,
 			},
-			// "robot_id": {
-			// 	Type:     schema.TypeString,
-			// 	Computed: true,
-			// },
+			"robot_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 		Create: resourceRobotAccountCreate,
 		Read:   resourceRobotAccountRead,
 		Update: resourceRobotAccountUpdate,
 		Delete: resourceRobotAccountDelete,
+		Importer: &schema.ResourceImporter{
+			// State: schema.ImportStatePassthrough,
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+
+				apiclient := m.(*client.Client)
+
+				resp, err := apiclient.SendRequest("GET", d.Id(), nil, 200)
+				if err != nil {
+					fmt.Println(err)
+				}
+				var jsonData robotRepones
+				json.Unmarshal([]byte(resp), &jsonData)
+
+				d.Set("name", strings.Replace(jsonData.Name, "robot$", "", -1))
+				d.Set("description", jsonData.Description)
+				// d.Set("prjoect", "projects/"+jsonData.ProjectID)
+
+				// d.SetId(d.Id())
+
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 	}
+}
+
+func checkProjectid(id string) (projecid string) {
+	path := "/projects/"
+	if strings.Contains(id, path) == false {
+		id = path + id
+	}
+	return id
+
 }
 
 func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := d.Get("project_id").(string)
+	projectid := checkProjectid(d.Get("project_id").(string))
 
 	url := projectid + "/robots"
+	// action := "Action:" + d.Get("action").(string)
 	resource := strings.Replace(projectid, "s", "", +1) + "/repository"
 
-	body := robot{
+	body := robotRequest{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 		Access: []access{
-			access{
+			{
 				Action:   d.Get("action").(string),
 				Resource: resource,
 			},
@@ -93,7 +129,7 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	var jsonData robotAccount
+	var jsonData robotRepones
 
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
@@ -106,16 +142,17 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := d.Get("project_id").(string)
+	projectid := checkProjectid(d.Get("project_id").(string))
 	name := d.Get("name").(string)
+
 	url := projectid + "/robots"
+
+	var jsonData []robotRepones
 
 	resp, err := apiClient.SendRequest("GET", url, nil, 200)
 	if err != nil {
 		return err
 	}
-
-	var jsonData []robotAccount
 
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
@@ -128,8 +165,10 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 
 	for _, v := range jsonData {
 		if v.Name == "robot$"+name {
-			d.SetId(url + "/" + strconv.Itoa(v.RobotID))
-			// d.Set("robot_id", strconv.Itoa(v.RobotID))
+			d.SetId(url + "/" + strconv.Itoa(v.ID))
+			d.Set("robot_id", strconv.Itoa(v.ID))
+			d.Set("name", strings.Replace(name, "robot$", "", -1))
+			d.Set("description", v.Description)
 		}
 	}
 	return nil
@@ -143,8 +182,6 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRobotAccountDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	// projectid := d.Get("project_id").(string)
-	// robotid := d.Id()
 
 	apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 

@@ -72,6 +72,10 @@ func resourceProject() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"project_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"public": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -124,6 +128,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	for _, v := range jsonData {
 		if v.Name == d.Get("name").(string) {
 			d.SetId(pathProjects + "/" + strconv.Itoa(v.ProjectID))
+			d.Set("project_id", strconv.Itoa(v.ProjectID))
 
 		}
 
