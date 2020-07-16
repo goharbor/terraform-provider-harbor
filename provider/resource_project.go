@@ -140,7 +140,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient, body := projectAPIClientRequest(d, m)
 
-	_, err := apiClient.SendRequest("PUT", pathProjects, body, 200)
+	_, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
