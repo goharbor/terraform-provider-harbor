@@ -7,6 +7,7 @@ The Harbor provider is used to configure an instance of Harbor. The provider nee
 * [Resource: harbor_tasks](harbor_tasks.md)
 * [Resource: harbor_project](harbor_project.md)
 * [Resource: harbor_robot_account](harbor_robot_account.md)
+* [Resource: harbor_project_member](harbor_project_member.md)
 
 ## Authentication
 ```
