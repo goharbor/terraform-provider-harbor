@@ -47,6 +47,7 @@ jobs:
           release-type: << parameters.release-type >>
 
 
+
 tag_filter: &tag_filter /v[0-9]+.[0-9]+.[0-9]+/
 my_context: &my_context es02-prod
 
