@@ -43,10 +43,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp
-      - run:
-          name: go get
-          command: |
-            go get -v ./...
       - goreleaser:
           release-type: << parameters.release-type >>
 
