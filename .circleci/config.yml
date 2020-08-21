@@ -1,84 +1,47 @@
-version: 2
+version: 2.1
+
+orbs:
+  secret-injector: bestsellerit/secret-injector@0.2.32
+
 
 jobs:
-  test:
-    docker:
-      - image: circleci/golang:1.13
-    steps:
-      - checkout
-      - run: go get -v ./...
   build:
     docker:
-      - image: circleci/golang:1.13
+      - image: circleci/golang:1.14
     steps:
       - checkout
-      - run: 
-          name: update n upgrade
-          command: |
-            sudo apt update
-            sudo apt upgrade -y
-      - run: go get -v ./...
+      - attach_workspace:
+          at: /tmp
       - run:
-          name: Build terraform provider for multiple platforms
+          name: go get
           command: |
-            package_name=terraform-harbor-provider
-
-            platforms=(
-            "darwin/amd64"
-            "linux/amd64"
-            "windows/amd64" )
-
-            for platform in "${platforms[@]}"
-            do
-                platform_split=(${platform//\// })
-                GOOS=${platform_split[0]}
-                GOARCH=${platform_split[1]}
-                output_name=$package_name
-                if [ $GOOS = "windows" ]; then
-                    output_name+='.exe'
-                fi
-
-                env CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH go build -o $output_name
-
-                zip -v terraform-harbor-provider-$GOOS-$GOARCH $output_name
-                rm $output_name
-            done
-            cat /etc/*release
-            ls -lh
-      
+            go get -v ./...
       - run:
-          name: Create release
+          name: Go Releaser
           command: |
-            curl -X POST \
-              https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases \
-              -H "authorization: Basic $GH_TOKEN" \
-              -H 'content-type: application/json' \
-              -d '{
-              "tag_name": "'$CIRCLE_TAG'",
-              "target_commitish": "master",
-              "name": "'$CIRCLE_TAG'",
-              "body": "",
-              "draft": false,
-              "prerelease": false
-            }' | jq
-      - run:
-          name: Upload release assets
-          command: |
-            id=$(curl https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/latest -H "authorization: Basic $GH_TOKEN" | jq '.id')
-      
-            FILES=$(ls -l terraform-harbor-provider* | awk '{print $9}')
-            for f in $FILES
-            do
-              GH_ASSET="https://uploads.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases/$id/assets?name=$(basename $f)"
-
-              curl --data-binary @"$f" -H "authorization: Basic $GH_TOKEN" -H "Content-Type: application/zip" $GH_ASSET | jq
-            done
-
+            source /tmp/secrets.env
+            echo -e "$GPG_PRIVATE_KEY" | base64 --decode > $HOME/private.key
+            gpg --pinentry-mode loopback --batch --yes --import $HOME/private.key
+            curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+            sudo mv ./bin/goreleaser /usr/bin/goreleaser
+            rm -rf ./bin
+            goreleaser release --rm-dist
 workflows:
   version: 2
   build-n-release:
     jobs:
+      - secret-injector/dump-secrets:
+          vault-path: ES/terraform-stuff/dev
+          output-type: env
+          context: es02-dev
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+.[0-9]+.[0-9]+/
       - build:
+          requires:
+            - secret-injector/dump-secrets
           filters:
             branches:
               ignore: /.*/
