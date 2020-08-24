@@ -23,4 +23,4 @@ The following arguments are supported:
 * **username** - (Required) The username to be used to access harbor
 * **password** - (Required) The password to be used to access harbor
 * **insecure** - (Optional) Choose to igorne certificate errors
-* **api_version** - (Optional) Chosse which version of the api you would like to use 1 or 2.
+* **api_version** - (Optional) Choose which version of the api you would like to use 1 or 2.
