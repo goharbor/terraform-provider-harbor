@@ -22,3 +22,10 @@ The following arguments are supported:
 In addition to all argument, the folloing attributes are exported:
 
 * **project_id** - The id of the project with harbor.
+
+## Import
+Harbor project can be imported using the `project id` eg,
+
+`
+terraform import haror_project.main /projects/1
+`

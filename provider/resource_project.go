@@ -91,6 +91,25 @@ func resourceProject() *schema.Resource {
 		Read:   resourceProjectRead,
 		Update: resourceProjectUpdate,
 		Delete: resourceProjectDelete,
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+
+				apiclient := m.(*client.Client)
+
+				resp, err := apiclient.SendRequest("GET", d.Id(), nil, 200)
+				if err != nil {
+					fmt.Println(err)
+				}
+				var jsonData projectsResponses
+				json.Unmarshal([]byte(resp), &jsonData)
+
+				d.Set("name", jsonData.Name)
+				d.Set("project_id", jsonData.ProjectID)
+				d.Set("public", jsonData.Metadata.Public)
+
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 	}
 }
 
@@ -128,8 +147,10 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	for _, v := range jsonData {
 		if v.Name == d.Get("name").(string) {
 			d.SetId(pathProjects + "/" + strconv.Itoa(v.ProjectID))
+			d.Set("name", d.Get("name").(string))
 			d.Set("project_id", strconv.Itoa(v.ProjectID))
-
+			d.Set("public", v.Metadata.Public)
+			d.Set("vulnerability_scanning", v.Metadata.PreventVul)
 		}
 
 	}
