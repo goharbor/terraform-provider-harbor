@@ -1,8 +1,6 @@
 package client
 
 import (
-	// "github.com/BESTSELLER/terraform-provider-habor/client"
-
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
