@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"bitbucket.org/bestsellerit/terraform-provider-harbor/client"
+	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -57,7 +57,10 @@ func resourceTasksCreate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 
-	resp, _ := apiClient.SendRequest("GET", pathVuln, nil, 0)
+	resp, err := apiClient.SendRequest("GET", pathVuln, nil, 0)
+	if err != nil {
+		return err
+	}
 	var jsonData Info
 
 	json.Unmarshal([]byte(resp), &jsonData)

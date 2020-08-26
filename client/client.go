@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type Client struct {
@@ -29,6 +30,7 @@ func NewClient(url string, username string, password string, insecure bool) *Cli
 	}
 }
 
+// SendRequest send a http request
 func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, err error) {
 	url := c.url + path
 	client := &http.Client{}
@@ -66,6 +68,16 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 	resp.Body.Close()
 
 	strbody := string(body)
+
+	location := resp.Header.Get("location")
+	if location != "" {
+		id := strings.Replace(location, "/api/v2.0", "", -1)
+
+		localation := map[string]string{"localation": id}
+		json, _ := json.Marshal(localation)
+		strbody = string(json)
+
+	}
 
 	if statusCode != 0 {
 		if resp.StatusCode != statusCode {

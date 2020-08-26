@@ -3,7 +3,7 @@ package provider
 import (
 	"strings"
 
-	"bitbucket.org/bestsellerit/terraform-provider-harbor/client"
+	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
@@ -44,6 +44,7 @@ func Provider() terraform.ResourceProvider {
 			"harbor_project_member": resourceMembers(),
 			"harbor_tasks":          resourceTasks(),
 			"harbor_robot_account":  resourceRobotAccount(),
+			"harbor_user":           resourceUser(),
 		},
 
 		ConfigureFunc: providerConfigure,
