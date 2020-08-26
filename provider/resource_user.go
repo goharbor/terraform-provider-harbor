@@ -73,7 +73,7 @@ func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	var jsonData models.UserBody
-	_, err := json.Unmarshal([]byte(resp), &jsonData)
+	err := json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
 		return err
 	}
