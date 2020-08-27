@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  secret-injector: bestsellerit/secret-injector@0.2.32
+  secret-injector: bestsellerit/secret-injector@0.2.34
 
 commands:
   goreleaser:
