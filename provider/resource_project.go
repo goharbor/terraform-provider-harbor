@@ -96,7 +96,7 @@ func resourceProject() *schema.Resource {
 
 				apiclient := m.(*client.Client)
 
-				resp, err := apiclient.SendRequest("GET", d.Id(), nil, 200)
+				resp, _, err := apiclient.SendRequest("GET", d.Id(), nil, 200)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -116,7 +116,7 @@ func resourceProject() *schema.Resource {
 func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient, body := projectAPIClientRequest(d, m)
 
-	_, err := apiClient.SendRequest("POST", pathProjects, body, 201)
+	_, _, err := apiClient.SendRequest("POST", pathProjects, body, 201)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 
 	ProjectName := d.Get("name").(string)
 
-	resp, err := apiClient.SendRequest("GET", pathProjects+"?name="+ProjectName, nil, 200)
+	resp, _, err := apiClient.SendRequest("GET", pathProjects+"?name="+ProjectName, nil, 200)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient, body := projectAPIClientRequest(d, m)
 
-	_, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}

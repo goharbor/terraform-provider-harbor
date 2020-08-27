@@ -77,7 +77,7 @@ func resourceRobotAccount() *schema.Resource {
 
 				apiclient := m.(*client.Client)
 
-				resp, err := apiclient.SendRequest("GET", d.Id(), nil, 200)
+				resp, _, err := apiclient.SendRequest("GET", d.Id(), nil, 200)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -124,7 +124,7 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 
-	resp, err := apiClient.SendRequest("POST", url, body, 201)
+	resp, _, err := apiClient.SendRequest("POST", url, body, 201)
 	if err != nil {
 		return err
 	}
@@ -149,7 +149,7 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 
 	var jsonData []robotRepones
 
-	resp, err := apiClient.SendRequest("GET", url, nil, 200)
+	resp, _, err := apiClient.SendRequest("GET", url, nil, 200)
 	if err != nil {
 		return err
 	}

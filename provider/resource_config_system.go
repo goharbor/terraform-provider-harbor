@@ -55,7 +55,7 @@ func resourceConfigSystemCreate(d *schema.ResourceData, m interface{}) error {
 		RobotTokenDuration:         days2mins(d.Get("robot_token_expiration").(int)),
 	}
 
-	_, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
+	_, _, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func resourceConfigSystemUpdate(d *schema.ResourceData, m interface{}) error {
 		RobotTokenDuration:         days2mins(d.Get("robot_token_expiration").(int)),
 	}
 
-	_, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
+	_, _, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
 	if err != nil {
 		return err
 	}

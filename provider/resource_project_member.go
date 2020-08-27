@@ -124,7 +124,7 @@ func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 
-	_, err := apiClient.SendRequest("POST", path, body, 201)
+	_, _, err := apiClient.SendRequest("POST", path, body, 201)
 	if err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	projectid := checkProjectid(d.Get("project_id").(string))
 	path := projectid + "/members?entityname=" + d.Get("name").(string)
 
-	resp, err := apiClient.SendRequest("GET", path, nil, 200)
+	resp, _, err := apiClient.SendRequest("GET", path, nil, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -161,7 +161,7 @@ func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
 		RoleID: roleType(d.Get("role").(string)),
 	}
 
-	_, err := apiClient.SendRequest("GET", d.Id(), body, 200)
+	_, _, err := apiClient.SendRequest("GET", d.Id(), body, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -172,7 +172,7 @@ func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceMembersDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
