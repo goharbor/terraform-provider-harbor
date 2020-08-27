@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"bitbucket.org/bestsellerit/terraform-provider-harbor/client"
+	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 

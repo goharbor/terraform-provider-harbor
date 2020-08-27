@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"bitbucket.org/bestsellerit/terraform-provider-harbor/client"
+	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -57,18 +57,26 @@ func resourceTasksCreate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 
-	resp, _ := apiClient.SendRequest("GET", pathVuln, nil, 0)
+	resp, err := apiClient.SendRequest("GET", pathVuln, nil, 0)
+	if err != nil {
+		return err
+	}
 	var jsonData Info
 
 	json.Unmarshal([]byte(resp), &jsonData)
 
 	time := jsonData.Schedule.Type
+	requestType := "POST"
 	if time != "" {
 		log.Printf("Shedule found performing PUT request")
-		apiClient.SendRequest("PUT", pathVuln, body, 0)
+		requestType = "PUT"
 	} else {
 		log.Printf("No shedule found performing POST request")
-		apiClient.SendRequest("POST", pathVuln, body, 0)
+	}
+	_, err = apiClient.SendRequest(requestType, pathVuln, body, 0)
+	if err != nil {
+		return err
+
 	}
 
 	d.SetId(randomString(15))
