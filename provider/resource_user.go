@@ -60,7 +60,10 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	var jsonData models.UserBody
-	json.Unmarshal([]byte(resp), &jsonData)
+	err = json.Unmarshal([]byte(resp), &jsonData)
+	if err != nil {
+		return err
+	}
 
 	d.SetId(jsonData.Localation)
 	return resourceUserRead(d, m)
