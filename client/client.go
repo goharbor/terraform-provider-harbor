@@ -88,9 +88,12 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 }
 
 // GetID gets the resource id from locaation resposne header
-func GetID(body string) (id string) {
+func GetID(body string) (id string, err error) {
 	var jsonData models.ResponseHeaders
-	json.Unmarshal([]byte(body), &jsonData)
+	err = json.Unmarshal([]byte(body), &jsonData)
+	if err != nil {
+		return "", err
+	}
 
 	localation := jsonData.Location[0]
 	localation = strings.Replace(localation, "/api", "", -1)
@@ -98,5 +101,5 @@ func GetID(body string) (id string) {
 	// removes /v2.0 from string if using api version 2
 	localation = strings.Replace(localation, "/v2.0", "", -1)
 
-	return localation
+	return localation, nil
 }
