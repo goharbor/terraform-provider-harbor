@@ -2,18 +2,9 @@ package provider
 
 import (
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
+	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
-
-type email struct {
-	EmailHost     string `json:"email_host"`
-	EmailPort     string `json:"email_port"`
-	EmailUsername string `json:"email_username,omitempty"`
-	EmailPassword string `json:"email_password,omitempty"`
-	EmailFrom     string `json:"email_from"`
-	EmailSsl      string `json:"email_ssl,omitempty"`
-	// EmailVerifyCert string `json:"email_verify_cert,omitempty"`
-}
 
 func resourceConfigEmail() *schema.Resource {
 	return &schema.Resource{
@@ -59,44 +50,27 @@ func resourceConfigEmail() *schema.Resource {
 func resourceConfigEmailCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := email{
-		EmailHost:     d.Get("email_host").(string),
-		EmailPort:     d.Get("email_port").(string),
-		EmailUsername: d.Get("email_username").(string),
-		EmailPassword: d.Get("email_password").(string),
-		EmailFrom:     d.Get("email_from").(string),
-		EmailSsl:      d.Get("email_ssl").(string),
-		// EmailVerifyCert: d.Get("email_verify_cert").(string),
-	}
+	body := client.GetConfigBody(d)
 
-	_, _, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
+	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(randomString(15))
-	// return resourceConfigEmailRead(d, m)
-	return nil
+	return resourceConfigEmailRead(d, m)
 }
 
 func resourceConfigEmailRead(d *schema.ResourceData, m interface{}) error {
+	d.SetId("configuration/email")
 	return nil
 }
 
 func resourceConfigEmailUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := email{
-		EmailHost:     d.Get("email_host").(string),
-		EmailPort:     d.Get("email_port").(string),
-		EmailUsername: d.Get("email_username").(string),
-		EmailPassword: d.Get("email_password").(string),
-		EmailFrom:     d.Get("email_from").(string),
-		EmailSsl:      d.Get("email_ssl").(string),
-		// EmailVerifyCert: d.Get("email_verify_cert").(string),
-	}
+	body := client.GetConfigBody(d)
 
-	_, _, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
+	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
 		return err
 	}
