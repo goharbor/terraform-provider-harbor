@@ -51,7 +51,7 @@ func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	id := client.GetID(headers)
+	id, err := client.GetID(headers)
 	d.SetId(id)
 	return resourceProjectRead(d, m)
 }
