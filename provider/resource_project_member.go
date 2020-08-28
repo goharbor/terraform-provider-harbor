@@ -3,26 +3,11 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
+	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
-
-type members struct {
-	RoleID      int   `json:"role_id"`
-	GroupMember group `json:"member_group"`
-}
-
-type group struct {
-	GroupType int    `json:"group_type"`
-	GroupName string `json:"group_name"`
-}
-
-type entity struct {
-	ID     int `json:"id"`
-	RoleID int `json:"role_id"`
-}
 
 func resourceMembers() *schema.Resource {
 	return &schema.Resource{
@@ -71,96 +56,49 @@ func resourceMembers() *schema.Resource {
 	}
 }
 
-func groupType(group string) (x int) {
-	switch group {
-	case "ldap":
-		x = 1
-	case "internal":
-		x = 2
-	case "oidc":
-		x = 3
-	}
-	return x
-}
-
-func roleTypeNumber(role int) (x string) {
-	switch role {
-	case 1:
-		x = "projectadmin"
-	case 2:
-		x = "developer"
-	case 3:
-		x = "guest"
-	case 4:
-		x = "master"
-	}
-	return x
-}
-
-func roleType(role string) (x int) {
-	switch role {
-	case "projectadmin":
-		x = 1
-	case "developer":
-		x = 2
-	case "guest":
-		x = 3
-	case "master":
-		x = 4
-	}
-	return x
-}
-
 func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	projectid := checkProjectid(d.Get("project_id").(string))
 	path := projectid + "/members"
 
-	body := members{
-		RoleID: roleType(d.Get("role").(string)),
-		GroupMember: group{
-			GroupType: groupType(d.Get("type").(string)),
-			GroupName: d.Get("name").(string),
-		},
-	}
+	body := client.ProjectBody(d)
 
-	_, _, err := apiClient.SendRequest("POST", path, body, 201)
+	_, headers, err := apiClient.SendRequest("POST", path, body, 201)
 	if err != nil {
 		return err
 	}
 
+	id, err := client.GetID(headers)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(id)
 	return resourceMembersRead(d, m)
 }
 
 func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := checkProjectid(d.Get("project_id").(string))
-	path := projectid + "/members?entityname=" + d.Get("name").(string)
 
-	resp, _, err := apiClient.SendRequest("GET", path, nil, 200)
+	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	var entityData []entity
-	json.Unmarshal([]byte(resp), &entityData)
+	var jsonData models.ProjectMembersBody
+	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Unable to unmarshal: %s", err)
+		return err
 	}
 
-	d.SetId(projectid + "/members/" + strconv.Itoa(entityData[0].ID))
-	d.Set("member_id", entityData[0].ID)
-	d.Set("role", roleTypeNumber(entityData[0].RoleID))
+	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
 	return nil
 }
 
 func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := members{
-		RoleID: roleType(d.Get("role").(string)),
-	}
-
+	body := client.ProjectMembersBody(d)
 	_, _, err := apiClient.SendRequest("GET", d.Id(), body, 200)
 	if err != nil {
 		fmt.Println(err)
