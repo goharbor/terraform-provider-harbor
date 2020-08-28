@@ -59,7 +59,10 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	id := client.GetID(header)
+	id, err := client.GetID(header)
+	if err != nil {
+		return nil
+	}
 
 	d.SetId(id)
 	return resourceUserRead(d, m)
