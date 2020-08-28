@@ -54,24 +54,23 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.UserBody(d)
 
-	resp, err := apiClient.SendRequest("POST", models.PathUsers, &body, 201)
+	_, header, err := apiClient.SendRequest("POST", models.PathUsers, &body, 201)
 	if err != nil {
 		return err
 	}
 
-	var jsonData models.UserBody
-	err = json.Unmarshal([]byte(resp), &jsonData)
+	id, err := client.GetID(header)
 	if err != nil {
-		return err
+		return nil
 	}
 
-	d.SetId(jsonData.Localation)
+	d.SetId(id)
 	return resourceUserRead(d, m)
 }
 
 func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	resp, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}
@@ -94,17 +93,17 @@ func resourceUserUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	body := client.UserBody(d)
-	_, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
 
-	_, err = apiClient.SendRequest("PUT", d.Id()+"/sysadmin", body, 200)
+	_, _, err = apiClient.SendRequest("PUT", d.Id()+"/sysadmin", body, 200)
 	if err != nil {
 		return err
 	}
 
-	_, err = apiClient.SendRequest("PUT", d.Id()+"/password", body, 200)
+	_, _, err = apiClient.SendRequest("PUT", d.Id()+"/password", body, 200)
 	if err != nil {
 		return err
 	}
@@ -115,7 +114,7 @@ func resourceUserUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceUserDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}

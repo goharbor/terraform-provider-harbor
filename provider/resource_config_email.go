@@ -69,7 +69,7 @@ func resourceConfigEmailCreate(d *schema.ResourceData, m interface{}) error {
 		// EmailVerifyCert: d.Get("email_verify_cert").(string),
 	}
 
-	_, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
+	_, _, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func resourceConfigEmailUpdate(d *schema.ResourceData, m interface{}) error {
 		// EmailVerifyCert: d.Get("email_verify_cert").(string),
 	}
 
-	_, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
+	_, _, err := apiClient.SendRequest("PUT", pathConfig, body, 200)
 	if err != nil {
 		return err
 	}

@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/BESTSELLER/terraform-provider-harbor/models"
 )
 
 type Client struct {
@@ -31,14 +33,14 @@ func NewClient(url string, username string, password string, insecure bool) *Cli
 }
 
 // SendRequest send a http request
-func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, err error) {
+func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, respheaders string, err error) {
 	url := c.url + path
 	client := &http.Client{}
 
 	b := new(bytes.Buffer)
 	err = json.NewEncoder(b).Encode(payload)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	if c.insecure == true {
@@ -50,7 +52,7 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 
 	req, err := http.NewRequest(method, url, b)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	req.SetBasicAuth(c.username, c.password)
@@ -58,33 +60,46 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	resp.Body.Close()
 
 	strbody := string(body)
 
-	location := resp.Header.Get("location")
-	if location != "" {
-		id := strings.Replace(location, "/api/v2.0", "", -1)
-
-		localation := map[string]string{"localation": id}
-		json, _ := json.Marshal(localation)
-		strbody = string(json)
-
+	respHeaders := resp.Header
+	headers, err := json.Marshal(respHeaders)
+	if err != nil {
+		return "", "", err
 	}
 
 	if statusCode != 0 {
 		if resp.StatusCode != statusCode {
 
-			return "", fmt.Errorf("[ERROR] unexpected status code got: %v expected: %v \n %v", resp.StatusCode, statusCode, strbody)
+			return "", "", fmt.Errorf("[ERROR] unexpected status code got: %v expected: %v \n %v", resp.StatusCode, statusCode, strbody)
 		}
 	}
 
-	return strbody, nil
+	return strbody, string(headers), nil
+}
+
+// GetID gets the resource id from locaation resposne header
+func GetID(body string) (id string, err error) {
+	var jsonData models.ResponseHeaders
+	err = json.Unmarshal([]byte(body), &jsonData)
+	if err != nil {
+		return "", err
+	}
+
+	localation := jsonData.Location[0]
+	localation = strings.Replace(localation, "/api", "", -1)
+
+	// removes /v2.0 from string if using api version 2
+	localation = strings.Replace(localation, "/v2.0", "", -1)
+
+	return localation, nil
 }
