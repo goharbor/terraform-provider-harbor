@@ -15,9 +15,9 @@ func resourceConfigSystem() *schema.Resource {
 				Default:  "adminonly",
 			},
 			"read_only": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  "false",
+				Default:  false,
 			},
 			"robot_token_expiration": {
 				Type:     schema.TypeInt,

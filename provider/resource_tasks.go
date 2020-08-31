@@ -31,6 +31,7 @@ type Info struct {
 
 func resourceTasks() *schema.Resource {
 	return &schema.Resource{
+		DeprecationMessage: "Use harbor_interrogation_services resource instead. harbor_tasks Will be removed in the next major version",
 		Schema: map[string]*schema.Schema{
 			"vulnerability_scan_policy": {
 				Type:     schema.TypeString,

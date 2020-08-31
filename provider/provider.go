@@ -37,14 +37,15 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"harbor_config_auth":    resourceConfigAuth(),
-			"harbor_config_email":   resourceConfigEmail(),
-			"harbor_config_system":  resourceConfigSystem(),
-			"harbor_project":        resourceProject(),
-			"harbor_project_member": resourceMembers(),
-			"harbor_tasks":          resourceTasks(),
-			"harbor_robot_account":  resourceRobotAccount(),
-			"harbor_user":           resourceUser(),
+			"harbor_config_auth":            resourceConfigAuth(),
+			"harbor_config_email":           resourceConfigEmail(),
+			"harbor_config_system":          resourceConfigSystem(),
+			"harbor_project":                resourceProject(),
+			"harbor_project_member":         resourceMembers(),
+			"harbor_tasks":                  resourceTasks(),
+			"harbor_interrogation_services": resourceVuln(),
+			"harbor_robot_account":          resourceRobotAccount(),
+			"harbor_user":                   resourceUser(),
 		},
 
 		ConfigureFunc: providerConfigure,
