@@ -50,7 +50,7 @@ func resourceConfigEmail() *schema.Resource {
 func resourceConfigEmailCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := client.GetConfigBody(d)
+	body := client.GetConfigEmail(d)
 
 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
@@ -68,7 +68,7 @@ func resourceConfigEmailRead(d *schema.ResourceData, m interface{}) error {
 func resourceConfigEmailUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := client.GetConfigBody(d)
+	body := client.GetConfigEmail(d)
 
 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {

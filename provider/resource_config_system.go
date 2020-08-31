@@ -35,7 +35,7 @@ func resourceConfigSystem() *schema.Resource {
 func resourceConfigSystemCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := client.GetConfigBody(d)
+	body := client.GetConfigSystem(d)
 
 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
@@ -53,7 +53,7 @@ func resourceConfigSystemRead(d *schema.ResourceData, m interface{}) error {
 func resourceConfigSystemUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := client.GetConfigBody(d)
+	body := client.GetConfigSystem(d)
 
 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
