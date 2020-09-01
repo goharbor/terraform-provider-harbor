@@ -1,8 +1,8 @@
-# Resource: interrogation_services
+# Resource: harbor_interrogation_services
 
 ## Example Usage
 ```
-resource "interrogation_services" "main" {
+resource "harbor_interrogation_services" "main" {
   vulnerability_scan_policy = "daily"
 
 }
