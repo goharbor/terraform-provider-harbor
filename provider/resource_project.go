@@ -24,7 +24,7 @@ func resourceProject() *schema.Resource {
 			"public": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  false,
+				Default:  "false",
 			},
 			"vulnerability_scanning": {
 				Type:     schema.TypeString,
@@ -73,7 +73,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", strconv.Itoa(jsonData.ProjectID))
 	d.Set("public", jsonData.Metadata.Public)
-	d.Set("vulnerability_scanning", jsonData.Metadata.PreventVul)
+	d.Set("vulnerability_scanning", jsonData.Metadata.AutoScan)
 
 	return nil
 }
