@@ -5,12 +5,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func ProjectMembersBody(d *schema.ResourceData) models.ProjectMembersBody {
+func ProjectMembersGroupBody(d *schema.ResourceData) models.ProjectMembersBody {
 	return models.ProjectMembersBody{
 		RoleID: RoleType(d.Get("role").(string)),
 		GroupMember: models.ProjectMembersBodyGroup{
 			GroupType: GroupType(d.Get("type").(string)),
-			GroupName: d.Get("name").(string),
+			GroupName: d.Get("group_name").(string),
+		},
+	}
+}
+
+func ProjectMembersUserBody(d *schema.ResourceData) models.ProjectMembersBody {
+	return models.ProjectMembersBody{
+		RoleID: RoleType(d.Get("role").(string)),
+		UserMembers: models.ProjectMemberUsersGroup{
+			UserName: d.Get("user_name").(string),
 		},
 	}
 }

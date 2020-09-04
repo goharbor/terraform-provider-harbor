@@ -9,16 +9,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func resourceMembers() *schema.Resource {
+func resourceMembersUser() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-
 			"project_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"name": {
+			"user_name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -38,32 +37,19 @@ func resourceMembers() *schema.Resource {
 					return
 				},
 			},
-			"type": {
-				Type:     schema.TypeString,
-				Required: true,
-				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
-					v := val.(string)
-					if v != "ldap" && v != "internal" && v != "oidc" {
-						errs = append(errs, fmt.Errorf("%q must be either ldap, internal or oidc, got: %s", key, v))
-					}
-					return
-				},
-			},
 		},
-		Create:             resourceMembersCreate,
-		Read:               resourceMembersRead,
-		Update:             resourceMembersUpdate,
-		Delete:             resourceMembersDelete,
-		DeprecationMessage: "The resource project_member has been renamed to project_member_group. This resource is deprecated and will be removed in the next major version",
+		Create: resourceMembersUserCreate,
+		Read:   resourceMembersUserRead,
+		Update: resourceMembersUserUpdate,
+		Delete: resourceMembersUserDelete,
 	}
 }
 
-func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
+func resourceMembersUserCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := checkProjectid(d.Get("project_id").(string))
-	path := projectid + "/members"
+	path := d.Get("project_id").(string) + "/members"
 
-	body := client.ProjectMembersGroupBody(d)
+	body := client.ProjectMembersUserBody(d)
 
 	_, headers, err := apiClient.SendRequest("POST", path, body, 201)
 	if err != nil {
@@ -76,10 +62,10 @@ func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(id)
-	return resourceMembersRead(d, m)
+	return resourceMembersUserRead(d, m)
 }
 
-func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
+func resourceMembersUserRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
@@ -97,19 +83,19 @@ func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceMembersUserUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := client.ProjectMembersGroupBody(d)
-	_, _, err := apiClient.SendRequest("GET", d.Id(), body, 200)
+	body := client.ProjectMembersUserBody(d)
+	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	return resourceMembersRead(d, m)
+	return resourceMembersUserRead(d, m)
 }
 
-func resourceMembersDelete(d *schema.ResourceData, m interface{}) error {
+func resourceMembersUserDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)

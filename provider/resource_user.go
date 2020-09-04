@@ -103,9 +103,11 @@ func resourceUserUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	_, _, err = apiClient.SendRequest("PUT", d.Id()+"/password", body, 200)
-	if err != nil {
-		return err
+	if d.HasChange("password") == true {
+		_, _, err = apiClient.SendRequest("PUT", d.Id()+"/password", body, 200)
+		if err != nil {
+			return err
+		}
 	}
 
 	return resourceUserRead(d, m)
