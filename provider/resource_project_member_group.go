@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func resourceMembers() *schema.Resource {
+func resourceMembersGroup() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"project_id": {
@@ -49,14 +49,14 @@ func resourceMembers() *schema.Resource {
 				},
 			},
 		},
-		Create: resourceMembersCreate,
-		Read:   resourceMembersRead,
-		Update: resourceMembersUpdate,
-		Delete: resourceMembersDelete,
+		Create: resourceMembersGroupCreate,
+		Read:   resourceMembersGroupRead,
+		Update: resourceMembersGroupUpdate,
+		Delete: resourceMembersGroupDelete,
 	}
 }
 
-func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
+func resourceMembersGroupCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	projectid := checkProjectid(d.Get("project_id").(string))
 	path := projectid + "/members"
@@ -74,10 +74,10 @@ func resourceMembersCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(id)
-	return resourceMembersRead(d, m)
+	return resourceMembersGroupRead(d, m)
 }
 
-func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
+func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
@@ -95,19 +95,19 @@ func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceMembersUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceMembersGroupUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := client.ProjectMembersBody(d)
+	body := client.ProjectMembersUserBody(d)
 	_, _, err := apiClient.SendRequest("GET", d.Id(), body, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	return resourceMembersRead(d, m)
+	return resourceMembersGroupRead(d, m)
 }
 
-func resourceMembersDelete(d *schema.ResourceData, m interface{}) error {
+func resourceMembersGroupDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
