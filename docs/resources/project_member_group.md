@@ -1,6 +1,4 @@
-# Resource: harbor_project_member
-
-### WARNING - Resource project_member has been renamed to project_member_group. This resource is deprecated and will be removed in the next major version
+# Resource: harbor_project_member_group
 
 ## Example Usage
 ```
@@ -8,7 +6,7 @@ resource "haror_project" "main" {
     name = "main"
 }
 
-resource "harbor_project_member" "main" {
+resource "harbor_project_member_group" "main" {
   project_id    = harbor_project.main.id
   name          = "testing1"
   role          = "master"
