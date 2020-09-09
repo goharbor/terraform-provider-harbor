@@ -1,3 +1,5 @@
+// +build internal_auth
+
 package provider
 
 import (
