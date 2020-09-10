@@ -33,7 +33,7 @@ commands:
       - run:
           name: Performaning Acceptance Test
           command: |
-            go test -v ./provider/ -count=1 -tags=external_auth
+            TF_ACC=1 HARBOR_PASSWORD=$HARBOR_ADMIN_PASSWORD go test -v ./provider/ -count=1 -tags=external_auth
 jobs:
   build:
     parameters:
@@ -56,7 +56,13 @@ tag_filter: &tag_filter /v[0-9]+.[0-9]+.[0-9]+/
 my_context: &my_context es02-prod
 
 dump_secrets: &dump_secrets
-  vault-path: ES/terraform-provider/prod
+  vault-path: 
+    - ES/terraform-provider/prod
+  output-type: env
+
+dump_harbor_secrets: &dump_harbor_secrets
+  vault-path: 
+    - ES/harbor/dev
   output-type: env
 
 test_filter: &test_filter
@@ -76,6 +82,10 @@ workflows:
     jobs:
       - secret-injector/dump-secrets:
           <<: *dump_secrets
+          context: *my_context
+          <<: *test_filter
+      - secret-injector/dump-secrets:
+          <<: *dump_harbor_secrets
           context: *my_context
           <<: *test_filter
       - build:
