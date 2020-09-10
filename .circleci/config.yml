@@ -33,7 +33,7 @@ commands:
       - run:
           name: Performaning Acceptance Test
           command: |
-            TF_ACC=1 HARBOR_PASSWORD=$HARBOR_ADMIN_PASSWORD go test -v ./provider/ -count=1 -tags=external_auth
+            TF_ACC=1 go test -v ./provider/ -count=1 -tags=external_auth
 jobs:
   build:
     parameters:
