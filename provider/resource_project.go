@@ -70,10 +70,15 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	vuln, err := strconv.ParseBool(jsonData.Metadata.AutoScan)
+	if err != nil {
+		return err
+	}
+
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", strconv.Itoa(jsonData.ProjectID))
 	d.Set("public", jsonData.Metadata.Public)
-	d.Set("vulnerability_scanning", jsonData.Metadata.AutoScan)
+	d.Set("vulnerability_scanning", vuln)
 
 	return nil
 }

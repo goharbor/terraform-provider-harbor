@@ -13,26 +13,30 @@ func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"url": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("HARBOR_URL", ""),
 			},
 			"username": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("HARBOR_USERNAME", ""),
 			},
 			"password": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("HARBOR_PASSWORD", ""),
 			},
 			"insecure": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				DefaultFunc: schema.EnvDefaultFunc("HARBOR_IGNORE_CERT", ""),
 			},
 			"api_version": {
 				Type:     schema.TypeInt,
 				Optional: true,
-				Default:  1,
+				Default:  2,
 			},
 		},
 

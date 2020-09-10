@@ -17,7 +17,7 @@ func resourceMembersGroup() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"name": {
+			"group_name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -61,7 +61,7 @@ func resourceMembersGroupCreate(d *schema.ResourceData, m interface{}) error {
 	projectid := checkProjectid(d.Get("project_id").(string))
 	path := projectid + "/members"
 
-	body := client.ProjectBody(d)
+	body := client.ProjectMembersGroupBody(d)
 
 	_, headers, err := apiClient.SendRequest("POST", path, body, 201)
 	if err != nil {
@@ -98,8 +98,8 @@ func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
 func resourceMembersGroupUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := client.ProjectMembersUserBody(d)
-	_, _, err := apiClient.SendRequest("GET", d.Id(), body, 200)
+	body := client.ProjectMembersGroupBody(d)
+	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		fmt.Println(err)
 	}

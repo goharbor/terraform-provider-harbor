@@ -30,6 +30,10 @@ commands:
             else
               goreleaser release --rm-dist
             fi
+      - run:
+          name: Performaning Acceptance Test
+          command: |
+            TF_ACC=1 go test -v ./provider/ -count=1 -tags=external_auth
 jobs:
   build:
     parameters:
@@ -54,6 +58,7 @@ my_context: &my_context es02-prod
 dump_secrets: &dump_secrets
   vault-path: ES/terraform-provider/prod
   output-type: env
+
 
 test_filter: &test_filter
   filters:

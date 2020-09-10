@@ -8,7 +8,7 @@ resource "haror_project" "main" {
 
 resource "harbor_project_member_group" "main" {
   project_id    = harbor_project.main.id
-  name          = "testing1"
+  group_name    = "testing1"
   role          = "master"
   type          = "oidc"
 }
@@ -18,7 +18,7 @@ resource "harbor_project_member_group" "main" {
 ## Argument Reference
 The following arguments are supported:
 
-* **name** - (Required) The name of the member entity
+* **group_name** - (Required) The name of the group member entity
 
 * **project_id** - (Required) The project id of the project that the entity will have access to.
 
