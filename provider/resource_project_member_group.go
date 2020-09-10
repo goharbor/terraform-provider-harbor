@@ -99,7 +99,7 @@ func resourceMembersGroupUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	body := client.ProjectMembersGroupBody(d)
-	_, _, err := apiClient.SendRequest("GET", d.Id(), body, 200)
+	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
