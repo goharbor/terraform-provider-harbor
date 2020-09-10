@@ -30,6 +30,10 @@ commands:
             else
               goreleaser release --rm-dist
             fi
+      - run:
+          name: Performaning Acceptance Test
+          command: |
+            go test -v ./provider/ -count=1 -tags=external_auth
 jobs:
   build:
     parameters:
