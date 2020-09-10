@@ -81,7 +81,7 @@ func testAccCheckMemberGroupBasic() string {
 	
 	resource "harbor_project_member_group" "main" {
 	  project_id    = harbor_project.main.id
-	  group_name    = "8582dd52-1da5-4afe-94fe-25b55097d43a"
+	  group_name    = "testing"
 	  role          = "developer"
 	  type          = "oidc"
 	}
@@ -97,11 +97,10 @@ func testAccCheckMemberGroupUpdate() string {
 	
 	resource "harbor_project_member_group" "main" {
 	  project_id    = harbor_project.main.id
-	  group_name    = "8582dd52-1da5-4afe-94fe-25b55097d43a"
+	  group_name    = "testing"
 	  role          = "guest"
 	  type          = "oidc"
 	}
-	 
-	  
+
 	`)
 }
