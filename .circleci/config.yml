@@ -60,10 +60,6 @@ dump_secrets: &dump_secrets
     - ES/terraform-provider/prod
   output-type: env
 
-dump_harbor_secrets: &dump_harbor_secrets
-  vault-path: 
-    - ES/harbor/dev
-  output-type: env
 
 test_filter: &test_filter
   filters:
@@ -82,10 +78,6 @@ workflows:
     jobs:
       - secret-injector/dump-secrets:
           <<: *dump_secrets
-          context: *my_context
-          <<: *test_filter
-      - secret-injector/dump-secrets:
-          <<: *dump_harbor_secrets
           context: *my_context
           <<: *test_filter
       - build:
