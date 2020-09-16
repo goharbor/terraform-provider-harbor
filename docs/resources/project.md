@@ -1,7 +1,7 @@
 # Resource: harbor_project
 
 ## Example Usage
-```
+```hcl
 resource "haror_project" "main" {
     name                    = "main"
     public                  = false               # (Optional) Default value is false

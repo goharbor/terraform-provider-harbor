@@ -1,20 +1,43 @@
-# Resource: harbor_registry
+# Resource: harbor_replication
 
 
 
 ## Example Usage
 
 ```hcl
-    resource "harbor_registry" "main" {
-		provider_name = "docker-hub"
-    	name = "docker registry"
-		endpoint_url = "https://hub.docker.com"
-        description = "Description here for the cexternal container register"
-	}
+  resource "harbor_registry" "main" {
+	provider_name = "docker-hub"
+	name = "docker-hub-replication"
+	endpoint_url = "https://hub.docker.com"
+  }
+
+  resource "harbor_replication" "push" {
+	name  = "test_push"
+	action = "push"
+	registry_id = harbor_registry.main.registry_id
+  }
 ```
 
 ## Argument Reference
 The following arguments are supported:
+
+* **name** - (Required)
+
+* **action** - (Required)
+
+* **schedule** - (Optional) The scheduled time of when the containter register will be push / pull. In cron base format. Hourly `"0 0 * * * *"`, Daily `"0 0 0 * * *"`, Monthly `"0 0 0 * * 0"`
+* **override** - (Optional)
+* **enabled** - (Optional)
+* **description** (Optional)	
+
+"filters":
+				
+						"name":
+						"tag": 
+						"labels"ptional: true,
+			
+						"resource"
+
 
 * **provider_name** - (Required) The name of the provider type. Supported values include `alibaba`, `aws`, `azure`, `docker-hub`, `docker-registry`, `gitlab`, `google`, `harbor`, `helm`, `huawei`, `jfrog`
 
@@ -35,10 +58,8 @@ The following arguments are supported:
 ## Attributes Reference
 In addition to all argument, the folloing attributes are exported:
 
-* **registry_id** - The id of the register within harbor.
-
-* **status** - The health status of the external container register
-
+* **replication_policy_id**
+  
 ## Import
 Harbor project can be imported using the `registry id` eg,
 

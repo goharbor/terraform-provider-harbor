@@ -1,7 +1,7 @@
 # Resource: harbor_robot_account
 
 ## Example Usage
-```
+```hcl
 resource "haror_project" "main" {
     name = "main"
 }

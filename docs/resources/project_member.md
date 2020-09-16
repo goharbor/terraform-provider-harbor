@@ -3,7 +3,7 @@
 ### WARNING - Resource project_member has been renamed to project_member_group. This resource is deprecated and will be removed in the next major version
 
 ## Example Usage
-```
+```hcl
 resource "haror_project" "main" {
     name = "main"
 }
