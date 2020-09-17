@@ -26,34 +26,22 @@ The following arguments are supported:
 * **action** - (Required)
 
 * **schedule** - (Optional) The scheduled time of when the containter register will be push / pull. In cron base format. Hourly `"0 0 * * * *"`, Daily `"0 0 0 * * *"`, Monthly `"0 0 0 * * 0"`
-* **override** - (Optional)
-* **enabled** - (Optional)
-* **description** (Optional)	
+* **override** - (Optional) Specify whether to override the resources at the destination if a resources with the same name exist. Can be set to `true` or `false` (Default: `true`)
+* **enabled** - (Optional) Specify whether the replication is enabled. Can be set to `true` or `false` (Default: `true`)
+* **description** (Optional) Write about decscription of the replication policy.
 
-"filters":
+* **filters** - (Optional) A collection of `filters` block as documented below.
+
+---
+
+**filters** supports the following:
+
+* **name** - (Optional) Filter on the name of the resource.
+* **tag** - (Optional) Filter on the tag/verison of the resource.
+* **labels** - (Optional) Filter on the resource according to labels.
+* **resource** - (Optional) Filter on the recource type. Can be one of the following types. `image`,`chart`, `artifact`
 				
-						"name":
-						"tag": 
-						"labels"ptional: true,
-			
-						"resource"
 
-
-* **provider_name** - (Required) The name of the provider type. Supported values include `alibaba`, `aws`, `azure`, `docker-hub`, `docker-registry`, `gitlab`, `google`, `harbor`, `helm`, `huawei`, `jfrog`
-
-* **name** - (Required) The name of the register.
-
-* **endpoint_url** - (Required) The url endpoint for the external container register ie, `https://hub.docker.com`
-
-* **description** - (Optional) The description of the external container register.
-
-* **access_id** - (Optional) The username / access id for the external container register 
-
-* **access_key** - (Optional) The password / access keys / token for the external container register
-
-* **insecure** - (Optional) Verifies the certificate of the external container register. Can be set to **"true"** or **"false"** (Default: true)
-
-* **enabled** - (Optional) enables / disables the external container register within harbor. Can be set to **"true"** or **"false"** (Default: true)
 
 ## Attributes Reference
 In addition to all argument, the folloing attributes are exported:
@@ -61,7 +49,7 @@ In addition to all argument, the folloing attributes are exported:
 * **replication_policy_id**
   
 ## Import
-Harbor project can be imported using the `registry id` eg,
+Harbor project can be imported using the `replication id` eg,
 
 `
 terraform import haror_project.main /registries/7
