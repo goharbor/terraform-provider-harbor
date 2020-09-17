@@ -58,7 +58,7 @@ func testAccCheckReplicationDestroy(s *terraform.State) error {
 }
 
 func testAccCheckReplicationBasic() string {
-	endpoint := os.Getenv("harbor_replication_endpoint")
+	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
 	config := fmt.Sprintf(`
 
 resource "harbor_registry" "main" {
@@ -77,13 +77,13 @@ resource "harbor_registry" "main" {
 }
 
 // func testAccCheckReplicationUpdate() string {
-
-// 	return fmt.Sprintf(`
+// 	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+// 	config := fmt.Sprintf(`
 
 // 	resource "harbor_registry" "main" {
 // 		provider_name = "harbor"
 // 		name = "harbor-test"
-// 		endpoint_url = "https://harbor-dev.bestsellerit.com"
+// 		endpoint_url = "%s"
 // 	  }
 
 // 	  resource "harbor_replication" "push" {
@@ -91,5 +91,6 @@ resource "harbor_registry" "main" {
 // 		action = "push"
 // 		registry_id = harbor_registry.main.registry_id
 // 	}
-// 	`)
+// 	`, endpoint)
+// 	return config
 // }

@@ -56,7 +56,7 @@ func testAccCheckRegistryDestroy(s *terraform.State) error {
 }
 
 func testAccCheckRegistryBasic() string {
-	endpoint := os.Getenv("endpoint")
+	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
 	config := fmt.Sprintf(`
 
 	resource "harbor_registry" "main" {
