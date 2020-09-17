@@ -70,7 +70,7 @@ func testAccCheckRegistryBasic() string {
 }
 
 func testAccCheckRegistryUpdate() string {
-	endpoint := os.Getenv("harbor_replication_endpoint")
+	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
 	config := fmt.Sprintf(`
 
 	resource "harbor_registry" "main" {
