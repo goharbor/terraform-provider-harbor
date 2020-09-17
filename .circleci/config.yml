@@ -59,6 +59,9 @@ dump_secrets: &dump_secrets
   vault-path: ES/terraform-provider/prod
   output-type: env
 
+dump_secrets_acctest: &dump_secrets_acctest
+  vault-path: ES/terraform-provider/harbor/accTest
+  output-type: env
 
 test_filter: &test_filter
   filters:
@@ -79,6 +82,12 @@ workflows:
           <<: *dump_secrets
           context: *my_context
           <<: *test_filter
+
+      - secret-injector/dump-secrets:
+          <<: *dump_secrets_acctest
+          context: *my_context
+          <<: *test_filter
+
       - build:
           release-type: test
           name: test
