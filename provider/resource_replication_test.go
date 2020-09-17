@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
@@ -57,23 +58,22 @@ func testAccCheckReplicationDestroy(s *terraform.State) error {
 }
 
 func testAccCheckReplicationBasic() string {
+	endpoint := os.Getenv("harbor_replication_endpoint")
+	config := fmt.Sprintf(`
 
-	return fmt.Sprintf(`
+resource "harbor_registry" "main" {
+	provider_name = "harbor"
+	name = "harbor-test-replication"
+	endpoint_url = "%s"
+  }
 
-	resource "harbor_registry" "main" {
-		provider_name = "harbor"
-		name = "harbor-test-replication"
-		endpoint_url = "https://harbor-dev.bestsellerit.com"
-	  }
+  resource "harbor_replication" "push" {
+	name  = "test_push"
+	action = "push"
+	registry_id = harbor_registry.main.registry_id
 
-	  resource "harbor_replication" "push" {
-		name  = "test_push"
-		action = "push"
-		registry_id = harbor_registry.main.registry_id
-
-	}
-	
-	`)
+}`, endpoint)
+	return config
 }
 
 // func testAccCheckReplicationUpdate() string {
