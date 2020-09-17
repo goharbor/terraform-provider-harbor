@@ -30,6 +30,9 @@ commands:
             else
               goreleaser release --rm-dist
             fi
+
+  acceptance_test:
+    steps:
       - run:
           name: Performaning Acceptance Test
           command: |
@@ -76,18 +79,23 @@ release_filter: &release_filter
 
 workflows:
   version: 2
+  acceptance_test:
+    jobs:
+      - secret-injector/dump-secrets:
+          <<: *dump_secrets_acctest
+          context: *my_context
+          <<: *test_filter
+      - acceptance_test:
+          name: acceptance_test
+          requires:
+            - secret-injector/dump-secrets
+          <<: *test_filter
   tester:
     jobs:
       - secret-injector/dump-secrets:
           <<: *dump_secrets
           context: *my_context
           <<: *test_filter
-
-      - secret-injector/dump-secrets:
-          <<: *dump_secrets_acctest
-          context: *my_context
-          <<: *test_filter
-
       - build:
           release-type: test
           name: test
