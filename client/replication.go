@@ -24,12 +24,11 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		body.SrcRegistry.ID = d.Get("registry_id").(int)
 	}
 
-	if schedule == "manual" {
-		body.Trigger.Type = "manual"
-		// body.Trigger.TriggerSettings.Cron = ""
-	} else {
-		body.Trigger.Type = "schedule"
+	if schedule != "manual" {
+		body.Trigger.Type = "scheduled"
 		body.Trigger.TriggerSettings.Cron = schedule
+	} else {
+		body.Trigger.Type = "manual"
 	}
 
 	filters := d.Get("filters").(*schema.Set).List()

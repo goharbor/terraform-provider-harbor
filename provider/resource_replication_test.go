@@ -20,21 +20,25 @@ func TestAccReplicationyBasic(t *testing.T) {
 				Config: testAccCheckReplicationBasic(),
 				Check: resource.ComposeTestCheckFunc(
 
-					testAccCheckResourceExists("harbor_replication.push"),
+					testAccCheckResourceExists("harbor_replication.pull"),
 					resource.TestCheckResourceAttr(
-						"harbor_replication.push", "name", "test_push"),
+						"harbor_replication.pull", "name", "test_pull"),
 					resource.TestCheckResourceAttr(
-						"harbor_replication.push", "action", "push"),
+						"harbor_replication.pull", "action", "pull"),
 				),
 			},
-			// {
-			// 	Config: testAccCheckReplicationUpdate(),
-			// 	Check: resource.ComposeTestCheckFunc(
-			// 		testAccCheckResourceExists("harbor_replication.push"),
-			// 		resource.TestCheckResourceAttr(
-			// 			"harbor_replication.main", "name", "test_push"),
-			// 	),
-			// },
+			{
+				Config: testAccCheckReplicationUpdate(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists("harbor_replication.pull"),
+					resource.TestCheckResourceAttr(
+						"harbor_replication.pull", "name", "test_pull"),
+					resource.TestCheckResourceAttr(
+						"harbor_replication.pull", "action", "pull"),
+					resource.TestCheckResourceAttr(
+						"harbor_replication.pull", "schedule", "0 0 0 * * *"),
+				),
+			},
 		},
 	})
 }
@@ -67,30 +71,32 @@ resource "harbor_registry" "main" {
 	endpoint_url = "%s"
   }
 
-  resource "harbor_replication" "push" {
-	name  = "test_push"
-	action = "push"
+  resource "harbor_replication" "pull" {
+	name  = "test_pull"
+	action = "pull"
 	registry_id = harbor_registry.main.registry_id
 
 }`, endpoint)
 	return config
 }
 
-// func testAccCheckReplicationUpdate() string {
-// 	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
-// 	config := fmt.Sprintf(`
+func testAccCheckReplicationUpdate() string {
+	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	config := fmt.Sprintf(`
 
-// 	resource "harbor_registry" "main" {
-// 		provider_name = "harbor"
-// 		name = "harbor-test"
-// 		endpoint_url = "%s"
-// 	  }
+	resource "harbor_registry" "main" {
+		provider_name = "harbor"
+		name = "harbor-test"
+		endpoint_url = "%s"
+	  }
 
-// 	  resource "harbor_replication" "push" {
-// 		name  = "test_push"
-// 		action = "push"
-// 		registry_id = harbor_registry.main.registry_id
-// 	}
-// 	`, endpoint)
-// 	return config
-// }
+	  resource "harbor_replication" "pull" {
+		name  = "test_pull"
+		action = "pull"
+		registry_id = harbor_registry.main.registry_id
+		schedule = "0 0 0 * * *"
+		
+	}
+	`, endpoint)
+	return config
+}
