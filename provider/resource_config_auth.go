@@ -52,6 +52,7 @@ func resourceConfigAuth() *schema.Resource {
 
 func resourceConfigAuthCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
+
 	body := client.GetConfigAuth(d)
 
 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)

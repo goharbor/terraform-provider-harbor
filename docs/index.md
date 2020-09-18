@@ -9,7 +9,7 @@ The Harbor provider is used to configure an instance of Harbor. The provider nee
 * [Resource: harbor_robot_account](resources/robot_account.md)
 
 ## Authentication
-```
+```hcl
 provider "harbor" {
   url      = "https://harbor.aceme_corpartion.com"
   username = "insert_admin_username_here"
@@ -23,4 +23,4 @@ The following arguments are supported:
 * **username** - (Required) The username to be used to access harbor
 * **password** - (Required) The password to be used to access harbor
 * **insecure** - (Optional) Choose to igorne certificate errors
-* **api_version** - (Optional) Choose which version of the api you would like to use 1 or 2.
+* **api_version** - (Optional) Choose which version of the api you would like to use 1 or 2. Default is `2`

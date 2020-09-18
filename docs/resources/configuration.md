@@ -1,7 +1,8 @@
 # Resource: harbor_configuration
 
 ## Example Usage
-```
+
+```hcl
 resource "harbor_config_auth" "oidc" {
   auth_mode          = "oidc_auth"
   oidc_name          = "azure"

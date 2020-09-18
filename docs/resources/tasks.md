@@ -1,7 +1,7 @@
 # Resource: harbor_tasks
 
 ## Example Usage
-```
+```hcl
 resource "harbor_tasks" "main" {
   vulnerability_scan_policy = "daily"
 }

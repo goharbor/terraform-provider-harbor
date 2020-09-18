@@ -1,7 +1,7 @@
 # Resource: harbor_user
 
 ## Example Usage
-```
+```hcl
 
 resource "harbor_user" "main" {
   username = "john"

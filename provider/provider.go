@@ -52,6 +52,8 @@ func Provider() terraform.ResourceProvider {
 			"harbor_interrogation_services": resourceVuln(),
 			"harbor_robot_account":          resourceRobotAccount(),
 			"harbor_user":                   resourceUser(),
+			"harbor_registry":               resourceRegistry(),
+			"harbor_replication":            resourceReplication(),
 		},
 
 		ConfigureFunc: providerConfigure,
