@@ -5,17 +5,20 @@
 ## Example Usage
 
 ```hcl
-  resource "harbor_registry" "main" {
-	provider_name = "docker-hub"
-	name = "docker-hub-replication"
-	endpoint_url = "https://hub.docker.com"
-  }
+resource "harbor_registry" "main" {
+  provider_name = "docker-hub"
+  name          = "test_docker_harbor"
+  endpoint_url  = "https://hub.docker.com"
 
-  resource "harbor_replication" "push" {
-	name  = "test_push"
-	action = "push"
-	registry_id = harbor_registry.main.registry_id
-  }
+}
+
+
+resource "harbor_replication" "push" {
+  name        = "test_push"
+  action      = "push"
+  registry_id = harbor_registry.main.registry_id
+}
+ 
 ```
 
 ## Argument Reference
