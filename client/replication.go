@@ -65,18 +65,3 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 	log.Println(body)
 	return body
 }
-
-// func expandfilters(configured []interface{}) *models.ReplicationFilters {
-// 	filters := make([]*models.ReplicationFilters, 0, len(configured))
-// 	for _, fRaw := range configured {
-// 		data := fRaw.(map[string]interface{})
-// 		log.Panicln(data)
-// 		f := &models.ReplicationFilters{
-// 			Type:  data["type"].(string),
-// 			Value: data["value"].(string),
-// 		}
-// 		filters = append(filters, f)
-// 	}
-
-// 	return filters
-// }

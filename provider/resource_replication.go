@@ -95,7 +95,6 @@ func resourceReplicationCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(id)
-	// d.Set("replication_policy_id", int)
 	return resourceReplicationRead(d, m)
 }
 
