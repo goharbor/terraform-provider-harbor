@@ -40,7 +40,7 @@ jobs:
         enum: ["test", "release"]
         default: "test"
     docker:
-      - image: circleci/golang:1.14
+      - image: circleci/golang:1.15
     steps:
       - checkout
       - attach_workspace:
