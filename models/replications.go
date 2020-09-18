@@ -11,7 +11,7 @@ type ReplicationBody struct {
 	DestRegistry struct {
 		ID int `json:"id,omitempty"`
 	} `json:"dest_registry,omitempty"`
-	DestNamespace interface{} `json:"dest_namespace,omitempty"`
+	DestNamespace string `json:"dest_namespace,omitempty"`
 	Trigger       struct {
 		Type            string `json:"type,omitempty"`
 		TriggerSettings struct {
