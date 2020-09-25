@@ -5,8 +5,7 @@
 ![GitHub All Releases](https://img.shields.io/github/downloads/bestseller/terraform-provider-harbor/total)
 
 
-A Harbor provider for Terraform. 
-Allows you to configure and manage a Harbor instance.
+A Harbor provider for Terraform. Allows you to configure and manage a Harbor instance.
 
 ## Usage
 [See the docs for usage information](./docs).
