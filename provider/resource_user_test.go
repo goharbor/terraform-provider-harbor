@@ -11,6 +11,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
+const resourceHarborUserMain = "harbor_user.main"
+
 func testAccCheckUserDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
 
@@ -38,13 +40,13 @@ func TestAccUserBasic(t *testing.T) {
 			{
 				Config: testAccCheckUserBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_user.main"),
+					testAccCheckResourceExists(resourceHarborUserMain),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "username", "john"),
+						resourceHarborUserMain, "username", "john"),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "full_name", "John Smith"),
+						resourceHarborUserMain, "full_name", "John Smith"),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "email", "john.smith@contoso.com"),
+						resourceHarborUserMain, "email", "john.smith@contoso.com"),
 				),
 			},
 		},
@@ -60,25 +62,25 @@ func TestAccUserUpdate(t *testing.T) {
 			{
 				Config: testAccCheckUserBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_user.main"),
+					testAccCheckResourceExists(resourceHarborUserMain),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "username", "john"),
+						resourceHarborUserMain, "username", "john"),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "full_name", "John Smith"),
+						resourceHarborUserMain, "full_name", "John Smith"),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "email", "john.smith@contoso.com"),
+						resourceHarborUserMain, "email", "john.smith@contoso.com"),
 				),
 			},
 			{
 				Config: testAccCheckUserUpdate(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_user.main"),
+					testAccCheckResourceExists(resourceHarborUserMain),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "username", "john"),
+						resourceHarborUserMain, "username", "john"),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "full_name", "John"),
+						resourceHarborUserMain, "full_name", "John"),
 					resource.TestCheckResourceAttr(
-						"harbor_user.main", "email", "john@contoso.com"),
+						resourceHarborUserMain, "email", "john@contoso.com"),
 				),
 			},
 		},

@@ -10,6 +10,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
+const harborRegistryMain = "harbor_registry.main"
+
 func TestAccRegistryBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -20,17 +22,17 @@ func TestAccRegistryBasic(t *testing.T) {
 				Config: testAccCheckRegistryBasic(),
 				Check: resource.ComposeTestCheckFunc(
 
-					testAccCheckResourceExists("harbor_registry.main"),
+					testAccCheckResourceExists(harborRegistryMain),
 					resource.TestCheckResourceAttr(
-						"harbor_registry.main", "name", "harbor-test"),
+						harborRegistryMain, "name", "harbor-test"),
 				),
 			},
 			{
 				Config: testAccCheckRegistryUpdate(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_registry.main"),
+					testAccCheckResourceExists(harborRegistryMain),
 					resource.TestCheckResourceAttr(
-						"harbor_registry.main", "name", "harbor-test-update"),
+						harborRegistryMain, "name", "harbor-test-update"),
 				),
 			},
 		},

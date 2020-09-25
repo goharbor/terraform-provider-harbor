@@ -9,6 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
+const harborRobotAccount = "harbor_robot_account.main"
+
 func TestAccRobotBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -20,11 +22,11 @@ func TestAccRobotBasic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists("harbor_project.main"),
 
-					testAccCheckResourceExists("harbor_robot_account.main"),
+					testAccCheckResourceExists(harborRobotAccount),
 					resource.TestCheckResourceAttr(
-						"harbor_robot_account.main", "name", "test_robot_account"),
+						harborRobotAccount, "name", "test_robot_account"),
 					resource.TestCheckResourceAttr(
-						"harbor_robot_account.main", "action", "push"),
+						harborRobotAccount, "action", "push"),
 				),
 			},
 		},

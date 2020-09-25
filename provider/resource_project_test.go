@@ -9,6 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
+const resourceHarborProjectMain = "harbor_project.main"
+
 func testAccCheckProjectDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
 	r := "harbor_project"
@@ -37,13 +39,13 @@ func TestAccProjectBasic(t *testing.T) {
 			{
 				Config: testAccCheckProjectBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_project.basic"),
+					testAccCheckResourceExists(resourceHarborProjectMain),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "name", "test_basic"),
+						resourceHarborProjectMain, "name", "test_basic"),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "public", "false"),
+						resourceHarborProjectMain, "public", "false"),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "vulnerability_scanning", "false"),
+						resourceHarborProjectMain, "vulnerability_scanning", "false"),
 				),
 			},
 		},
@@ -59,25 +61,25 @@ func TestAccProjectUpdate(t *testing.T) {
 			{
 				Config: testAccCheckProjectBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_project.basic"),
+					testAccCheckResourceExists(resourceHarborProjectMain),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "name", "test_basic"),
+						resourceHarborProjectMain, "name", "test_basic"),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "public", "false"),
+						resourceHarborProjectMain, "public", "false"),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "vulnerability_scanning", "false"),
+						resourceHarborProjectMain, "vulnerability_scanning", "false"),
 				),
 			},
 			{
 				Config: testAccCheckItemUpdate(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_project.basic"),
+					testAccCheckResourceExists(resourceHarborProjectMain),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "name", "test_basic"),
+						resourceHarborProjectMain, "name", "test_basic"),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "public", "true"),
+						resourceHarborProjectMain, "public", "true"),
 					resource.TestCheckResourceAttr(
-						"harbor_project.basic", "vulnerability_scanning", "true"),
+						resourceHarborProjectMain, "vulnerability_scanning", "true"),
 				),
 			},
 		},
@@ -86,7 +88,7 @@ func TestAccProjectUpdate(t *testing.T) {
 
 func testAccCheckProjectBasic() string {
 	return fmt.Sprintf(`
-	resource "harbor_project" "basic" {
+	resource "harbor_project" "main" {
 		name = "test_basic"
 		public = false
 		vulnerability_scanning = false
@@ -96,7 +98,7 @@ func testAccCheckProjectBasic() string {
 
 func testAccCheckItemUpdate() string {
 	return fmt.Sprintf(`
-	resource "harbor_project" "basic" {
+	resource "harbor_project" "main" {
 		name = "test_basic"
 		public = true
 		vulnerability_scanning = true

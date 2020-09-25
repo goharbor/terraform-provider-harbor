@@ -11,6 +11,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
+const harborProjectMemberGroupMain = "harbor_project_member_group.main"
+
 func testAccCheckMemberGroupDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
 
@@ -38,9 +40,9 @@ func TestAccMemberGroupBasic(t *testing.T) {
 			{
 				Config: testAccCheckMemberGroupBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_project_member_group.main"),
+					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
-						"harbor_project_member_group.main", "role", "developer"),
+						harborProjectMemberGroupMain, "role", "developer"),
 				),
 			},
 		},
@@ -56,17 +58,17 @@ func TestAccMemberGroupUpdate(t *testing.T) {
 			{
 				Config: testAccCheckMemberGroupBasic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_project_member_group.main"),
+					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
-						"harbor_project_member_group.main", "role", "developer"),
+						harborProjectMemberGroupMain, "role", "developer"),
 				),
 			},
 			{
 				Config: testAccCheckMemberGroupUpdate(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_project_member_group.main"),
+					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
-						"harbor_project_member_group.main", "role", "guest"),
+						harborProjectMemberGroupMain, "role", "guest"),
 				),
 			},
 		},

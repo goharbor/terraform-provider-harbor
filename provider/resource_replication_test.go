@@ -10,6 +10,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
+const harborReplicationPull = "harbor_replication.pull"
+
 func TestAccReplicationyBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -20,23 +22,23 @@ func TestAccReplicationyBasic(t *testing.T) {
 				Config: testAccCheckReplicationBasic(),
 				Check: resource.ComposeTestCheckFunc(
 
-					testAccCheckResourceExists("harbor_replication.pull"),
+					testAccCheckResourceExists(harborReplicationPull),
 					resource.TestCheckResourceAttr(
-						"harbor_replication.pull", "name", "test_pull"),
+						harborReplicationPull, "name", "test_pull"),
 					resource.TestCheckResourceAttr(
-						"harbor_replication.pull", "action", "pull"),
+						harborReplicationPull, "action", "pull"),
 				),
 			},
 			{
 				Config: testAccCheckReplicationUpdate(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists("harbor_replication.pull"),
+					testAccCheckResourceExists(harborReplicationPull),
 					resource.TestCheckResourceAttr(
-						"harbor_replication.pull", "name", "test_pull"),
+						harborReplicationPull, "name", "test_pull"),
 					resource.TestCheckResourceAttr(
-						"harbor_replication.pull", "action", "pull"),
+						harborReplicationPull, "action", "pull"),
 					resource.TestCheckResourceAttr(
-						"harbor_replication.pull", "schedule", "0 0 0 * * *"),
+						harborReplicationPull, "schedule", "0 0 0 * * *"),
 				),
 			},
 		},
