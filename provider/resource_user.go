@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -77,7 +78,7 @@ func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.UserBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return err
+		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
 	d.Set("username", jsonData.Username)

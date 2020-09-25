@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -106,7 +107,7 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.RegistryBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return err
+		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
 	return nil

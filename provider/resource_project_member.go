@@ -91,6 +91,7 @@ func resourceMembersRead(d *schema.ResourceData, m interface{}) error {
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
 		return err
+
 	}
 
 	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))

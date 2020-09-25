@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
@@ -67,7 +68,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.ProjectsBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return err
+		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
 	vuln, err := strconv.ParseBool(jsonData.Metadata.AutoScan)

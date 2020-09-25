@@ -76,7 +76,7 @@ func resourceMembersUserRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.ProjectMembersBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return err
+		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
 	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))

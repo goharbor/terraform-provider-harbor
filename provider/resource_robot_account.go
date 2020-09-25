@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -106,7 +107,7 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.RobotBodyRepones
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return err
+		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
 	d.Set("robot_id", strconv.Itoa(jsonData.ID))
