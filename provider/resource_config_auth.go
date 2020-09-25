@@ -45,7 +45,7 @@ func resourceConfigAuth() *schema.Resource {
 		},
 		Create: resourceConfigAuthCreate,
 		Read:   resourceConfigAuthRead,
-		Update: resourceConfigAuthUpdate,
+		Update: resourceConfigAuthCreate,
 		Delete: resourceConfigAuthDelete,
 	}
 }
@@ -69,17 +69,17 @@ func resourceConfigAuthRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceConfigAuthUpdate(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(*client.Client)
-	body := client.GetConfigAuth(d)
+// func resourceConfigAuthUpdate(d *schema.ResourceData, m interface{}) error {
+// 	apiClient := m.(*client.Client)
+// 	body := client.GetConfigAuth(d)
 
-	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
-	if err != nil {
-		return err
-	}
+// 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return resourceConfigAuthRead(d, m)
-}
+// 	return resourceConfigAuthRead(d, m)
+// }
 
 func resourceConfigAuthDelete(d *schema.ResourceData, m interface{}) error {
 	return nil

@@ -42,7 +42,7 @@ func resourceConfigEmail() *schema.Resource {
 		},
 		Create: resourceConfigEmailCreate,
 		Read:   resourceConfigEmailRead,
-		Update: resourceConfigEmailUpdate,
+		Update: resourceConfigEmailCreate,
 		Delete: resourceConfigEmailDelete,
 	}
 }
@@ -65,18 +65,18 @@ func resourceConfigEmailRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceConfigEmailUpdate(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(*client.Client)
+// func resourceConfigEmailUpdate(d *schema.ResourceData, m interface{}) error {
+// 	apiClient := m.(*client.Client)
 
-	body := client.GetConfigEmail(d)
+// 	body := client.GetConfigEmail(d)
 
-	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
-	if err != nil {
-		return err
-	}
+// 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return resourceConfigEmailRead(d, m)
-}
+// 	return resourceConfigEmailRead(d, m)
+// }
 
 func resourceConfigEmailDelete(d *schema.ResourceData, m interface{}) error {
 	return nil

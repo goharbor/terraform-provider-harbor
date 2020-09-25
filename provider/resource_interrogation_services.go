@@ -20,7 +20,7 @@ func resourceVuln() *schema.Resource {
 		},
 		Create: resourceVulnCreate,
 		Read:   resourceVulnRead,
-		Update: resourceVulnUpdate,
+		Update: resourceVulnCreate,
 		Delete: resourceVulnDelete,
 	}
 }
@@ -46,21 +46,21 @@ func resourceVulnRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceVulnUpdate(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(*client.Client)
+// func resourceVulnUpdate(d *schema.ResourceData, m interface{}) error {
+// 	apiClient := m.(*client.Client)
 
-	err := apiClient.SetScannerPolicy(d)
-	if err != nil {
-		return err
-	}
+// 	err := apiClient.SetScannerPolicy(d)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	scanner := d.Get("default_scanner").(string)
-	if scanner != "" {
-		apiClient.SetDefaultScanner(scanner)
-	}
+// 	scanner := d.Get("default_scanner").(string)
+// 	if scanner != "" {
+// 		apiClient.SetDefaultScanner(scanner)
+// 	}
 
-	return resourceVulnRead(d, m)
-}
+// 	return resourceVulnRead(d, m)
+// }
 
 func resourceVulnDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
