@@ -34,8 +34,20 @@ func resourceRobotAccount() *schema.Resource {
 			"action": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "pull",
-				ForceNew: true,
+				// Default:       "pull",
+				ForceNew:      true,
+				Deprecated:    "Use actions attribute instead. action Will be removed in the next Major version",
+				ConflictsWith: []string{"actions"},
+			},
+			"actions": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+				// Default:  ["pull"],
+				ForceNew:      true,
+				ConflictsWith: []string{"action"},
 			},
 			"token": {
 				Type:      schema.TypeString,
@@ -71,9 +83,8 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 
 	projectid := d.Get("project_id").(string)
 	url := projectid + "/robots"
-	resource := strings.Replace(projectid, "s", "", +1) + "/repository"
 
-	body := client.RobotBody(d, resource)
+	body := client.RobotBody(d, projectid)
 
 	resp, headers, err := apiClient.SendRequest("POST", url, body, 201)
 	if err != nil {

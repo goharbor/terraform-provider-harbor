@@ -25,8 +25,28 @@ func TestAccRobotBasic(t *testing.T) {
 					testAccCheckResourceExists(harborRobotAccount),
 					resource.TestCheckResourceAttr(
 						harborRobotAccount, "name", "test_robot_account"),
+					// resource.TestCheckResourceAttr(
+					// 	harborRobotAccount, "action", "push"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccRobotMultipleAction(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckRobotDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckRobotMultipleAction(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists("harbor_project.main"),
+
+					testAccCheckResourceExists(harborRobotAccount),
 					resource.TestCheckResourceAttr(
-						harborRobotAccount, "action", "push"),
+						harborRobotAccount, "name", "test_robot_account"),
 				),
 			},
 		},
@@ -56,9 +76,27 @@ func testAccCheckRobotBasic() string {
 
 	resource "harbor_robot_account" "main" {
 		name        = "test_robot_account"
+		description = "Robot account to be used to pull images"
+		project_id  = harbor_project.main.id
+		actions     = ["pull"]
+
+	  }
+
+	  resource "harbor_project" "main" {
+		name = "test_basic"
+	  }
+	  
+	`)
+}
+
+func testAccCheckRobotMultipleAction() string {
+	return fmt.Sprintf(`
+
+	resource "harbor_robot_account" "main" {
+		name        = "test_robot_account"
 		description = "Robot account to be used to push images"
 		project_id  = harbor_project.main.id
-		action      = "push"
+		actions      = ["push","read","create"]
 	  }
 
 	  resource "harbor_project" "main" {
