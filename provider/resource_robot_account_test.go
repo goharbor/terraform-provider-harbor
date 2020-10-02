@@ -80,6 +80,8 @@ func testAccCheckRobotBasic() string {
 		name        = "test_robot_account"
 		description = "Robot account to be used to push images"
 		project_id  = harbor_project.main.id
+		actions     = ["pull"]
+
 	  }
 
 	  resource "harbor_project" "main" {
@@ -96,7 +98,7 @@ func testAccCheckRobotMultipleAction() string {
 		name        = "test_robot_account"
 		description = "Robot account to be used to push images"
 		project_id  = harbor_project.main.id
-		action      = "push"
+		actions      = ["push","read","create"]
 	  }
 
 	  resource "harbor_project" "main" {
