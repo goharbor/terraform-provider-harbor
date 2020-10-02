@@ -10,7 +10,7 @@ resource "harbor_robot_account" "account" {
   name        = "${harbor_project.main.name}"
   description = "Robot account used to push images to harbor"
   project_id  = harbor_project.main.id
-  action      = "push"
+  actions      = ["push"]
 }
 ```
 
@@ -23,7 +23,17 @@ The following arguments are supported:
 
 * **project_id** - (Required) The project id of the project that the robot account will be associated with.
 
-* **action** - (Optional) The action that the robot account will be able to perform on the project. Can be **"pull"** or **"push"** (Default: **pull**).
+* **action** - **Deprecated** The action that the robot account will be able to perform on the project. Can be **"pull"** or **"push"**.
+
+* **actions** - (Optional) A list of actions that the robot account will be able to perform on the project. 
+    You to have set `["pull"]` as minimal requirement, if `["push"]` is set you don't need to set pull. Other combinations can be `["push","create","view"]` or `["push","view"]` or `["pull","view"]`
+    ```
+    pull    = permission to pull from docker registry
+    push    = permission to push to docker registry
+    create  = permission to created helm charts
+    view    = permision to veiw helm charts
+    ```
+
 
 ## Attributes Reference
 In addition to all argument, the folloing attributes are exported:
