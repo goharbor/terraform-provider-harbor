@@ -26,12 +26,12 @@ The following arguments are supported:
 * **action** - **Deprecated** The action that the robot account will be able to perform on the project. Can be **"pull"** or **"push"**.
 
 * **actions** - (Optional) A list of actions that the robot account will be able to perform on the project. 
-    You to have set `["pull"]` as minimal requirement, if `["push"]` is set you don't need to set pull. Other combinations can be `["push","create","view"]` or `["push","view"]` or `["pull","view"]`
+    You to have set `["pull"]` as minimal requirement, if `["push"]` is set you don't need to set pull. Other combinations can be `["push","create","read"]` or `["push","read"]` or `["pull","read"]`
     ```
     pull    = permission to pull from docker registry
     push    = permission to push to docker registry
     create  = permission to created helm charts
-    view    = permision to veiw helm charts
+    read    = permision to read helm charts
     ```
 
 
