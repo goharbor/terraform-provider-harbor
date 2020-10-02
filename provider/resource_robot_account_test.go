@@ -47,8 +47,6 @@ func TestAccRobotMultipleAction(t *testing.T) {
 					testAccCheckResourceExists(harborRobotAccount),
 					resource.TestCheckResourceAttr(
 						harborRobotAccount, "name", "test_robot_account"),
-					// resource.TestCheckResourceAttr(
-					// 	harborRobotAccount, "action", "push"),
 				),
 			},
 		},
@@ -78,7 +76,7 @@ func testAccCheckRobotBasic() string {
 
 	resource "harbor_robot_account" "main" {
 		name        = "test_robot_account"
-		description = "Robot account to be used to push images"
+		description = "Robot account to be used to pull images"
 		project_id  = harbor_project.main.id
 		actions     = ["pull"]
 
