@@ -39,7 +39,7 @@ func resourceConfigAuth() *schema.Resource {
 				Optional: true,
 			},
 			"oidc_verify_cert": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Optional: true,
 			},
 		},
