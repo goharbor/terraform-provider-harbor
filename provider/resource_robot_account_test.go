@@ -25,8 +25,6 @@ func TestAccRobotBasic(t *testing.T) {
 					testAccCheckResourceExists(harborRobotAccount),
 					resource.TestCheckResourceAttr(
 						harborRobotAccount, "name", "test_robot_account"),
-					// resource.TestCheckResourceAttr(
-					// 	harborRobotAccount, "action", "push"),
 				),
 			},
 		},
@@ -58,6 +56,9 @@ func testAccCheckRobotDestroy(s *terraform.State) error {
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "harbor_robot_account" {
+			continue
+		}
+		if rs.Type != "harbor_project" {
 			continue
 		}
 
