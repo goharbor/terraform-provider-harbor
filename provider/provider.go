@@ -55,6 +55,10 @@ func Provider() terraform.ResourceProvider {
 			"harbor_registry":               resourceRegistry(),
 			"harbor_replication":            resourceReplication(),
 		},
+		DataSourcesMap: map[string]*schema.Resource{
+			"harbor_project":  dataProject(),
+			"harbor_registry": dataRegistry(),
+		},
 
 		ConfigureFunc: providerConfigure,
 	}
