@@ -14,8 +14,9 @@ func resourceConfigEmail() *schema.Resource {
 				Required: true,
 			},
 			"email_port": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  25,
 			},
 			"email_username": {
 				Type:     schema.TypeString,
