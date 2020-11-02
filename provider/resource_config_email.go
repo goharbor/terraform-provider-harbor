@@ -32,14 +32,15 @@ func resourceConfigEmail() *schema.Resource {
 				Required: true,
 			},
 			"email_ssl": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  "false",
+				Default:  false,
 			},
-			// "email_verify_cert": {
-			// 	Type:     schema.TypeString,
-			// 	Optional: true,
-			// },
+			"email_insecure": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			 },
 		},
 		Create: resourceConfigEmailCreate,
 		Read:   resourceConfigEmailRead,
