@@ -46,6 +46,8 @@ func RoleTypeNumber(role int) (x string) {
 		x = "guest"
 	case 4:
 		x = "master"
+	case 5:
+		x = "limitedguest"
 	}
 	return x
 }
@@ -60,6 +62,8 @@ func RoleType(role string) (x int) {
 		x = 3
 	case "master":
 		x = 4
+	case "limitedguest":
+		x = 5
 	}
 	return x
 }
