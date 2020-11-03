@@ -34,6 +34,7 @@ func GetConfigEmail(d *schema.ResourceData) models.ConfigBodyPost {
 		EmailPassword: d.Get("email_password").(string),
 		EmailFrom:     d.Get("email_from").(string),
 		EmailSsl:      d.Get("email_ssl").(bool),
+		EmailInsecure: d.Get("email_insecure").(bool),
 	}
 }
 

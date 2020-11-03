@@ -4,6 +4,7 @@ The Harbor provider is used to configure an instance of Harbor. The provider nee
 ## Resources
 * [Resource: harbor_configuration](resources/configuration.md)
 * [Resource: harbor_config_system](resources/config_system.md)
+* [Resource: harbor_config_email](resources/config_email.md)
 * [Resource: harbor_interrogation_services](resources/interrogation_services.md)
 * [Resource: harbor_project_member_group](resources/project_member_group.md)
 * [Resource: harbor_project_member_user](resources/project_member_user.md)

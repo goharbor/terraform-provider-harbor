@@ -3,11 +3,11 @@ package models
 var PathConfig = "/configurations"
 
 type ConfigBodyPost struct {
-	OidcVerifyCert        bool   `json:"oidc_verify_cert,omitempty"`
+	OidcVerifyCert        bool   `json:"oidc_verify_cert"`
 	EmailIdentity         string `json:"email_identity,omitempty"`
 	LdapGroupSearchFilter string `json:"ldap_group_search_filter,omitempty"`
 	AuthMode              string `json:"auth_mode,omitempty"`
-	SelfRegistration      bool   `json:"self_registration,omitempty"`
+	SelfRegistration      bool   `json:"self_registration"`
 	OidcScope             string `json:"oidc_scope,omitempty"`
 	LdapSearchDn          string `json:"ldap_search_dn,omitempty"`
 	StoragePerProject     string `json:"storage_per_project,omitempty"`
@@ -17,12 +17,11 @@ type ConfigBodyPost struct {
 			DailyTime int `json:"daily_time,omitempty"`
 		} `json:"parameter,omitempty"`
 	} `json:"scan_all_policy,omitempty"`
-	VerifyRemoteCert           bool   `json:"verify_remote_cert,omitempty"`
 	LdapTimeout                int    `json:"ldap_timeout,omitempty"`
 	LdapBaseDn                 string `json:"ldap_base_dn,omitempty"`
 	LdapFilter                 string `json:"ldap_filter,omitempty"`
-	ReadOnly                   bool   `json:"read_only,omitempty"`
-	QuotaPerProjectEnable      bool   `json:"quota_per_project_enable,omitempty"`
+	ReadOnly                   bool   `json:"read_only"`
+	QuotaPerProjectEnable      bool   `json:"quota_per_project_enable"`
 	LdapURL                    string `json:"ldap_url,omitempty"`
 	OidcName                   string `json:"oidc_name,omitempty"`
 	ProjectCreationRestriction string `json:"project_creation_restriction,omitempty"`
@@ -30,7 +29,7 @@ type ConfigBodyPost struct {
 	OidcClientID               string `json:"oidc_client_id,omitempty"`
 	LdapGroupBaseDn            string `json:"ldap_group_base_dn,omitempty"`
 	LdapGroupAttributeName     string `json:"ldap_group_attribute_name,omitempty"`
-	EmailInsecure              bool   `json:"email_insecure,omitempty"`
+	EmailInsecure              bool   `json:"email_insecure"`
 	LdapGroupAdminDn           string `json:"ldap_group_admin_dn,omitempty"`
 	EmailUsername              string `json:"email_username,omitempty"`
 	EmailPassword              string `json:"email_password,omitempty"`
@@ -41,7 +40,7 @@ type ConfigBodyPost struct {
 	CountPerProject            string `json:"count_per_project,omitempty"`
 	TokenExpiration            int    `json:"token_expiration,omitempty"`
 	LdapGroupSearchScope       int    `json:"ldap_group_search_scope,omitempty"`
-	EmailSsl                   bool   `json:"email_ssl,omitempty"`
+	EmailSsl                   bool   `json:"email_ssl"`
 	EmailPort                  int    `json:"email_port,omitempty"`
 	EmailHost                  string `json:"email_host,omitempty"`
 	EmailFrom                  string `json:"email_from,omitempty"`
