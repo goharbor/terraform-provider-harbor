@@ -7,6 +7,10 @@ var PathScanners = "/scanners"
 
 var PathGC = "/system/gc/schedule"
 
+type JobParameters struct {
+	DeleteUntagged bool `json:"delete_untagged"`
+}
+
 type SystemBody struct {
 	Schedule struct {
 		Type string `json:"type,omitempty"`

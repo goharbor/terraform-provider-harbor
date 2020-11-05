@@ -2,6 +2,7 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -34,6 +35,7 @@ func resourceGCCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	d.SetId("/system/gc/schedule")
 	return resourceGCRead(d, m)
 }
@@ -52,7 +54,16 @@ func resourceGCRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	jobParameters := jsonData.JobParameters
+
+	var jsonJobParameters models.JobParameters
+	err = json.Unmarshal([]byte(jobParameters), &jsonJobParameters)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	d.Set("schedule", jsonData.Schedule.Type)
+	d.Set("delete_untagged", jsonJobParameters.DeleteUntagged)
 	return nil
 }
 
