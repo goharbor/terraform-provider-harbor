@@ -61,7 +61,7 @@ func resourceReplication() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"labels": {
+						"label": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
