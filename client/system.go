@@ -9,27 +9,45 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func GetVulnBoby(d *schema.ResourceData) models.VulnBody {
-	vulnSchedule := d.Get("vulnerability_scan_policy").(string)
-	TypeStr, CronStr := GetSchedule(vulnSchedule)
+func GetSystemBoby(d *schema.ResourceData, scheduleType string) models.SystemBody {
+	var schedule string
 
-	body := models.VulnBody{}
+	if scheduleType == "gc" {
+		schedule = d.Get("schedule").(string)
+	} else if scheduleType == "vuln" {
+		schedule = d.Get("vulnerability_scan_policy").(string)
+	}
+
+	TypeStr, CronStr := GetSchedule(schedule)
+
+	body := models.SystemBody{}
 	body.Schedule.Type = TypeStr
 	body.Schedule.Cron = CronStr
+	if scheduleType == "gc" {
+		body.Parameters.DeleteUntagged = d.Get("delete_untagged").(bool)
+	}
+
 	return body
 }
 
-// SetScannerPolicy sets the schedule time to perform Vuln scannin
-func (client *Client) SetScannerPolicy(d *schema.ResourceData) (err error) {
+// SetSchedule sets the schedule time to perform Vuln scanning and GC
+func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (err error) {
+	var path string
 
-	body := GetVulnBoby(d)
+	if scheduleType == "gc" {
+		path = models.PathGC
+	} else if scheduleType == "vuln" {
+		path = models.PathVuln
+	}
 
-	resp, _, err := client.SendRequest("GET", models.PathVuln, nil, 0)
+	body := GetSystemBoby(d, scheduleType)
+
+	resp, _, err := client.SendRequest("GET", path, nil, 0)
 	if err != nil {
 		return err
 	}
 
-	var jsonData models.VulnBody
+	var jsonData models.SystemBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
 		return err
@@ -38,13 +56,13 @@ func (client *Client) SetScannerPolicy(d *schema.ResourceData) (err error) {
 	time := jsonData.Schedule.Type
 	requestType := "POST"
 	if time != "" {
-		log.Printf("Shedule found performing PUT request")
+		log.Printf("Schedule found performing PUT request")
 		requestType = "PUT"
 	} else {
-		log.Printf("No shedule found performing POST request")
+		log.Printf("No Schedule found performing POST request")
 	}
 
-	_, _, err = client.SendRequest(requestType, models.PathVuln, body, 0)
+	_, _, err = client.SendRequest(requestType, path, body, 200)
 	if err != nil {
 		return err
 

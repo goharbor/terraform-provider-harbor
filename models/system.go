@@ -5,7 +5,9 @@ import "time"
 var PathVuln = "/system/scanAll/schedule"
 var PathScanners = "/scanners"
 
-type VulnBody struct {
+var PathGC = "/system/gc/schedule"
+
+type SystemBody struct {
 	Schedule struct {
 		Type string `json:"type,omitempty"`
 		Cron string `json:"cron,omitempty"`
@@ -19,6 +21,7 @@ type VulnBody struct {
 	CreationTime  time.Time `json:"creation_time,omitempty"`
 	UpdateTime    time.Time `json:"update_time,omitempty"`
 	Parameters    struct {
+		DeleteUntagged  bool `json:"delete_untagged,omitempty"`
 		AdditionalProp1 bool `json:"additionalProp1,omitempty"`
 		AdditionalProp2 bool `json:"additionalProp2,omitempty"`
 		AdditionalProp3 bool `json:"additionalProp3,omitempty"`
