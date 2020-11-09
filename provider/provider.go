@@ -44,6 +44,7 @@ func Provider() terraform.ResourceProvider {
 			"harbor_config_auth":            resourceConfigAuth(),
 			"harbor_config_email":           resourceConfigEmail(),
 			"harbor_config_system":          resourceConfigSystem(),
+			"harbor_garbarge_collect":       resourceGarbageCollect(),
 			"harbor_project":                resourceProject(),
 			"harbor_project_member":         resourceMembers(),
 			"harbor_project_member_group":   resourceMembersGroup(),
