@@ -1,5 +1,7 @@
 package client
 
+import "regexp"
+
 func GetSchedule(schedule string) (typefmt string, cronfmt string) {
 	var TypeStr string
 	var CronStr string
@@ -16,6 +18,12 @@ func GetSchedule(schedule string) (typefmt string, cronfmt string) {
 		CronStr = "0 0 0 * * 0"
 
 	}
+	if regexCron.MatchString(schedule) {
+		TypeStr = "Custom"
+		CronStr = schedule
+	}
 
 	return TypeStr, CronStr
 }
+
+var regexCron = regexp.MustCompile(`(?m)((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})`)
