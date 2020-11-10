@@ -42,7 +42,7 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 
 	body := GetSystemBoby(d, scheduleType)
 
-	resp, _, err := client.SendRequest("GET", path, nil, 0)
+	resp, _, err := client.SendRequest("GET", path, nil, 200)
 	if err != nil {
 		return err
 	}
@@ -55,14 +55,17 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 
 	time := jsonData.Schedule.Type
 	requestType := "POST"
+	httpStatusCode := 201
+
 	if time != "" {
 		log.Printf("Schedule found performing PUT request")
 		requestType = "PUT"
+		httpStatusCode = 200
 	} else {
 		log.Printf("No Schedule found performing POST request")
 	}
 
-	_, _, err = client.SendRequest(requestType, path, body, 200)
+	_, _, err = client.SendRequest(requestType, path, body, httpStatusCode)
 	if err != nil {
 		return err
 
