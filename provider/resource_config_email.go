@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"encoding/json"
+
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -63,22 +65,27 @@ func resourceConfigEmailCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceConfigEmailRead(d *schema.ResourceData, m interface{}) error {
-	d.SetId("configuration/email")
+	apiClient := m.(*client.Client)
+
+	resp, _, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
+	if err != nil {
+		return err
+	}
+
+	var jsonData models.ConfigBodyResponse
+	err = json.Unmarshal([]byte(resp), &jsonData)
+	if err != nil {
+		return err
+	}
+
+	d.SetId("/configuration/email")
+	d.Set("email_host", jsonData.EmailHost.Value)
+	d.Set("email_port", jsonData.EmailPort.Value)
+	d.Set("email_username", jsonData.EmailUsername.Value)
+	d.Set("email_from", jsonData.EmailFrom.Value)
+	d.Set("email_ssl", jsonData.EmailSsl.Value)
 	return nil
 }
-
-// func resourceConfigEmailUpdate(d *schema.ResourceData, m interface{}) error {
-// 	apiClient := m.(*client.Client)
-
-// 	body := client.GetConfigEmail(d)
-
-// 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return resourceConfigEmailRead(d, m)
-// }
 
 func resourceConfigEmailDelete(d *schema.ResourceData, m interface{}) error {
 	return nil

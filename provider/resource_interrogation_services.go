@@ -28,7 +28,7 @@ func resourceVuln() *schema.Resource {
 func resourceVulnCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	err := apiClient.SetScannerPolicy(d)
+	err := apiClient.SetSchedule(d, "vuln")
 	if err != nil {
 		return err
 	}
@@ -46,26 +46,10 @@ func resourceVulnRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-// func resourceVulnUpdate(d *schema.ResourceData, m interface{}) error {
-// 	apiClient := m.(*client.Client)
-
-// 	err := apiClient.SetScannerPolicy(d)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	scanner := d.Get("default_scanner").(string)
-// 	if scanner != "" {
-// 		apiClient.SetDefaultScanner(scanner)
-// 	}
-
-// 	return resourceVulnRead(d, m)
-// }
-
 func resourceVulnDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := models.VulnBody{}
+	body := models.SystemBody{}
 	body.Schedule.Cron = ""
 	body.Schedule.Type = "None"
 
