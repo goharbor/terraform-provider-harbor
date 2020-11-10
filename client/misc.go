@@ -1,19 +1,22 @@
 package client
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 func GetSchedule(schedule string) (typefmt string, cronfmt string) {
 	var TypeStr string
 	var CronStr string
 
-	switch schedule {
-	case "hourly", "Hourly":
+	switch strings.ToLower(schedule) {
+	case "hourly":
 		TypeStr = "Hourly"
 		CronStr = "0 0 * * * *"
-	case "daily", "Daily":
+	case "daily":
 		TypeStr = "Daily"
 		CronStr = "0 0 0 * * *"
-	case "weekly", "Weekly":
+	case "weekly":
 		TypeStr = "Weekly"
 		CronStr = "0 0 0 * * 0"
 
