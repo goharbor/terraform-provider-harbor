@@ -5,13 +5,13 @@ func GetSchedule(schedule string) (typefmt string, cronfmt string) {
 	var CronStr string
 
 	switch schedule {
-	case "hourly":
+	case "hourly", "Hourly":
 		TypeStr = "Hourly"
 		CronStr = "0 0 * * * *"
-	case "daily":
+	case "daily", "Daily":
 		TypeStr = "Daily"
 		CronStr = "0 0 0 * * *"
-	case "weekly":
+	case "weekly", "Weekly":
 		TypeStr = "Weekly"
 		CronStr = "0 0 0 * * 0"
 
