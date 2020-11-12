@@ -4,6 +4,8 @@ var PathConfig = "/configurations"
 
 type ConfigBodyPost struct {
 	OidcVerifyCert        bool   `json:"oidc_verify_cert"`
+	OidcAutoOnboard       bool   `json:"oidc_auto_onboard"`
+	OidcUserClaim         string `json:"oidc_user_claim,omitempty"`
 	EmailIdentity         string `json:"email_identity,omitempty"`
 	LdapGroupSearchFilter string `json:"ldap_group_search_filter,omitempty"`
 	AuthMode              string `json:"auth_mode,omitempty"`
@@ -52,6 +54,14 @@ type ConfigBodyResponse struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`
 	} `json:"oidc_verify_cert,omitempty"`
+	OidcAutoOnboard struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    bool `json:"value,omitempty"`
+	} `json:"oidc_auto_onboard,omitempty"`
+	OidcUserClaim struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"oidc_user_claim,omitempty"`
 	EmailIdentity struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`

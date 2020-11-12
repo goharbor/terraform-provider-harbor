@@ -42,6 +42,14 @@ func resourceConfigAuth() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+			"oidc_auto_onboard": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"oidc_user_claim": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 		Create: resourceConfigAuthCreate,
 		Read:   resourceConfigAuthRead,

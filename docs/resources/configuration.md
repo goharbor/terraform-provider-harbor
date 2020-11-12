@@ -11,6 +11,8 @@ resource "harbor_config_auth" "oidc" {
   oidc_client_secret = "ODDC Client Secret goes here"
   oidc_scope         = "openid,email"
   oidc_verify_cert   = true
+  oidc_auto_onboard  = true
+  oidc_user_claim    = "name"
 }
 ```
 
@@ -34,3 +36,7 @@ The following arguments are supported:
 * **oidc_scope** - (Optional) The scope sent to OIDC server during authentication. It has to contain “openid”. (Required - if auth_mode set to **oidc_auth**)
 
 * **oidc_verify_cert** - (Optional) Set to **"false"** if your OIDC server is using a self-signed certificate. (Required - if auth_mode set to **oidc_auth**)
+
+* **oidc_auto_onboard** - (Optional) Default is **"false"**, set to **"true"** if you want to skip the user onboarding screen, so user cannot change its username
+
+* **oidc_user_claim** - (Optional) Default is **"name"**

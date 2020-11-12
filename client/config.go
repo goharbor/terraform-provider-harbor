@@ -23,6 +23,8 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyPost {
 		OidcGroupsClaim:  d.Get("oidc_groups_claim").(string),
 		OidcScope:        d.Get("oidc_scope").(string),
 		OidcVerifyCert:   d.Get("oidc_verify_cert").(bool),
+		OidcAutoOnboard:  d.Get("oidc_auto_onboard").(bool),
+		OidcUserClaim:    d.Get("oidc_user_claim").(string),
 	}
 }
 
