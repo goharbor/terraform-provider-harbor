@@ -63,7 +63,11 @@ func resourceGCRead(d *schema.ResourceData, m interface{}) error {
 		fmt.Println(err)
 	}
 
-	d.Set("schedule", strings.ToLower(jsonData.Schedule.Type))
+	if jsonData.Schedule.Type == "Custom" {
+		d.Set("schedule", jsonData.Schedule.Cron)
+	} else {
+		d.Set("schedule", strings.ToLower(jsonData.Schedule.Type))
+	}
 	d.Set("delete_untagged", jsonJobParameters.DeleteUntagged)
 	return nil
 }
