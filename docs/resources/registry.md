@@ -42,5 +42,5 @@ In addition to all argument, the folloing attributes are exported:
 Harbor project can be imported using the `registry id` eg,
 
 `
-terraform import haror_project.main /registries/7
+terraform import harbor_project.main /registries/7
 `

@@ -2,7 +2,7 @@
 
 ## Example Usage
 ```hcl
-data "haror_project" "main" {
+data "harbor_project" "main" {
     name    = "library" 
 }
 
