@@ -10,6 +10,7 @@ type ProjectMembersBody struct {
 type ProjectMembersBodyGroup struct {
 	GroupType int    `json:"group_type,omitempty"`
 	GroupName string `json:"group_name,omitempty"`
+	GroupID   int    `json:"id,omitempty"`
 }
 
 type ProjectMemberUsersGroup struct {
