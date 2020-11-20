@@ -30,5 +30,5 @@ The following arguments are supported:
 An internal user harbor user can be imported using the `user id` eg,
 
 `
-terraform import haror_user.main /users/19
+terraform import harbor_user.main /users/19
 `

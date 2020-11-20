@@ -25,9 +25,9 @@ The following arguments are supported:
 
 * **oidc_endpoint** - (Optional) The URL of an OIDC-complaint server. (Required - if auth_mode set to **oidc_auth**)
 
-* **oidc_client_id** - (Optional) The client id for the odic server. (Required - if auth_mode set to **oidc_auth**)
+* **oidc_client_id** - (Optional) The client id for the oidc server. (Required - if auth_mode set to **oidc_auth**)
 
-* **oidc_client_serect** - (Optional) The client secert for the odic server. (Required - if auth_mode set to **oidc_auth**)
+* **oidc_client_serect** - (Optional) The client secert for the oidc server. (Required - if auth_mode set to **oidc_auth**)
 
 * **oidc_groups_claim** - (Optional) The name of the claim in the token whose values is the list of group names.
 

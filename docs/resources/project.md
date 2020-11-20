@@ -2,7 +2,7 @@
 
 ## Example Usage
 ```hcl
-resource "haror_project" "main" {
+resource "harbor_project" "main" {
     name                    = "main"
     public                  = false               # (Optional) Default value is false
     vulnerability_scanning  = true                # (Optional) Default vale is true. Automatically scan images on push 
@@ -27,5 +27,5 @@ In addition to all argument, the folloing attributes are exported:
 Harbor project can be imported using the `project id` eg,
 
 `
-terraform import haror_project.main /projects/1
+terraform import harbor_project.main /projects/1
 `

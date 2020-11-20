@@ -4,7 +4,7 @@
 
 ## Example Usage
 ```hcl
-resource "haror_project" "main" {
+resource "harbor_project" "main" {
     name = "main"
 }
 
@@ -28,4 +28,4 @@ The following arguments are supported:
 
 * **type** - (Requried) The group type.  Can be set to **"ldap"**, **"internal"** or **"oidc"** 
 
-`NOTE: odic group type can only be used with harbor version v1.10.1 and above`
+`NOTE: oidc group type can only be used with harbor version v1.10.1 and above`
