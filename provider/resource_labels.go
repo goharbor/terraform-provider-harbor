@@ -30,6 +30,10 @@ func resourceLabel() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"scope": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 		Create: resourceLabelCreate,
 		Read:   resourceLabelRead,
@@ -72,6 +76,8 @@ func resourceLabelRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("name", jsonData.Name)
 	d.Set("description", jsonData.Description)
 	d.Set("color", jsonData.Color)
+	d.Set("scope", jsonData.Scope)
+
 	return nil
 }
 
