@@ -86,6 +86,40 @@ func TestAccLabelUpdate(t *testing.T) {
 	})
 }
 
+func TestAccLabelProjectUpdate(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckProjectDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckLabelProjectBasic(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceHarborLabelMain),
+					resource.TestCheckResourceAttr(
+						resourceHarborLabelMain, "name", "accTest"),
+					resource.TestCheckResourceAttr(
+						resourceHarborLabelMain, "color", "#FFFFFF"),
+					resource.TestCheckResourceAttr(
+						resourceHarborLabelMain, "decription", "Decription to for acceptance test"),
+				),
+			},
+			{
+				Config: testAccCheckLabelProjectUpdate(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceHarborLabelMain),
+					resource.TestCheckResourceAttr(
+						resourceHarborLabelMain, "name", "accTest"),
+					resource.TestCheckResourceAttr(
+						resourceHarborLabelMain, "color", "#FF0000"),
+					resource.TestCheckResourceAttr(
+						resourceHarborLabelMain, "decription", "Decription to for acceptance test"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckLabelBasic() string {
 	return fmt.Sprintf(`
 	resource "harbor_label" "main" {
