@@ -13,7 +13,7 @@ const resourceHarborLabelMain = "harbor_label.main"
 
 func testAccCheckLabelDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
-	r := "harbor_project"
+	r := "harbor_label"
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != r {
@@ -34,10 +34,10 @@ func TestAccLabelBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckProjectDestroy,
+		CheckDestroy: testAccCheckLabelDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckProjectBasic(),
+				Config: testAccCheckLabelBasic(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(resourceHarborLabelMain),
 					resource.TestCheckResourceAttr(
@@ -45,7 +45,7 @@ func TestAccLabelBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceHarborLabelMain, "color", "#FFFFFF"),
 					resource.TestCheckResourceAttr(
-						resourceHarborLabelMain, "decription", "Decription to for acceptance test"),
+						resourceHarborLabelMain, "description", "Description to for acceptance test"),
 				),
 			},
 		},
@@ -56,10 +56,10 @@ func TestAccLabelUpdate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckProjectDestroy,
+		CheckDestroy: testAccCheckLabelDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckProjectBasic(),
+				Config: testAccCheckLabelBasic(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(resourceHarborLabelMain),
 					resource.TestCheckResourceAttr(
@@ -67,11 +67,11 @@ func TestAccLabelUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceHarborLabelMain, "color", "#FFFFFF"),
 					resource.TestCheckResourceAttr(
-						resourceHarborLabelMain, "decription", "Decription to for acceptance test"),
+						resourceHarborLabelMain, "description", "Description to for acceptance test"),
 				),
 			},
 			{
-				Config: testAccCheckItemUpdate(),
+				Config: testAccCheckLabelUpdate(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(resourceHarborLabelMain),
 					resource.TestCheckResourceAttr(
@@ -79,7 +79,7 @@ func TestAccLabelUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceHarborLabelMain, "color", "#FF0000"),
 					resource.TestCheckResourceAttr(
-						resourceHarborLabelMain, "decription", "Decription to for acceptance test"),
+						resourceHarborLabelMain, "description", "Description to for acceptance test"),
 				),
 			},
 		},
@@ -90,7 +90,7 @@ func TestAccLabelProjectUpdate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckProjectDestroy,
+		CheckDestroy: testAccCheckLabelDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckLabelProjectBasic(),
@@ -101,7 +101,7 @@ func TestAccLabelProjectUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceHarborLabelMain, "color", "#FFFFFF"),
 					resource.TestCheckResourceAttr(
-						resourceHarborLabelMain, "decription", "Decription to for acceptance test"),
+						resourceHarborLabelMain, "description", "Description to for acceptance test"),
 				),
 			},
 			{
@@ -113,7 +113,7 @@ func TestAccLabelProjectUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceHarborLabelMain, "color", "#FF0000"),
 					resource.TestCheckResourceAttr(
-						resourceHarborLabelMain, "decription", "Decription to for acceptance test"),
+						resourceHarborLabelMain, "description", "Description to for acceptance test"),
 				),
 			},
 		},
@@ -125,7 +125,7 @@ func testAccCheckLabelBasic() string {
 	resource "harbor_label" "main" {
 		name  		= "accTest"
 		color 		= "#FFFFFF"
-		decription 	= "Decription to for acceptance test"
+		description 	= "Description to for acceptance test"
 	  }
 	`)
 }
@@ -135,7 +135,7 @@ func testAccCheckLabelUpdate() string {
 	resource "harbor_label" "main" {
 		name  		= "accTest"
 		color 		= "#FF0000"
-		description 	= "description to for acceptance test"
+		description 	= "Description to for acceptance test"
 	}
 	`)
 }
@@ -143,14 +143,14 @@ func testAccCheckLabelUpdate() string {
 func testAccCheckLabelProjectBasic() string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
-		name = "accTest"
+		name = "acctest"
 	}
 
 	resource "harbor_label" "main" {
 		name  		= "accTest"
 		color 		= "#FFFFFF"
-		description 	= "description to for acceptance test"
-		project_id	= harbor_project.main.id
+		description 	= "Description to for acceptance test"
+#		project_id	= harbor_project.main.id
 	}
 	`)
 }
@@ -158,14 +158,14 @@ func testAccCheckLabelProjectBasic() string {
 func testAccCheckLabelProjectUpdate() string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
-		name = "accTest"
+		name = "acctest"
 	}
 
 	resource "harbor_label" "main" {
 		name  		= "accTest"
 		color 		= "#FF0000"
-		description 	= "description to for acceptance test"
-		project_id	= harbor_project.main.id
+		description 	= "Description to for acceptance test"
+	#	project_id	= harbor_project.main.id
 	}
 	`)
 }
