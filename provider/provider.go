@@ -55,6 +55,7 @@ func Provider() terraform.ResourceProvider {
 			"harbor_registry":               resourceRegistry(),
 			"harbor_replication":            resourceReplication(),
 			"harbor_garbage_collection":     resourceGC(),
+			"harbor_label":                  resourceLabel(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"harbor_project":  dataProject(),

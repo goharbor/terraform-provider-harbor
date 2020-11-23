@@ -1,5 +1,7 @@
 package models
 
+var PathLabel = "/labels"
+
 type Labels struct {
 	Description string `json:"description"`
 	Color       string `json:"color"`

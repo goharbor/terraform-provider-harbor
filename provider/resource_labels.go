@@ -49,7 +49,7 @@ func resourceLabelCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.LabelsBody(d)
 
-	_, headers, err := apiClient.SendRequest("POST", models.PathProjects, body, 201)
+	_, headers, err := apiClient.SendRequest("POST", models.PathLabel, body, 201)
 	if err != nil {
 		return err
 	}
