@@ -135,7 +135,7 @@ func testAccCheckLabelUpdate() string {
 	resource "harbor_label" "main" {
 		name  		= "accTest"
 		color 		= "#FF0000"
-		decription 	= "Decription to for acceptance test"
+		description 	= "description to for acceptance test"
 	}
 	`)
 }
@@ -149,7 +149,7 @@ func testAccCheckLabelProjectBasic() string {
 	resource "harbor_label" "main" {
 		name  		= "accTest"
 		color 		= "#FFFFFF"
-		decription 	= "Decription to for acceptance test"
+		description 	= "description to for acceptance test"
 		project_id	= harbor_project.main.id
 	}
 	`)
@@ -164,7 +164,7 @@ func testAccCheckLabelProjectUpdate() string {
 	resource "harbor_label" "main" {
 		name  		= "accTest"
 		color 		= "#FF0000"
-		decription 	= "Decription to for acceptance test"
+		description 	= "description to for acceptance test"
 		project_id	= harbor_project.main.id
 	}
 	`)
