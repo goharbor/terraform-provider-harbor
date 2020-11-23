@@ -1,6 +1,7 @@
 package client
 
 import (
+	"log"
 	"strconv"
 	"strings"
 
@@ -15,10 +16,14 @@ func LabelsBody(d *schema.ResourceData) models.Labels {
 		Color:       d.Get("color").(string),
 	}
 
-	if _, ok := d.GetOk("project_id"); ok {
-		id := d.Get("project_id").(string)
+	project := d.Get("project_id").(string)
+	if project != "" {
+		id, err := strconv.Atoi(strings.ReplaceAll(project, "/projects/", ""))
+		if err != nil {
+			log.Println(err)
+		}
 
-		body.ID, _ = strconv.Atoi(strings.ReplaceAll(id, "/projects/", ""))
+		body.ProjectID = id
 		body.Scope = "p"
 	} else {
 
