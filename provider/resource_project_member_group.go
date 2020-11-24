@@ -19,8 +19,14 @@ func resourceMembersGroup() *schema.Resource {
 			},
 			"group_name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
+			},
+			"group_id": {
+				Type:         schema.TypeInt,
+				Optional:     true,
+				ForceNew:     true,
+				AtLeastOneOf: []string{"group_id", "group_name"},
 			},
 			"member_id": {
 				Type:     schema.TypeInt,
