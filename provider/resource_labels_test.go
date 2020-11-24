@@ -150,7 +150,7 @@ func testAccCheckLabelProjectBasic() string {
 		name  		= "accTest"
 		color 		= "#FFFFFF"
 		description 	= "Description to for acceptance test"
-#		project_id	= harbor_project.main.id
+		project_id	= harbor_project.main.id
 	}
 	`)
 }
@@ -165,7 +165,7 @@ func testAccCheckLabelProjectUpdate() string {
 		name  		= "accTest"
 		color 		= "#FF0000"
 		description 	= "Description to for acceptance test"
-	#	project_id	= harbor_project.main.id
+		project_id	= harbor_project.main.id
 	}
 	`)
 }
