@@ -32,6 +32,17 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"deployment_security": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"cve_whitelist": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
 		},
 		Create: resourceProjectCreate,
 		Read:   resourceProjectRead,

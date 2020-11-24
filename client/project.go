@@ -1,6 +1,8 @@
 package client
 
 import (
+	"log"
+
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -12,5 +14,37 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	}
 	body.Metadata.AutoScan = d.Get("vulnerability_scanning").(string)
 	body.Metadata.Public = d.Get("public").(string)
+
+	security := d.Get("deployment_security").(string)
+	if security != "" {
+		body.Metadata.Severity = security
+		body.Metadata.PreventVul = "true"
+	} else {
+		body.Metadata.Severity = "low"
+		body.Metadata.PreventVul = "false"
+	}
+
+	cveWhiteList := d.Get("cve_whitelist").([]interface{})
+	log.Printf("[DEBUG] %v ", cveWhiteList)
+	if len(cveWhiteList) > 0 {
+		log.Printf("[DEBUG] %v ", expandCveWhiteList(cveWhiteList))
+		body.CveWhitelist.Items = expandCveWhiteList(cveWhiteList)
+		body.Metadata.ReuseSysCveWhitelist = "false"
+	} else {
+		body.Metadata.ReuseSysCveWhitelist = "true"
+	}
 	return body
+}
+
+func expandCveWhiteList(cveWhitelist []interface{}) models.CveWhitelistItems {
+	whitelist := models.CveWhitelistItems{}
+
+	for _, data := range cveWhitelist {
+		item := models.CveWhitelistItem{
+			CveID: data.(string),
+		}
+		whitelist = append(whitelist, item)
+	}
+
+	return whitelist
 }

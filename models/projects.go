@@ -6,9 +6,10 @@ type ProjectsBodyPost struct {
 	CountLimit   int    `json:"count_limit,omitempty"`
 	ProjectName  string `json:"project_name,omitempty"`
 	CveWhitelist struct {
-		Items []struct {
-			CveID string `json:"cve_id,omitempty"`
-		} `json:"items,omitempty"`
+		Items CveWhitelistItems `json:"items,omitempty"`
+		// Items []struct {
+		// 	CveID string `json:"cve_id,omitempty"`
+		// } `json:"items,omitempty"`
 		ProjectID int `json:"project_id,omitempty"`
 		ID        int `json:"id,omitempty"`
 		ExpiresAt int `json:"expires_at,omitempty"`
@@ -53,4 +54,11 @@ type ProjectsBodyResponses struct {
 		Public               string `json:"public"`
 		PreventVul           string `json:"prevent_vul"`
 	} `json:"metadata"`
+}
+
+type CveWhitelistItems []struct {
+	CveID string `json:"cve_id,omitempty"`
+}
+type CveWhitelistItem struct {
+	CveID string `json:"cve_id,omitempty"`
 }
