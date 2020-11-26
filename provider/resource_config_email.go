@@ -42,7 +42,7 @@ func resourceConfigEmail() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
-			 },
+			},
 		},
 		Create: resourceConfigEmailCreate,
 		Read:   resourceConfigEmailRead,
@@ -78,7 +78,7 @@ func resourceConfigEmailRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.SetId("/configuration/email")
+	d.SetId("/configurations")
 	d.Set("email_host", jsonData.EmailHost.Value)
 	d.Set("email_port", jsonData.EmailPort.Value)
 	d.Set("email_username", jsonData.EmailUsername.Value)
