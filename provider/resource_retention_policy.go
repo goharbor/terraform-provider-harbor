@@ -12,7 +12,6 @@ func resourceRentention() *schema.Resource {
 			"schedule": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 			},
 			"scope": {
 				Type:     schema.TypeString,
@@ -26,6 +25,11 @@ func resourceRentention() *schema.Resource {
 				Elem: &schema.Resource{
 					// Schema: retentionPolicyRuleFields(),
 					Schema: map[string]*schema.Schema{
+						"disabled": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  false,
+						},
 						"n_days_since_last_pull": {
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -46,29 +50,29 @@ func resourceRentention() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 						},
-						"always": {
+						"always_retain": {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},
 						"repo_matching": {
-							Type:          schema.TypeString,
-							Optional:      true,
-							ConflictsWith: []string{".repo_excluding"},
+							Type:     schema.TypeString,
+							Optional: true,
+							// ConflictsWith: []string{".repo_excluding"},
 						},
 						"repo_excluding": {
-							Type:          schema.TypeString,
-							Optional:      true,
-							ConflictsWith: []string{".repo_matching"},
+							Type:     schema.TypeString,
+							Optional: true,
+							// ConflictsWith: []string{".repo_matching"},
 						},
 						"tag_matching": {
-							Type:          schema.TypeString,
-							Optional:      true,
-							ConflictsWith: []string{".tag_excluding"},
+							Type:     schema.TypeString,
+							Optional: true,
+							// ConflictsWith: []string{".tag_excluding"},
 						},
 						"tag_excluding": {
-							Type:          schema.TypeString,
-							Optional:      true,
-							ConflictsWith: []string{".tag_matching"},
+							Type:     schema.TypeString,
+							Optional: true,
+							// ConflictsWith: []string{".tag_matching"},
 						},
 						"untagged_artifacts": {
 							Type:     schema.TypeBool,
@@ -126,13 +130,13 @@ func resourceRententionRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceRententionUpdate(d *schema.ResourceData, m interface{}) error {
-	// apiClient := m.(*client.Client)
-	// body := client.LabelsBody(d)
+	apiClient := m.(*client.Client)
+	body := client.GetRententionBody(d)
 
-	// _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
-	// if err != nil {
-	// 	return err
-	// }
+	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	if err != nil {
+		return err
+	}
 
 	return resourceRententionRead(d, m)
 }

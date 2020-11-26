@@ -31,11 +31,11 @@ The following arguments are supported:
     pull    = permission to pull from docker registry
     push    = permission to push to docker registry
     create  = permission to created helm charts
-    read    = permision to read helm charts
+    read    = permission to read helm charts
     ```
 
 
 ## Attributes Reference
-In addition to all argument, the folloing attributes are exported:
+In addition to all argument, the following attributes are exported:
 
 * **token** - The token of the robot account.

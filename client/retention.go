@@ -26,8 +26,17 @@ func GetRententionBody(d *schema.ResourceData) *models.Retention {
 	body.Trigger = models.Trigger{
 		Kind: "Schedule",
 	}
-	body.Trigger.Settings = models.Settings{
-		Cron: "",
+
+	schedule := d.Get("schedule").(string)
+	if schedule != "" {
+		_, cronstr := GetSchedule(schedule)
+		body.Trigger.Settings = models.Settings{
+			Cron: cronstr,
+		}
+	} else {
+		body.Trigger.Settings = models.Settings{
+			Cron: "",
+		}
 	}
 
 	body.Rules = expandRententionRules(d)
@@ -44,7 +53,7 @@ func expandRententionRules(d *schema.ResourceData) []models.Rules {
 		i := v.(map[string]interface{})
 
 		rule := models.Rules{
-			Disabled: false,
+			Disabled: i["disabled"].(bool),
 			Action:   "retain",
 		}
 
@@ -57,7 +66,7 @@ func expandRententionRules(d *schema.ResourceData) []models.Rules {
 		} else if i["most_recently_pushed"].(int) > 0 {
 			rule.Params.LatestPushedK = i["most_recently_pulled"].(int)
 			rule.Template = "LatestPushedK"
-		} else if i["always"] == true {
+		} else if i["always_retain"] == true {
 			rule.Template = "always"
 		}
 
