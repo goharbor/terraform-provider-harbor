@@ -2,9 +2,10 @@ package client
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // ProjectBody return a json body
@@ -12,7 +13,7 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	body := models.ProjectsBodyPost{
 		ProjectName: d.Get("name").(string),
 	}
-	body.Metadata.AutoScan = d.Get("vulnerability_scanning").(string)
+	body.Metadata.AutoScan = strconv.FormatBool(d.Get("vulnerability_scanning").(bool))
 	body.Metadata.Public = d.Get("public").(string)
 
 	security := d.Get("deployment_security").(string)

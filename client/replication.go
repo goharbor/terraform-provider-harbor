@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
