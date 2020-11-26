@@ -32,7 +32,7 @@ The following arguments are supported:
 * **enabled** - (Optional) enables / disables the external container register within harbor. Can be set to **"true"** or **"false"** (Default: true)
 
 ## Attributes Reference
-In addition to all argument, the folloing attributes are exported:
+In addition to all argument, the following attributes are exported:
 
 * **registry_id** - The id of the register within harbor.
 

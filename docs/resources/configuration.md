@@ -19,7 +19,7 @@ resource "harbor_config_auth" "oidc" {
 ## Argument Reference
 The following arguments are supported:
 
-* **auth_mode** - (Requried) Harbor authenication mode. Can be **"oidc_auth"** or **"db_auth"**. (Default: **"db_auth"**)
+* **auth_mode** - (Required) Harbor authentication mode. Can be **"oidc_auth"** or **"db_auth"**. (Default: **"db_auth"**)
 
 * **oidc_name** - (Optional) The name of the oidc provider name. (Required - if auth_mode set to **oidc_auth**)
 

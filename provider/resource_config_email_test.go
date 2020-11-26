@@ -17,11 +17,11 @@ func TestAccConfigEmail(t *testing.T) {
 		// CheckDestroy: testAccCheckConfigEmailDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckRobotBasic(),
+				Config: testAccCheckConfigEmail(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborConfigEmail),
-				// resource.TestCheckResourceAttr(
-				// 	harborConfigEmail, "email_host", "server.acme.com"),
+					resource.TestCheckResourceAttr(
+						harborConfigEmail, "email_host", "server.acme.com"),
 				),
 			},
 		},
@@ -48,7 +48,6 @@ func testAccCheckConfigEmailDestroy(s *terraform.State) error {
 
 func testAccCheckConfigEmail() string {
 	return fmt.Sprintf(`
-
 	resource "harbor_config_email" "main" {
 		email_host = "server.acme.com"
 		email_from = "dont_reply@acme.com"
@@ -56,7 +55,5 @@ func testAccCheckConfigEmail() string {
     	email_port = 234
     	email_ssl = true
 	}
-	  
-	  
 	`)
 }

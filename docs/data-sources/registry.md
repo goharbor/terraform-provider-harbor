@@ -18,7 +18,7 @@ The following arguments are supported:
 * **name** - (Required) The name of the register.
 
 ## Attributes Reference
-In addition to all argument, the folloing attributes are exported:
+In addition to all argument, the following attributes are exported:
 
 * **registry_id** - The id of the register within harbor.
 

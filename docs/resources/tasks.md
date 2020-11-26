@@ -10,4 +10,4 @@ resource "harbor_tasks" "main" {
 ## Argument Reference
 The following arguments are supported:
 
-* **vulnerability_scan_policy** - (Optional) The frequency of the vulnerbility scanning is done. Can be to **"hourly"**, **"daily"** or **"weekly"**
+* **vulnerability_scan_policy** - (Optional) The frequency of the vulnerability scanning is done. Can be to **"hourly"**, **"daily"** or **"weekly"**

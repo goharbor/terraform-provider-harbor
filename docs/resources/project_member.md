@@ -26,6 +26,6 @@ The following arguments are supported:
 
 * **role** - (Required) The premissions that the entity will be granted.
 
-* **type** - (Requried) The group type.  Can be set to **"ldap"**, **"internal"** or **"oidc"** 
+* **type** - (Required) The group type.  Can be set to **"ldap"**, **"internal"** or **"oidc"** 
 
 `NOTE: oidc group type can only be used with harbor version v1.10.1 and above`

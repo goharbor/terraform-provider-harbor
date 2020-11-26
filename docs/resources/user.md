@@ -16,7 +16,7 @@ The following arguments are supported:
 
 * **username** - (Required) The username of the internal user.
 
-* **password** - (Required) The password for the interal user.
+* **password** - (Required) The password for the internal user.
 
 * **full_name** - (Required) The Full Name of the internal user.
 
