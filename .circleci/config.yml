@@ -61,6 +61,19 @@ jobs:
             source /tmp/secrets.env
             TF_ACC=1 go test -v ./provider/ -count=1 -tags=external_auth
 
+  spellchecker:
+    docker:
+      - image:  circleci/python:latest
+    steps:
+      - checkout
+      - run:
+          name: Install code spell
+          command: |
+            pip install codespell
+      - run:
+          name: Checking for spelling missing in documentation
+          command: |
+            codespell ./docs   
 
 tag_filter: &tag_filter /v[0-9]+.[0-9]+.[0-9]+/
 my_context: &my_context es02-prod
@@ -86,6 +99,10 @@ release_filter: &release_filter
 
 workflows:
   version: 2
+  spellchecker:
+    jobs:
+      - spellchecker:
+          <<: *test_filter
   acceptance_test:
     jobs:
       - secret-injector/dump-secrets:
