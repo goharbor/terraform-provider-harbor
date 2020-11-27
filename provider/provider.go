@@ -4,12 +4,11 @@ import (
 	"strings"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // Provider returns a terraform.ResourceProvider.
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"url": {
@@ -45,7 +44,6 @@ func Provider() terraform.ResourceProvider {
 			"harbor_config_email":           resourceConfigEmail(),
 			"harbor_config_system":          resourceConfigSystem(),
 			"harbor_project":                resourceProject(),
-			"harbor_project_member":         resourceMembers(),
 			"harbor_project_member_group":   resourceMembersGroup(),
 			"harbor_project_member_user":    resourceMembersUser(),
 			"harbor_tasks":                  resourceTasks(),

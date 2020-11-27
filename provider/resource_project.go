@@ -7,7 +7,7 @@ import (
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceProject() *schema.Resource {
@@ -28,7 +28,7 @@ func resourceProject() *schema.Resource {
 				Default:  "false",
 			},
 			"vulnerability_scanning": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
 			},
@@ -88,7 +88,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("name", jsonData.Name)
-	d.Set("project_id", strconv.Itoa(jsonData.ProjectID))
+	d.Set("project_id", jsonData.ProjectID)
 	d.Set("public", jsonData.Metadata.Public)
 	d.Set("vulnerability_scanning", vuln)
 

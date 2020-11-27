@@ -23,8 +23,6 @@ The following arguments are supported:
 
 * **project_id** - (Required) The project id of the project that the robot account will be associated with.
 
-* **action** - **Deprecated** The action that the robot account will be able to perform on the project. Can be **"pull"** or **"push"**.
-
 * **actions** - (Optional) A list of actions that the robot account will be able to perform on the project. 
     You to have set `["pull"]` as minimal requirement, if `["push"]` is set you don't need to set pull. Other combinations can be `["push","create","read"]` or `["push","read"]` or `["pull","read"]`
     ```

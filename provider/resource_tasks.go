@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var pathVuln = "/system/scanAll/schedule"
@@ -69,10 +69,10 @@ func resourceTasksCreate(d *schema.ResourceData, m interface{}) error {
 	time := jsonData.Schedule.Type
 	requestType := "POST"
 	if time != "" {
-		log.Printf("Shedule found performing PUT request")
+		log.Printf("Schedule found performing PUT request")
 		requestType = "PUT"
 	} else {
-		log.Printf("No shedule found performing POST request")
+		log.Printf("No schedule found performing POST request")
 	}
 	_, _, err = apiClient.SendRequest(requestType, pathVuln, body, 0)
 	if err != nil {

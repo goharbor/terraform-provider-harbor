@@ -5,13 +5,17 @@ The Harbor provider is used to configure an instance of Harbor. The provider nee
 * [Resource: harbor_configuration](resources/configuration.md)
 * [Resource: harbor_config_system](resources/config_system.md)
 * [Resource: harbor_config_email](resources/config_email.md)
+* [Resource: harbor_garbage_collection](resources/garbage_collection.md)
 * [Resource: harbor_interrogation_services](resources/interrogation_services.md)
+* [Resource: harbor_label](resources/label.md)
 * [Resource: harbor_project_member_group](resources/project_member_group.md)
 * [Resource: harbor_project_member_user](resources/project_member_user.md)
 * [Resource: harbor_project](resources/project.md)
 * [Resource: harbor_registry](resources/registry.md)
 * [Resource: harbor_replication](resources/replication.md)
+* [Resource: harbor_retention_policy](resources/retention.md)
 * [Resource: harbor_robot_account](resources/robot_account.md)
+* [Resource: harbor_tasks](resources/tasks.md)
 * [Resource: harbor_user](resources/user.md)
 
 ## Authentication

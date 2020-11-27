@@ -2,7 +2,7 @@ package client
 
 import (
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // UserBody return a json body
