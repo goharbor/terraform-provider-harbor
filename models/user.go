@@ -4,7 +4,7 @@ var PathUsers = "/users"
 
 //
 type UserBody struct {
-	Location      string `json:"location,omitempty"`
+	Location        string `json:"location,omitempty"`
 	Username        string `json:"username,omitempty"`
 	Comment         string `json:"comment,omitempty"`
 	UpdateTime      string `json:"update_time,omitempty"`
