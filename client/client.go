@@ -87,7 +87,7 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 	return strbody, string(headers), nil
 }
 
-// GetID gets the resource id from locaation response header
+// GetID gets the resource id from location response header
 func GetID(body string) (id string, err error) {
 	var jsonData models.ResponseHeaders
 	err = json.Unmarshal([]byte(body), &jsonData)
