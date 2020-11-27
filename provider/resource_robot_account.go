@@ -31,14 +31,6 @@ func resourceRobotAccount() *schema.Resource {
 				Optional: true,
 				Default:  nil,
 			},
-			"action": {
-				Type:     schema.TypeString,
-				Optional: true,
-				// Default:       "pull",
-				ForceNew:      true,
-				Deprecated:    "Use actions attribute instead. action Will be removed in the next Major version",
-				ConflictsWith: []string{"actions"},
-			},
 			"actions": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
@@ -46,8 +38,7 @@ func resourceRobotAccount() *schema.Resource {
 				},
 				Optional: true,
 				// Default:  ["pull"],
-				ForceNew:      true,
-				ConflictsWith: []string{"action"},
+				ForceNew: true,
 			},
 			"token": {
 				Type:      schema.TypeString,
