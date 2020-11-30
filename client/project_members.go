@@ -11,6 +11,7 @@ func ProjectMembersGroupBody(d *schema.ResourceData) models.ProjectMembersBody {
 		GroupMember: models.ProjectMembersBodyGroup{
 			GroupType: GroupType(d.Get("type").(string)),
 			GroupName: d.Get("group_name").(string),
+			GroupID:   d.Get("group_id").(int),
 		},
 	}
 }
