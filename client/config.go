@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -95,4 +96,43 @@ func getLdapScope(scopeName string) (scopeInt int) {
 		scope = 2
 	}
 	return scope
+}
+
+// SetAuthValues the values for Auth when performing a read on resource
+func SetAuthValues(d *schema.ResourceData, resp string) error {
+	var jsonData models.ConfigBodyResponse
+	err := json.Unmarshal([]byte(resp), &jsonData)
+	if err != nil {
+		return err
+	}
+
+	auth := jsonData.AuthMode.Value
+	d.Set("auth_mode", auth)
+
+	switch auth {
+	case "oidc_auth", "oidc":
+		d.Set("oidc_name", jsonData.OidcName.Value)
+		d.Set("oidc_endpoint", jsonData.OidcEndpoint.Value)
+		d.Set("oidc_client_id", jsonData.OidcClientID.Value)
+		d.Set("oidc_groups_claim", jsonData.OidcGroupsClaim.Value)
+		d.Set("oidc_scope", jsonData.OidcScope.Value)
+		d.Set("oidc_verify_cert", jsonData.OidcVerifyCert)
+		d.Set("oidc_auto_onboard", jsonData.OidcAutoOnboard)
+		d.Set("oidc_user_claim", jsonData.OidcUserClaim)
+	case "ldap_auth", "ldap":
+		d.Set("ldap_url", jsonData.LdapURL.Value)
+		d.Set("ldap_base_dn", jsonData.LdapBaseDn.Value)
+		d.Set("ldap_uid", jsonData.LdapUID.Value)
+		d.Set("ldap_verify_cert", jsonData.VerifyRemoteCert.Value)
+		d.Set("ldap_search_dn", jsonData.LdapSearchDn.Value)
+		d.Set("ldap_scope", jsonData.LdapScope.Value)
+		d.Set("ldap_group_base_dn", jsonData.LdapGroupBaseDn.Value)
+		d.Set("ldap_group_filter", jsonData.LdapGroupSearchFilter)
+		d.Set("ldap_group_gid", jsonData.LdapGroupAttributeName.Value)
+		d.Set("ldap_group_admin_dn", jsonData.LdapGroupAdminDn)
+		d.Set("ldap_group_membership", jsonData.LdapGroupMembershipAttribute)
+		d.Set("ldap_group_scope", jsonData.LdapGroupSearchScope)
+	}
+
+	return nil
 }
