@@ -63,9 +63,12 @@ func expandRententionRules(d *schema.ResourceData) []models.Rules {
 		} else if i["n_days_since_last_push"].(int) > 0 {
 			rule.Params.NDaysSinceLastPush = i["n_days_since_last_push"].(int)
 			rule.Template = "nDaysSinceLastPush"
+		} else if i["most_recently_pulled"].(int) > 0 {
+			rule.Params.LatestPulledN = i["most_recently_pulled"].(int)
+			rule.Template = "latestPulledN"
 		} else if i["most_recently_pushed"].(int) > 0 {
-			rule.Params.LatestPushedK = i["most_recently_pulled"].(int)
-			rule.Template = "LatestPushedK"
+			rule.Params.LatestPushedK = i["most_recently_pushed"].(int)
+			rule.Template = "latestPushedK"
 		} else if i["always_retain"] == true {
 			rule.Template = "always"
 		}
