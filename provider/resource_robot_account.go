@@ -112,6 +112,7 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
+	d.Set("project_id", "/projects/"+strconv.Itoa(jsonData.ProjectID))
 	d.Set("robot_id", strconv.Itoa(jsonData.ID))
 	d.Set("name", strings.Replace(jsonData.Name, "robot$", "", -1))
 	d.Set("description", jsonData.Description)

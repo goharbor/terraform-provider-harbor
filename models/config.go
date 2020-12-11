@@ -47,6 +47,9 @@ type ConfigBodyPost struct {
 	EmailHost                  string `json:"email_host,omitempty"`
 	EmailFrom                  string `json:"email_from,omitempty"`
 	RobotTokenDuration         int    `json:"robot_token_duration,omitempty"`
+	LdapVerifyCert             bool   `json:"ldap_verify_cert,omitempty"`
+
+	LdapGroupGID string `json:"ldap_group_id,omitempty"`
 }
 
 type ConfigBodyResponse struct {
@@ -62,6 +65,10 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"oidc_user_claim,omitempty"`
+	OidcGroupsClaim struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"oidc_groups_claim,omitempty"`
 	EmailIdentity struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
@@ -156,6 +163,10 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"ldap_group_admin_dn,omitempty"`
+	LdapGroupMembershipAttribute struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"ldap_group_membership_attribute,omitempty"`
 	EmailUsername struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
