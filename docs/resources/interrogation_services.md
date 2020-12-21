@@ -10,6 +10,6 @@ resource "harbor_interrogation_services" "main" {
 
 ## Argument Reference
 The following arguments are supported:
-* **default_scanner** - (Optional) Sets the default interrogation service **Clair**
+* `default_scanner` - (Optional) Sets the default interrogation service **Clair**
 
-* **vulnerability_scan_policy** - (Optional) The frequency of the vulnerability scanning is done. Can be to **"hourly"**, **"daily"** or **"weekly"**
+* `vulnerability_scan_policy` - (Optional) The frequency of the vulnerability scanning is done. This can be `daily`, `weekly`, `monthly` or can be a custom cron string.
