@@ -8,7 +8,7 @@ import (
 )
 
 func GetRegistryBody(d *schema.ResourceData) models.RegistryBody {
-	regType, _ := getReigstryType(d.Get("provider_name").(string))
+	regType, _ := GetReigstryType(d.Get("provider_name").(string))
 
 	body := models.RegistryBody{
 		Description: d.Get("description").(string),
@@ -25,7 +25,7 @@ func GetRegistryBody(d *schema.ResourceData) models.RegistryBody {
 	return body
 }
 
-func getReigstryType(regType string) (regName string, err error) {
+func GetReigstryType(regType string) (regName string, err error) {
 	switch regType {
 	case "alibaba":
 		return "ali-acr", nil
@@ -52,30 +52,15 @@ func getReigstryType(regType string) (regName string, err error) {
 	case "quay":
 		return "quay-io", nil
 
-	default:
-		return "", fmt.Errorf("Unable to find type for %s", regType)
-	}
-
-}
-
-func GetReverseReigstryType(regType string) (regName string, err error) {
-	switch regType {
+	// for reverse lookup
 	case "ali-acr":
 		return "alibaba", nil
 	case "aws-ecr":
 		return "aws", nil
 	case "azure-acr":
 		return "azure", nil
-	case "docker-hub":
-		return "docker-hub", nil
-	case "docker-registry":
-		return "docker-registry", nil
-	case "gitlab":
-		return "gitlab", nil
 	case "google-gcr":
 		return "google", nil
-	case "harbor":
-		return "harbor", nil
 	case "helm-hub":
 		return "helm", nil
 	case "huawei-SWR":
