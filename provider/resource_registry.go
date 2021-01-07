@@ -92,7 +92,7 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
-	registryName, _ := client.GetReigstryType(jsonData.Type)
+	registryName, _ := client.GetRegistryType(jsonData.Type)
 
 	d.Set("name", jsonData.Name)
 	d.Set("description", jsonData.Description)
