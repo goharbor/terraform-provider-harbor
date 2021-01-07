@@ -56,6 +56,9 @@ func resourceRegistry() *schema.Resource {
 		Read:   resourceRegistryRead,
 		Update: resourceRegistryUpdate,
 		Delete: resourceRegistryDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 	}
 }
 
@@ -89,6 +92,8 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
+	registryName, _ := client.GetReverseReigstryType(jsonData.Type)
+
 	d.Set("name", jsonData.Name)
 	d.Set("description", jsonData.Description)
 	d.Set("endpoint_url", jsonData.URL)
@@ -96,6 +101,7 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("insecure", jsonData.Insecure)
 	d.Set("status", jsonData.Status)
 	d.Set("registry_id", jsonData.ID)
+	d.Set("provider_name", registryName)
 
 	return nil
 }

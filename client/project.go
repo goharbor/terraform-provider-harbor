@@ -12,6 +12,7 @@ import (
 func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	body := models.ProjectsBodyPost{
 		ProjectName: d.Get("name").(string),
+		RegistryID:  d.Get("registry_id").(int),
 	}
 	body.Metadata.AutoScan = strconv.FormatBool(d.Get("vulnerability_scanning").(bool))
 	body.Metadata.Public = d.Get("public").(string)
@@ -34,6 +35,7 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	} else {
 		body.Metadata.ReuseSysCveWhitelist = "true"
 	}
+
 	return body
 }
 

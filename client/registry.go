@@ -26,7 +26,6 @@ func GetRegistryBody(d *schema.ResourceData) models.RegistryBody {
 }
 
 func getReigstryType(regType string) (regName string, err error) {
-
 	switch regType {
 	case "alibaba":
 		return "ali-acr", nil
@@ -52,6 +51,39 @@ func getReigstryType(regType string) (regName string, err error) {
 		return "jfrog-artifactory", nil
 	case "quay":
 		return "quay-io", nil
+
+	default:
+		return "", fmt.Errorf("Unable to find type for %s", regType)
+	}
+
+}
+
+func GetReverseReigstryType(regType string) (regName string, err error) {
+	switch regType {
+	case "ali-acr":
+		return "alibaba", nil
+	case "aws-ecr":
+		return "aws", nil
+	case "azure-acr":
+		return "azure", nil
+	case "docker-hub":
+		return "docker-hub", nil
+	case "docker-registry":
+		return "docker-registry", nil
+	case "gitlab":
+		return "gitlab", nil
+	case "google-gcr":
+		return "google", nil
+	case "harbor":
+		return "harbor", nil
+	case "helm-hub":
+		return "helm", nil
+	case "huawei-SWR":
+		return "huawei", nil
+	case "jfrog-artifactory":
+		return "jfrog", nil
+	case "quay-io":
+		return "quay", nil
 
 	default:
 		return "", fmt.Errorf("Unable to find type for %s", regType)

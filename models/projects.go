@@ -5,6 +5,7 @@ var PathProjects = "/projects"
 type ProjectsBodyPost struct {
 	CountLimit   int    `json:"count_limit,omitempty"`
 	ProjectName  string `json:"project_name,omitempty"`
+	RegistryID   int    `json:"registry_id,omitempty"`
 	CveWhitelist struct {
 		Items CveWhitelistItems `json:"items,omitempty"`
 		// Items []struct {
