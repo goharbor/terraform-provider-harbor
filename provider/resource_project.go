@@ -22,6 +22,11 @@ func resourceProject() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
+			"registry_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				ForceNew: true,
+			},
 			"public": {
 				Type:     schema.TypeString,
 				Optional: true,
