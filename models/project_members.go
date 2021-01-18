@@ -8,9 +8,10 @@ type ProjectMembersBody struct {
 }
 
 type ProjectMembersBodyGroup struct {
-	GroupType int    `json:"group_type,omitempty"`
-	GroupName string `json:"group_name,omitempty"`
-	GroupID   int    `json:"id,omitempty"`
+	GroupType   int    `json:"group_type,omitempty"`
+	GroupName   string `json:"group_name,omitempty"`
+	GroupID     int    `json:"id,omitempty"`
+	LdapGroupDN string `json:"ldap_group_dn,omitempty"`
 }
 
 type ProjectMemberUsersGroup struct {

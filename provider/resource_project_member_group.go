@@ -28,6 +28,10 @@ func resourceMembersGroup() *schema.Resource {
 				ForceNew:     true,
 				AtLeastOneOf: []string{"group_id", "group_name"},
 			},
+			"ldap_group_dn": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"member_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
