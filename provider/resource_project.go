@@ -37,6 +37,11 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"storage_quota": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  -1,
+			},
 			"deployment_security": {
 				Type:     schema.TypeString,
 				Optional: true,
