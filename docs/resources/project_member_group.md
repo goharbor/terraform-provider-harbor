@@ -26,4 +26,6 @@ The following arguments are supported:
 
 * **type** - (Required) The group type.  Can be set to **"ldap"**, **"internal"** or **"oidc"** 
 
+* **ldap_group_dn** - (Optional) The distinguished name of the group within AD/LDAP 
+
 `NOTE: oidc group type can only be used with harbor version v1.10.1 and above`

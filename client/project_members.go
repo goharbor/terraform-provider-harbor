@@ -6,7 +6,7 @@ import (
 )
 
 func ProjectMembersGroupBody(d *schema.ResourceData) models.ProjectMembersBody {
-	return models.ProjectMembersBody{
+	body := models.ProjectMembersBody{
 		RoleID: RoleType(d.Get("role").(string)),
 		GroupMember: models.ProjectMembersBodyGroup{
 			GroupType: GroupType(d.Get("type").(string)),
@@ -14,6 +14,11 @@ func ProjectMembersGroupBody(d *schema.ResourceData) models.ProjectMembersBody {
 			GroupID:   d.Get("group_id").(int),
 		},
 	}
+
+	if v, ok := d.GetOk("ldap_group_dn"); ok {
+		body.GroupMember.LdapGroupDN = v.(string)
+	}
+	return body
 }
 
 func ProjectMembersUserBody(d *schema.ResourceData) models.ProjectMembersBody {
@@ -61,7 +66,7 @@ func RoleType(role string) (x int) {
 		x = 2
 	case "guest":
 		x = 3
-	case "master":
+	case "master", "maintainer":
 		x = 4
 	case "limitedguest":
 		x = 5
