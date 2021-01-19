@@ -39,6 +39,11 @@ func resourceUser() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"cli_secret": {
+				Type:      schema.TypeString,
+				Optional:  true,
+				Sensitive: true,
+			},
 		},
 		Create: resourceUserCreate,
 		Read:   resourceUserRead,
@@ -86,6 +91,7 @@ func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("email", jsonData.Email)
 	d.Set("admin", jsonData.SysadminFlag)
 	d.Set("comment", jsonData.Comment)
+	d.Set("cli_secret", jsonData.CLISecret)
 
 	return nil
 }
@@ -100,6 +106,11 @@ func resourceUserUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	_, _, err = apiClient.SendRequest("PUT", d.Id()+"/sysadmin", body, 200)
+	if err != nil {
+		return err
+	}
+
+	_, _, err = apiClient.SendRequest("PUT", d.Id()+"/cli_secret", body, 200)
 	if err != nil {
 		return err
 	}

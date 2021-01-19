@@ -21,4 +21,5 @@ type UserBody struct {
 	Salt            string `json:"Salt,omitempty"`
 	Email           string `json:"email,omitempty"`
 	Newpassword     string `json:"new_password,omitempty"`
+	CLISecret       string `json:"secret,omitempty"` // only works when auth mode is set to 'OIDC'
 }

@@ -47,6 +47,8 @@ func TestAccUserBasic(t *testing.T) {
 						resourceHarborUserMain, "full_name", "John Smith"),
 					resource.TestCheckResourceAttr(
 						resourceHarborUserMain, "email", "john.smith@contoso.com"),
+					resource.TestCheckResourceAttr(
+						resourceHarborUserMain, "cli_secret", "my_cli_secret"),
 				),
 			},
 		},
@@ -69,6 +71,8 @@ func TestAccUserUpdate(t *testing.T) {
 						resourceHarborUserMain, "full_name", "John Smith"),
 					resource.TestCheckResourceAttr(
 						resourceHarborUserMain, "email", "john.smith@contoso.com"),
+					resource.TestCheckResourceAttr(
+						resourceHarborUserMain, "cli_secret", "my_cli_secret"),
 				),
 			},
 			{
@@ -81,6 +85,8 @@ func TestAccUserUpdate(t *testing.T) {
 						resourceHarborUserMain, "full_name", "John"),
 					resource.TestCheckResourceAttr(
 						resourceHarborUserMain, "email", "john@contoso.com"),
+					resource.TestCheckResourceAttr(
+						resourceHarborUserMain, "cli_secret", "my_updated_cli_secret"),
 				),
 			},
 		},
@@ -90,10 +96,11 @@ func TestAccUserUpdate(t *testing.T) {
 func testAccCheckUserBasic() string {
 	return fmt.Sprintf(`
 	resource "harbor_user" "main" {
-		username  = "john"
-		password  = "Password12345"
-		full_name = "John Smith"
-		email     = "john.smith@contoso.com"
+		username   = "john"
+		password   = "Password12345"
+		full_name  = "John Smith"
+		email      = "john.smith@contoso.com"
+		cli_secret = "my_cli_secret"
 	  }
 	`)
 }
@@ -105,6 +112,7 @@ func testAccCheckUserUpdate() string {
 		password  = "Password12345!"
 		full_name = "John"
 		email     = "john@contoso.com"
+		cli_secret = "my_updated_cli_secret"
 	  }
 	`)
 }

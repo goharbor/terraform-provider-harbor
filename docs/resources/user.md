@@ -26,6 +26,8 @@ The following arguments are supported:
 
 * **admin** - (Optional) If the user will have admin rights within Harbor (Default: **false**)
 
+* **cli_secret** - (Optional) Set the CLI (only works when auth mode is set to 'OIDC')
+
 ## Import
 An internal user harbor user can be imported using the `user id` eg,
 

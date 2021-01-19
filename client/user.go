@@ -14,5 +14,6 @@ func UserBody(d *schema.ResourceData) models.UserBody {
 		Email:        d.Get("email").(string),
 		Realname:     d.Get("full_name").(string),
 		Newpassword:  d.Get("password").(string),
+		CLISecret:    d.Get("cli_secret").(string),
 	}
 }
