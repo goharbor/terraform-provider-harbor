@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: terraform-provider-harbor
+  description: Terraform provider for harbor
+  tags:
+    - terraform
+    - harbor
+    - golang:1.15
+  annotations:
+    # This also supports bitbucket/xxx/yyy
+    github.com/project-slug:  BESTSELLER/terraform-provider-harbor
+    circleci.com/project-slug: github/BESTSELLER/terraform-provider-harbor
+    sonarqube.org/project-key: BESTSELLER_terraform-provider-harbor
+    backstage.io/techdocs-ref: dir:./
+spec:
+  type: library
+  lifecycle: experimental
+  owner: engineering-services
+---
+
