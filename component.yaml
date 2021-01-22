@@ -6,7 +6,7 @@ metadata:
   tags:
     - terraform
     - harbor
-    - golang:1.15
+    - golang
   annotations:
     # This also supports bitbucket/xxx/yyy
     github.com/project-slug:  BESTSELLER/terraform-provider-harbor
