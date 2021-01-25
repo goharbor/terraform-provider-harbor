@@ -16,6 +16,7 @@ metadata:
 spec:
   type: library
   lifecycle: experimental
+  system: harbor
   owner: engineering-services
 ---
 
