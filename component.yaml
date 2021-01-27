@@ -12,7 +12,6 @@ metadata:
     github.com/project-slug:  BESTSELLER/terraform-provider-harbor
     circleci.com/project-slug: github/BESTSELLER/terraform-provider-harbor
     sonarqube.org/project-key: BESTSELLER_terraform-provider-harbor
-    backstage.io/techdocs-ref: dir:./
 spec:
   type: library
   lifecycle: experimental
