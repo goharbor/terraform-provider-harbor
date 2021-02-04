@@ -34,7 +34,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		body.Trigger.Type = schedule
 		break
 	default:
-		body.Trigger.Type = "schedule"
+		body.Trigger.Type = "scheduled"
 		body.Trigger.TriggerSettings.Cron = schedule
 	}
 
