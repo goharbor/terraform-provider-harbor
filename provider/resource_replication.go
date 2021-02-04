@@ -43,6 +43,10 @@ func resourceReplication() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"dest_namespace": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"override": {
 				Type:     schema.TypeBool,
 				Optional: true,
