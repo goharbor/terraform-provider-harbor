@@ -66,6 +66,27 @@ func TestAccRetentionUpdate(t *testing.T) {
 	})
 }
 
+func TestDestinationNamespace(t *testing.T) {
+	var scheduleType = "event_based"
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		// CheckDestroy: testAccCheckLabelDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testReplicationPolicyDestinationNamespace(scheduleType),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceHarborRetentionMain),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "schedule", scheduleType),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "dest_namespace", scheduleType),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckRetentionBasic() string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
@@ -88,4 +109,29 @@ func testAccCheckRetentionBasic() string {
 	  
 	  }
 	`)
+}
+
+func testReplicationPolicyDestinationNamespace(scheduleType string) string {
+	return fmt.Sprintf(`
+	resource "harbor_project" "main" {
+		name                = "acctest_retention_pol"
+	  }
+	  
+	  resource "harbor_retention_policy" "main" {
+		  scope = harbor_project.main.id
+		  schedule = "event_base"
+		  dest_namespace = "%s"
+		  rule {
+			  n_days_since_last_pull = 5
+			  repo_matching = "**"
+			  tag_matching = "latest"
+		  }
+		  rule {
+			  n_days_since_last_push = 10
+			  repo_matching = "**"
+			  tag_matching = "latest"
+		  }
+	  
+	  }
+	`, scheduleType)
 }
