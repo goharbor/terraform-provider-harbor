@@ -130,7 +130,7 @@ func testReplicationPolicyDestinationNamespace(scheduleType, destNamepace string
 		name                = "acctest_retention_pol"
 	  }
 	  
-	  resource "harbor_replication_policy" "main" {
+	  resource "harbor_replication" "main" {
 		  scope = harbor_project.main.id
 		  schedule = "%s"
 		  dest_namespace = "%s"
