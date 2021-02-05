@@ -103,6 +103,7 @@ func testAccCheckReplicationUpdate() string {
 	return config
 }
 
+
 func TestDestinationNamespace(t *testing.T) {
 	var scheduleType = "event_based"
 	var destNamepace = "gcp-project"
@@ -114,7 +115,7 @@ func TestDestinationNamespace(t *testing.T) {
 			{
 				Config: testReplicationPolicyDestinationNamespace(scheduleType, destNamepace),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckResourceExists(resourceHarborRetentionMain),
+					testAccCheckResourceExists(harborReplicationPull),
 					resource.TestCheckResourceAttr(
 						resourceHarborRetentionMain, "schedule", scheduleType),
 					resource.TestCheckResourceAttr(
@@ -143,3 +144,4 @@ func testReplicationPolicyDestinationNamespace(scheduleType, destNamepace string
 	  }
 	`, endpoint, scheduleType, destNamepace)
 }
+
