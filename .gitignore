@@ -2,4 +2,3 @@ terraform*
 .terraform
 example
 *.log
-dist/*

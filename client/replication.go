@@ -13,10 +13,9 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 	schedule := d.Get("schedule").(string)
 
 	body := models.ReplicationBody{
-		Name:          d.Get("name").(string),
-		Override:      d.Get("override").(bool),
-		Enabled:       d.Get("enabled").(bool),
-		DestNamespace: d.Get("dest_namespace").(string),
+		Name:     d.Get("name").(string),
+		Override: d.Get("override").(bool),
+		Enabled:  d.Get("enabled").(bool),
 	}
 
 	if action == "push" {
@@ -25,17 +24,11 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		body.SrcRegistry.ID = d.Get("registry_id").(int)
 	}
 
-	switch schedule {
-	case "manual":
-		body.Trigger.Type = schedule
-
-		break
-	case "event_based":
-		body.Trigger.Type = schedule
-		break
-	default:
+	if schedule != "manual" {
 		body.Trigger.Type = "scheduled"
 		body.Trigger.TriggerSettings.Cron = schedule
+	} else {
+		body.Trigger.Type = "manual"
 	}
 
 	filters := d.Get("filters").(*schema.Set).List()
