@@ -102,3 +102,46 @@ func testAccCheckReplicationUpdate() string {
 	`, endpoint)
 	return config
 }
+
+
+func TestDestinationNamespace(t *testing.T) {
+	var scheduleType = "event_based"
+	var destNamepace = "gcp-project"
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		// CheckDestroy: testAccCheckLabelDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testReplicationPolicyDestinationNamespace(scheduleType, destNamepace),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(harborReplicationPull),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "schedule", scheduleType),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "dest_namespace", scheduleType),
+				),
+			},
+		},
+	})
+}
+
+func testReplicationPolicyDestinationNamespace(scheduleType, destNamepace string) string {
+	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	return fmt.Sprintf(`
+	resource "harbor_registry" "main" {
+		provider_name = "harbor"
+		name = "harbor-test"
+		endpoint_url = "%s"
+	  }
+	  
+	  resource "harbor_replication" "pull" {
+		name  = "test_pull"
+		action = "pull"
+		registry_id = harbor_registry.main.registry_id
+		schedule = "%s"
+		dest_namespace = "%s"
+	  }
+	`, endpoint, scheduleType, destNamepace)
+}
+
