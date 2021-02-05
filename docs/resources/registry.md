@@ -25,7 +25,7 @@ The following arguments are supported:
 
 * **access_id** - (Optional) The username / access id for the external container register 
 
-* **access_key** - (Optional) The password / access keys / token for the external container register
+* **access_secret** - (Optional) The password / access keys / token for the external container register
 
 * **insecure** - (Optional) Verifies the certificate of the external container register. Can be set to **"true"** or **"false"** (Default: true)
 
