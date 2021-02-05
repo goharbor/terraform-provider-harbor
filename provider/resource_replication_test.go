@@ -135,10 +135,11 @@ func testReplicationPolicyDestinationNamespace(scheduleType, destNamepace string
 	  }
 	  
 	  resource "harbor_replication" "pull" {
-		  scope = harbor_project.main.id
-		  schedule = "%s"
-		  dest_namespace = "%s"
-		  registry_id = harbor_registry.main.registry_id	  
+		name  = "test_pull"
+		action = "pull"
+		registry_id = harbor_registry.main.registry_id
+		schedule = "%s"
+		dest_namespace = "%s"
 	  }
 	`, endpoint, scheduleType, destNamepace)
 }
