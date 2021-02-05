@@ -32,7 +32,7 @@ The following arguments are supported:
 * **override** - (Optional) Specify whether to override the resources at the destination if a resources with the same name exist. Can be set to `true` or `false` (Default: `true`)
 * **enabled** - (Optional) Specify whether the replication is enabled. Can be set to `true` or `false` (Default: `true`)
 * **description** (Optional) Write about description of the replication policy.
-* **dest_namespace** (Optional) destination namespace for replication policy.
+
 * **filters** - (Optional) A collection of `filters` block as documented below.
 
 ---
