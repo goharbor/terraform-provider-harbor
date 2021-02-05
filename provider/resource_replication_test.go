@@ -124,27 +124,21 @@ func TestDestinationNamespace(t *testing.T) {
 		},
 	})
 }
+
 func testReplicationPolicyDestinationNamespace(scheduleType, destNamepace string) string {
+	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
 	return fmt.Sprintf(`
-	resource "harbor_project" "main" {
-		name                = "acctest_retention_pol"
+	resource "harbor_registry" "main" {
+		provider_name = "harbor"
+		name = "harbor-test"
+		endpoint_url = "%s"
 	  }
 	  
-	  resource "harbor_retention_policy" "main" {
+	  resource "harbor_replication" "pull" {
 		  scope = harbor_project.main.id
 		  schedule = "%s"
 		  dest_namespace = "%s"
-		  rule {
-			  n_days_since_last_pull = 5
-			  repo_matching = "**"
-			  tag_matching = "latest"
-		  }
-		  rule {
-			  n_days_since_last_push = 10
-			  repo_matching = "**"
-			  tag_matching = "latest"
-		  }
-	  
+		  registry_id = harbor_registry.main.registry_id	  
 	  }
-	`, scheduleType, destNamepace)
+	`, endpoint, scheduleType, destNamepace)
 }
