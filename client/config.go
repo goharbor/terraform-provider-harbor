@@ -13,6 +13,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodyPost {
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(bool),
 		RobotTokenDuration:         days2mins(d.Get("robot_token_expiration").(int)),
+		QuotaPerProjectEnable:			true,
 	}
 }
 
