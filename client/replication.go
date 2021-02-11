@@ -27,11 +27,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 	}
 
 	switch schedule {
-	case "manual":
-		body.Trigger.Type = schedule
-
-		break
-	case "event_based":
+	case "manual", "event_based":
 		body.Trigger.Type = schedule
 		break
 	default:
