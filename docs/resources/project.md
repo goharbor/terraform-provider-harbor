@@ -35,7 +35,7 @@ The following arguments are supported:
 
 * `registry_id` - (Optional) To enabled project as Proxy Cache
 
-* `storage_quote` - (Optional) The storage quota of the project in GB's
+* `storage_quota` - (Optional) The storage quota of the project in GB's
   
 ## Attributes Reference
 In addition to all argument, the following attributes are exported:
