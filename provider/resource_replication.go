@@ -21,6 +21,11 @@ func resourceReplication() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"deletion": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -42,6 +47,10 @@ func resourceReplication() *schema.Resource {
 			"replication_policy_id": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"dest_namespace": {
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"override": {
 				Type:     schema.TypeBool,
