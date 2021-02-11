@@ -21,6 +21,11 @@ func resourceReplication() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"deletion": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
