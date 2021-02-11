@@ -16,6 +16,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		Name:          d.Get("name").(string),
 		Override:      d.Get("override").(bool),
 		Enabled:       d.Get("enabled").(bool),
+		Deletion:       d.Get("deletion").(bool),
 		DestNamespace: d.Get("dest_namespace").(string),
 	}
 
