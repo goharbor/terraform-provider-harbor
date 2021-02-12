@@ -47,7 +47,7 @@ func resourceProject() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"cve_whitelist": {
+			"cve_allowlist": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,

@@ -27,28 +27,28 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 		body.Metadata.PreventVul = "false"
 	}
 
-	cveWhiteList := d.Get("cve_whitelist").([]interface{})
-	log.Printf("[DEBUG] %v ", cveWhiteList)
-	if len(cveWhiteList) > 0 {
-		log.Printf("[DEBUG] %v ", expandCveWhiteList(cveWhiteList))
-		body.CveWhitelist.Items = expandCveWhiteList(cveWhiteList)
-		body.Metadata.ReuseSysCveWhitelist = "false"
+	cveAllowList := d.Get("cve_allowlist").([]interface{})
+	log.Printf("[DEBUG] %v ", cveAllowList)
+	if len(cveAllowList) > 0 {
+		log.Printf("[DEBUG] %v ", expandCveAllowList(cveAllowList))
+		body.CveAllowlist.Items = expandCveAllowList(cveAllowList)
+		body.Metadata.ReuseSysCveAllowlist = "false"
 	} else {
-		body.Metadata.ReuseSysCveWhitelist = "true"
+		body.Metadata.ReuseSysCveAllowlist = "true"
 	}
 
 	return body
 }
 
-func expandCveWhiteList(cveWhitelist []interface{}) models.CveWhitelistItems {
-	whitelist := models.CveWhitelistItems{}
+func expandCveAllowList(cveAllowlist []interface{}) models.CveAllowlistItems {
+	allowlist := models.CveAllowlistItems{}
 
-	for _, data := range cveWhitelist {
-		item := models.CveWhitelistItem{
+	for _, data := range cveAllowlist {
+		item := models.CveAllowlistItem{
 			CveID: data.(string),
 		}
-		whitelist = append(whitelist, item)
+		allowlist = append(allowlist, item)
 	}
 
-	return whitelist
+	return allowlist
 }
