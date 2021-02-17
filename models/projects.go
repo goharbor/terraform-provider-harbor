@@ -54,6 +54,7 @@ type ProjectsBodyResponses struct {
 		ReuseSysCveAllowlist string `json:"reuse_sys_cve_allowlist"`
 		Public               string `json:"public"`
 		PreventVul           string `json:"prevent_vul"`
+		RetentionId          string `json:"retention_id"`
 	} `json:"metadata"`
 }
 
