@@ -1,6 +1,10 @@
 package provider
 
 import (
+	"encoding/json"
+	"strconv"
+	"strings"
+
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -96,13 +100,28 @@ func resourceRentention() *schema.Resource {
 func resourceRententionCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.GetRententionBody(d)
+	id := ""
 
 	_, headers, err := apiClient.SendRequest("POST", models.PathRetentions, body, 201)
 	if err != nil {
-		return err
+		project_id := strconv.Itoa(body.Scope.Ref)
+		resp, _, err := apiClient.SendRequest("GET", models.PathProjects+"/"+project_id, nil, 200)
+
+		var jsonData models.ProjectsBodyResponses
+		err = json.Unmarshal([]byte(resp), &jsonData)
+
+		if err != nil {
+			return err
+		}
+		_, headers, err = apiClient.SendRequest("PUT", models.PathRetentions+"/"+jsonData.Metadata.RetentionId, body, 200)
+		if err != nil {
+			return err
+		}
+		id = models.PathRetentions + "/" + jsonData.Metadata.RetentionId
+	} else {
+		id, err = client.GetID(headers)
 	}
 
-	id, err := client.GetID(headers)
 	d.SetId(id)
 	return resourceRententionRead(d, m)
 }
@@ -142,11 +161,33 @@ func resourceRententionUpdate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceRententionDelete(d *schema.ResourceData, m interface{}) error {
-	// apiClient := m.(*client.Client)
+	apiClient := m.(*client.Client)
 
-	// _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
-	// if err != nil {
-	// 	return err
-	// }
+	scope := d.Get("scope").(string)
+	project_id, err := strconv.Atoi(strings.ReplaceAll(scope, "/projects/", ""))
+
+	retention := d.Id()
+	retention_id, err := strconv.Atoi(strings.ReplaceAll(retention, "/retentions/", ""))
+
+	body := models.Retention{
+		Algorithm: "or",
+		Scope: models.Scope{
+			Level: "project",
+			Ref:   project_id,
+		},
+		Trigger: models.Trigger{
+			Kind: "Schedule",
+			Settings: models.Settings{
+				Cron: "",
+			},
+		},
+		Rules: []models.Rules{},
+		Id:    retention_id,
+	}
+
+	_, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
+	if err != nil {
+		return err
+	}
 	return nil
 }

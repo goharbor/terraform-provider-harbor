@@ -3,6 +3,7 @@ package models
 var PathRetentions = "/retentions"
 
 type Retention struct {
+	Id        int     `json:"id,omitempty"`
 	Algorithm string  `json:"algorithm"`
 	Rules     []Rules `json:"rules"`
 	Trigger   Trigger `json:"trigger"`
