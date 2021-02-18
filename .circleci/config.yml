@@ -19,7 +19,8 @@ commands:
           name: Import private key
           command: |
             source /tmp/secrets.env
-            echo -e "$GPG_PRIVATE_KEY" | base64 --decode > $HOME/private.key
+            apk add gnupg
+            echo -e "$GPG_PRIVATE_KEY" | base64 -d > $HOME/private.key
             gpg --pinentry-mode loopback --batch --yes --import $HOME/private.key
       - run:
           name: Run GoReleaser
