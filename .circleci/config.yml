@@ -9,17 +9,18 @@ commands:
       release-type:
         type: string
     steps:
-      - run:
-          name: Install GoReleaser
-          command: |
-            curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
-            sudo mv ./bin/goreleaser /usr/bin/goreleaser
-            rm -rf ./bin
+      # - run:
+      #     name: Install GoReleaser
+      #     command: |
+      #       curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+      #       sudo mv ./bin/goreleaser /usr/bin/goreleaser
+      #       rm -rf ./bin
       - run:
           name: Import private key
           command: |
             source /tmp/secrets.env
-            echo -e "$GPG_PRIVATE_KEY" | base64 --decode > $HOME/private.key
+            apk add gnupg
+            echo -e "$GPG_PRIVATE_KEY" | base64 -d > $HOME/private.key
             gpg --pinentry-mode loopback --batch --yes --import $HOME/private.key
       - run:
           name: Run GoReleaser
@@ -40,7 +41,7 @@ jobs:
         enum: ["test", "release"]
         default: "test"
     docker:
-      - image: circleci/golang:1.15
+      - image: goreleaser/goreleaser #circleci/golang:1.15
     steps:
       - checkout
       - attach_workspace:
