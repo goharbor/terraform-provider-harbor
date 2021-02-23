@@ -45,7 +45,7 @@ func resourceReplication() *schema.Resource {
 				Required: true,
 			},
 			"replication_policy_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"dest_namespace": {
@@ -119,6 +119,7 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
+	d.Set("replication_policy_id", jsonData.ID)
 	return nil
 }
 
