@@ -66,19 +66,17 @@ func testAccCheckReplicationDestroy(s *terraform.State) error {
 func testAccCheckReplicationBasic() string {
 	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
 	config := fmt.Sprintf(`
-
-resource "harbor_registry" "main" {
-	provider_name = "harbor"
-	name = "harbor-test-replication"
-	endpoint_url = "%s"
-  }
-
-  resource "harbor_replication" "pull" {
-	name  = "test_pull"
-	action = "pull"
-	registry_id = harbor_registry.main.registry_id
-
-}`, endpoint)
+	resource "harbor_registry" "main" {
+		provider_name = "harbor"
+		name          = "harbor-test-replication"
+		endpoint_url  = "%s"
+	  }
+	  
+	resource "harbor_replication" "pull" {
+		name        = "test_pull"
+		action      = "pull"
+		registry_id = harbor_registry.main.registry_id
+	  }`, endpoint)
 	return config
 }
 
@@ -103,7 +101,6 @@ func testAccCheckReplicationUpdate() string {
 	return config
 }
 
-
 func TestDestinationNamespace(t *testing.T) {
 	var scheduleType = "event_based"
 	var destNamepace = "gcp-project"
@@ -117,16 +114,16 @@ func TestDestinationNamespace(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborReplicationPull),
 					resource.TestCheckResourceAttr(
-						resourceHarborRetentionMain, "schedule", scheduleType),
+						harborReplicationPull, "schedule", scheduleType),
 					resource.TestCheckResourceAttr(
-						resourceHarborRetentionMain, "dest_namespace", scheduleType),
+						harborReplicationPull, "dest_namespace", destNamepace),
 				),
 			},
 		},
 	})
 }
 
-func testReplicationPolicyDestinationNamespace(scheduleType, destNamepace string) string {
+func testReplicationPolicyDestinationNamespace(scheduleType string, destNamepace string) string {
 	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
 	return fmt.Sprintf(`
 	resource "harbor_registry" "main" {
@@ -134,7 +131,7 @@ func testReplicationPolicyDestinationNamespace(scheduleType, destNamepace string
 		name = "harbor-test"
 		endpoint_url = "%s"
 	  }
-	  
+
 	  resource "harbor_replication" "pull" {
 		name  = "test_pull"
 		action = "pull"
@@ -144,4 +141,3 @@ func testReplicationPolicyDestinationNamespace(scheduleType, destNamepace string
 	  }
 	`, endpoint, scheduleType, destNamepace)
 }
-
