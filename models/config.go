@@ -49,7 +49,7 @@ type ConfigBodyPost struct {
 	RobotTokenDuration         int    `json:"robot_token_duration,omitempty"`
 	LdapVerifyCert             bool   `json:"ldap_verify_cert,omitempty"`
 
-	LdapGroupGID string `json:"ldap_group_id,omitempty"`
+	LdapGroupGID string `json:"ldap_group_gid,omitempty"`
 }
 
 type ConfigBodyResponse struct {
