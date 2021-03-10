@@ -49,7 +49,7 @@ type ProjectsBodyResponses struct {
 	} `json:"cve_allowlist"`
 	Metadata struct {
 		EnableContentTrust   string `json:"enable_content_trust"`
-		AutoScan             string `json:"auto_scan"`
+		AutoScan             string `json:"auto_scan,omitempty"`
 		Severity             string `json:"severity"`
 		ReuseSysCveAllowlist string `json:"reuse_sys_cve_allowlist"`
 		Public               string `json:"public"`

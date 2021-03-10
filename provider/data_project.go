@@ -58,9 +58,16 @@ func dataProjectRead(d *schema.ResourceData, m interface{}) error {
 			if err != nil {
 				return err
 			}
-			autoScan, err := strconv.ParseBool(v.Metadata.AutoScan)
-			if err != nil {
-				return err
+
+			var autoScan bool
+			scan := v.Metadata.AutoScan
+			if scan == "" {
+				autoScan = false
+			} else {
+				autoScan, err = strconv.ParseBool(scan)
+				if err != nil {
+					return err
+				}
 			}
 
 			d.SetId(id)
