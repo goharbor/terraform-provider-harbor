@@ -10,11 +10,18 @@ import (
 
 // ProjectBody return a json body
 func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
+	quota := d.Get("storage_quota").(int)
+
 	body := models.ProjectsBodyPost{
 		ProjectName:  d.Get("name").(string),
 		RegistryID:   d.Get("registry_id").(int),
-		StorageLimit: d.Get("storage_quota").(int) * 1073741824,
+		StorageLimit: quota,
 	}
+
+	if quota != -1 {
+		body.StorageLimit = quota * 1073741824
+	}
+
 	body.Metadata.AutoScan = strconv.FormatBool(d.Get("vulnerability_scanning").(bool))
 	body.Metadata.Public = d.Get("public").(string)
 
