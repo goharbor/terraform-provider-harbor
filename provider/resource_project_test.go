@@ -46,6 +46,8 @@ func TestAccProjectBasic(t *testing.T) {
 						resourceHarborProjectMain, "public", "false"),
 					resource.TestCheckResourceAttr(
 						resourceHarborProjectMain, "vulnerability_scanning", "false"),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "enable_content_trust", "true"),
 				),
 			},
 		},
@@ -68,6 +70,8 @@ func TestAccProjectUpdate(t *testing.T) {
 						resourceHarborProjectMain, "public", "false"),
 					resource.TestCheckResourceAttr(
 						resourceHarborProjectMain, "vulnerability_scanning", "false"),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "enable_content_trust", "true"),
 				),
 			},
 			{
@@ -80,6 +84,8 @@ func TestAccProjectUpdate(t *testing.T) {
 						resourceHarborProjectMain, "public", "true"),
 					resource.TestCheckResourceAttr(
 						resourceHarborProjectMain, "vulnerability_scanning", "true"),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "enable_content_trust", "true"),
 				),
 			},
 		},
@@ -92,6 +98,7 @@ func testAccCheckProjectBasic() string {
 		name = "test_basic"
 		public = false
 		vulnerability_scanning = false
+		enable_content_trust = false
 	  }
 	`)
 }
@@ -102,6 +109,7 @@ func testAccCheckItemUpdate() string {
 		name = "test_basic"
 		public = true
 		vulnerability_scanning = true
+		enable_content_trust = true
 	  }
 `)
 }

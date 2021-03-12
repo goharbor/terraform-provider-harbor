@@ -54,6 +54,11 @@ func resourceProject() *schema.Resource {
 				},
 				Optional: true,
 			},
+			"enable_content_trust": {
+				Type: schema.TypeBool,
+				Optional: true,
+				Default: false,
+			},
 		},
 		Create: resourceProjectCreate,
 		Read:   resourceProjectRead,
@@ -98,10 +103,16 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	trust, err := strconv.ParseBool(jsonData.Metadata.EnableContentTrust)
+	if err != nil {
+		return err
+	}
+
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", jsonData.ProjectID)
 	d.Set("public", jsonData.Metadata.Public)
 	d.Set("vulnerability_scanning", vuln)
+	d.Set("enable_content_trust", trust)
 
 	return nil
 }
