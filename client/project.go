@@ -34,6 +34,8 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 		body.Metadata.PreventVul = "false"
 	}
 
+	body.Metadata.EnableContentTrust = strconv.FormatBool(d.Get("enable_content_trust").(bool))
+
 	cveAllowList := d.Get("cve_allowlist").([]interface{})
 	log.Printf("[DEBUG] %v ", cveAllowList)
 	if len(cveAllowList) > 0 {

@@ -6,6 +6,7 @@ resource "harbor_project" "main" {
     name                    = "main"
     public                  = false               # (Optional) Default value is false
     vulnerability_scanning  = true                # (Optional) Default vale is true. Automatically scan images on push 
+    enable_content_trust    = true                # (Optional) Default vale is false. Deny unsigned images from being pulled 
 }
 ```
 
@@ -36,6 +37,8 @@ The following arguments are supported:
 * `registry_id` - (Optional) To enabled project as Proxy Cache
 
 * `storage_quota` - (Optional) The storage quota of the project in GB's
+
+* `enable_content_trust` - (Optional) Enables Content Trust for project. When enabled it queries the embedded docker notary server. Can be set to `"true"` or `"false"` (Default: false)
   
 ## Attributes Reference
 In addition to all argument, the following attributes are exported:
