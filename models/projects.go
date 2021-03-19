@@ -48,7 +48,7 @@ type ProjectsBodyResponses struct {
 		ExpiresAt int `json:"expires_at"`
 	} `json:"cve_allowlist"`
 	Metadata struct {
-		EnableContentTrust   string `json:"enable_content_trust"`
+		EnableContentTrust   string `json:"enable_content_trust,omitempty"`
 		AutoScan             string `json:"auto_scan,omitempty"`
 		Severity             string `json:"severity"`
 		ReuseSysCveAllowlist string `json:"reuse_sys_cve_allowlist"`
