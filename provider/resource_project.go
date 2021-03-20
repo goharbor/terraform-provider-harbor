@@ -55,9 +55,9 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 			},
 			"enable_content_trust": {
-				Type: schema.TypeBool,
+				Type:     schema.TypeBool,
 				Optional: true,
-				Default: false,
+				Default:  false,
 			},
 		},
 		Create: resourceProjectCreate,
@@ -103,9 +103,15 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	trust, err := strconv.ParseBool(jsonData.Metadata.EnableContentTrust)
-	if err != nil {
-		return err
+	var trust bool
+	trustContent := jsonData.Metadata.EnableContentTrust
+	if trustContent == "" {
+		trust = false
+	} else {
+		trust, err = strconv.ParseBool(trustContent)
+		if err != nil {
+			return err
+		}
 	}
 
 	d.Set("name", jsonData.Name)
