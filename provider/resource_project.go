@@ -98,9 +98,15 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
-	vuln, err := strconv.ParseBool(jsonData.Metadata.AutoScan)
-	if err != nil {
-		return err
+	autoScan := jsonData.Metadata.AutoScan
+	var vuln bool
+	if autoScan == "" {
+		vuln = false
+	} else {
+		vuln, err = strconv.ParseBool(autoScan)
+		if err != nil {
+			return err
+		}
 	}
 
 	var trust bool
