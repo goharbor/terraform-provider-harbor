@@ -135,14 +135,32 @@ func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChange("storage_quota") {
 		quotaID := "/quotas/" + strings.Replace(d.Id(), "/projects", "", -1)
 
+		storage := d.Get("storage_quota").(int)
+		if storage > 0 {
+			storage *= 1073741824 // GB
+		}
 		quota := models.Hard{
-			Storage: int64(d.Get("storage_quota").(int) * 1073741824),
+			Storage: int64(storage),
 		}
 		body := models.StorageQuota{quota}
 
-		_, _, err := apiClient.SendRequest("PUT", quotaID, body, 200)
+		respBody, _, statusCode, err := apiClient.SendRequestWithStatusCode("PUT", quotaID, body, 0)
+
 		if err != nil {
 			return err
+		}
+
+		if statusCode == 404 {
+			if storage == -1 {
+				// don't fail if quota does not exist and no quota is supposed to be set
+				// this is normal when `quota_per_project_enable` is `false` in Harbor
+			} else {
+				name := d.Get("name").(string)
+				return fmt.Errorf("[ERROR] Quota for %s does not exist. Quotas can not be set if the project was created with Harbor configuration quota_per_project_enable=false", name)
+			}
+
+		} else if statusCode != 200 {
+			return fmt.Errorf("[ERROR] unexpected status code got: %v expected: %v \n %v", statusCode, 200, respBody)
 		}
 	}
 
