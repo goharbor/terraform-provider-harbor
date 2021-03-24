@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -138,19 +137,7 @@ func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if d.HasChange("storage_quota") {
-		quotaID := "/quotas/" + strings.Replace(d.Id(), "/projects", "", -1)
-
-		quota := models.Hard{
-			Storage: int64(d.Get("storage_quota").(int) * 1073741824),
-		}
-		body := models.StorageQuota{quota}
-
-		_, _, err := apiClient.SendRequest("PUT", quotaID, body, 200)
-		if err != nil {
-			return err
-		}
-	}
+	apiClient.UpdateStorageQuota(d)
 
 	return resourceProjectRead(d, m)
 }
