@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -98,9 +97,15 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
-	vuln, err := strconv.ParseBool(jsonData.Metadata.AutoScan)
-	if err != nil {
-		return err
+	autoScan := jsonData.Metadata.AutoScan
+	var vuln bool
+	if autoScan == "" {
+		vuln = false
+	} else {
+		vuln, err = strconv.ParseBool(autoScan)
+		if err != nil {
+			return err
+		}
 	}
 
 	var trust bool
@@ -132,19 +137,7 @@ func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if d.HasChange("storage_quota") {
-		quotaID := "/quotas/" + strings.Replace(d.Id(), "/projects", "", -1)
-
-		quota := models.Hard{
-			Storage: int64(d.Get("storage_quota").(int) * 1073741824),
-		}
-		body := models.StorageQuota{quota}
-
-		_, _, err := apiClient.SendRequest("PUT", quotaID, body, 200)
-		if err != nil {
-			return err
-		}
-	}
+	apiClient.UpdateStorageQuota(d)
 
 	return resourceProjectRead(d, m)
 }

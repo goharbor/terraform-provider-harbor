@@ -1,8 +1,10 @@
 package client
 
 import (
+	"encoding/json"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -60,4 +62,37 @@ func expandCveAllowList(cveAllowlist []interface{}) models.CveAllowlistItems {
 	}
 
 	return allowlist
+}
+
+func (client *Client) UpdateStorageQuota(d *schema.ResourceData) (err error) {
+	resp, _, err := client.SendRequest("GET", models.PathConfig, nil, 200)
+
+	var jsonData models.ConfigBodyResponse
+	err = json.Unmarshal([]byte(resp), &jsonData)
+	if err != nil {
+		return err
+	}
+
+	if jsonData.QuotaPerProjectEnable.Value == true {
+		if d.HasChange("storage_quota") {
+			quotaID := "/quotas/" + strings.Replace(d.Id(), "/projects", "", -1)
+
+			storage := d.Get("storage_quota").(int)
+			if storage > 0 {
+				storage *= 1073741824 // GB
+			}
+			quota := models.Hard{
+				Storage: int64(storage),
+			}
+			body := models.StorageQuota{quota}
+
+			_, _, err := client.SendRequest("PUT", quotaID, body, 200)
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+
+	return nil
 }
