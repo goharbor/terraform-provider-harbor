@@ -77,10 +77,12 @@ func (client *Client) UpdateStorageQuota(d *schema.ResourceData) (err error) {
 		if d.HasChange("storage_quota") {
 			quotaID := "/quotas/" + strings.Replace(d.Id(), "/projects", "", -1)
 
-			client.SendRequest("GET", quotaID, nil, 200)
-
+			storage := d.Get("storage_quota").(int)
+			if storage > 0 {
+				storage *= 1073741824 // GB
+			}
 			quota := models.Hard{
-				Storage: int64(d.Get("storage_quota").(int) * 1073741824),
+				Storage: int64(storage),
 			}
 			body := models.StorageQuota{quota}
 
