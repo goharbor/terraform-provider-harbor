@@ -10,6 +10,7 @@ import (
 )
 
 const resourceHarborProjectMain = "harbor_project.main"
+const enableContentTrust = "enable_content_trust"
 
 func testAccCheckProjectDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
@@ -47,7 +48,7 @@ func TestAccProjectBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceHarborProjectMain, "vulnerability_scanning", "false"),
 					resource.TestCheckResourceAttr(
-						resourceHarborProjectMain, "enable_content_trust", "false"),
+						resourceHarborProjectMain, enableContentTrust, "false"),
 				),
 			},
 		},
@@ -71,7 +72,7 @@ func TestAccProjectUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceHarborProjectMain, "vulnerability_scanning", "false"),
 					resource.TestCheckResourceAttr(
-						resourceHarborProjectMain, "enable_content_trust", "false"),
+						resourceHarborProjectMain, enableContentTrust, "false"),
 				),
 			},
 			{
@@ -85,7 +86,7 @@ func TestAccProjectUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceHarborProjectMain, "vulnerability_scanning", "true"),
 					resource.TestCheckResourceAttr(
-						resourceHarborProjectMain, "enable_content_trust", "true"),
+						resourceHarborProjectMain, enableContentTrust, "true"),
 				),
 			},
 		},
@@ -98,9 +99,9 @@ func testAccCheckProjectBasic() string {
 		name = "test_basic"
 		public = false
 		vulnerability_scanning = false
-		enable_content_trust = false
+		%v = false
 	  }
-	`)
+	`, enableContentTrust)
 }
 
 func testAccCheckItemUpdate() string {
@@ -109,7 +110,7 @@ func testAccCheckItemUpdate() string {
 		name = "test_basic"
 		public = true
 		vulnerability_scanning = true
-		enable_content_trust = true
+		%v = true
 	  }
-`)
+`, enableContentTrust)
 }
