@@ -14,12 +14,16 @@ import (
 func resourceRobotAccount() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
+			"robot_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"project_id": {
+			"level": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -29,23 +33,58 @@ func resourceRobotAccount() *schema.Resource {
 				Optional: true,
 				Default:  nil,
 			},
-			"actions": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+			"disable": {
+				Type:     schema.TypeBool,
 				Optional: true,
-				// Default:  ["pull"],
-				ForceNew: true,
+				Default:  false,
 			},
-			"token": {
+			"duration": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  -1,
+			},
+			"secret": {
 				Type:      schema.TypeString,
 				Computed:  true,
 				Sensitive: true,
 			},
-			"robot_id": {
-				Type:     schema.TypeString,
-				Computed: true,
+			"permissions": {
+				Type: schema.TypeSet,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"access": {
+							Type: schema.TypeSet,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"action": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"resource": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"effect": {
+										Type:     schema.TypeString,
+										Optional: true,
+										Default:  "allow",
+									},
+								},
+							},
+							Required: true,
+						},
+						"kind": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"namespace": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+				Required: true,
+				ForceNew: true,
 			},
 		},
 		Create: resourceRobotAccountCreate,
@@ -70,17 +109,14 @@ func checkProjectid(id string) (projecid string) {
 func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	projectid := d.Get("project_id").(string)
-	url := projectid + "/robots"
+	body := client.RobotBody(d)
 
-	body := client.RobotBody(d, projectid)
-
-	resp, headers, err := apiClient.SendRequest("POST", url, body, 201)
+	resp, headers, err := apiClient.SendRequest("POST", "/robots", body, 201)
 	if err != nil {
 		return err
 	}
 
-	var jsonData models.RobotBodyRepones
+	var jsonData models.RobotBodyResponse
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
 		return err
@@ -92,31 +128,43 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(id)
-	d.Set("token", jsonData.Token)
+	d.Set("secret", jsonData.Secret)
 	return resourceRobotAccountRead(d, m)
 }
 
 func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	robot, err := getRobot(d, apiClient)
 	if err != nil {
 		return err
 	}
 
-	var jsonData models.RobotBodyRepones
-	err = json.Unmarshal([]byte(resp), &jsonData)
-	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
-	}
-
-	d.Set("robot_id", strconv.Itoa(jsonData.ID))
-	d.Set("description", jsonData.Description)
+	d.Set("robot_id", strconv.Itoa(robot.ID))
 
 	return nil
 }
 
 func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
+	apiClient := m.(*client.Client)
+
+	body := client.RobotBody(d)
+
+	// if name not changed, use robot account name from api, otherwise it would always trigger a recreation,
+	// since harbor does internally attach the robot account prefix to it´s names
+	if false == d.HasChange("name") {
+		robot, err := getRobot(d, apiClient)
+		if err != nil {
+			return err
+		}
+		body.Name = robot.Name
+	}
+
+	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	if err != nil {
+		return err
+	}
+
 	return resourceRobotAccountRead(d, m)
 }
 
@@ -127,4 +175,17 @@ func resourceRobotAccountDelete(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func getRobot(d *schema.ResourceData, apiClient *client.Client) (models.RobotBody, error) {
+	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	if err != nil {
+		return models.RobotBody{}, err
+	}
+	var jsonData models.RobotBody
+	err = json.Unmarshal([]byte(resp), &jsonData)
+	if err != nil {
+		return models.RobotBody{}, fmt.Errorf("Resource not found %s", d.Id())
+	}
+	return jsonData, nil
 }

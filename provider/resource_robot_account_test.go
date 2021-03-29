@@ -11,40 +11,40 @@ import (
 
 const harborRobotAccount = "harbor_robot_account.main"
 
-func TestAccRobotBasic(t *testing.T) {
+func TestAccRobotSystem(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckRobotDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckRobotBasic(),
+				Config: testAccCheckRobotSystem(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists("harbor_project.main"),
 
 					testAccCheckResourceExists(harborRobotAccount),
 					resource.TestCheckResourceAttr(
-						harborRobotAccount, "name", "test_robot_account"),
+						harborRobotAccount, "name", "test_robot_system"),
 				),
 			},
 		},
 	})
 }
 
-func TestAccRobotMultipleAction(t *testing.T) {
+func TestAccRobotProject(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckRobotDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckRobotMultipleAction(),
+				Config: testAccCheckRobotProject(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists("harbor_project.main"),
 
 					testAccCheckResourceExists(harborRobotAccount),
 					resource.TestCheckResourceAttr(
-						harborRobotAccount, "name", "test_robot_account"),
+						harborRobotAccount, "name", "test_robot_project"),
 				),
 			},
 		},
@@ -72,37 +72,74 @@ func testAccCheckRobotDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckRobotBasic() string {
+func testAccCheckRobotSystem() string {
 	return fmt.Sprintf(`
-
 	resource "harbor_robot_account" "main" {
-		name        = "test_robot_account"
-		description = "Robot account to be used to pull images"
-		project_id  = harbor_project.main.id
-		actions     = ["pull"]
-
+	  name        = "test_robot_system"
+	  description = "system level robot account"
+	  level       = "system"
+	  permissions {
+		access {
+		  action   = "create"
+		  resource = "labels"
+		}
+		kind      = "system"
+		namespace = "/"
 	  }
-
-	  resource "harbor_project" "main" {
-		name = "test_basic"
+	  permissions {
+		access {
+		  action   = "push"
+		  resource = "repository"
+		}
+		access {
+		  action   = "read"
+		  resource = "helm-chart"
+		}
+		access {
+		  action   = "read"
+		  resource = "helm-chart-version"
+		}
+		kind      = "project"
+		namespace = harbor_project.main.name
 	  }
-	  
+	  permissions {
+		access {
+		  action   = "pull"
+		  resource = "repository"
+		}
+		kind      = "project"
+		namespace = "*"
+	  }
+	}
+
+	resource "harbor_project" "main" {
+	  name = "test_basic"
+	}
 	`)
 }
 
-func testAccCheckRobotMultipleAction() string {
+func testAccCheckRobotProject() string {
 	return fmt.Sprintf(`
-
 	resource "harbor_robot_account" "main" {
-		name        = "test_robot_account"
-		description = "Robot account to be used to push images"
-		project_id  = harbor_project.main.id
-		actions      = ["push","read","create"]
+	  name        = "test_robot_project"
+	  description = "project level robot account"
+	  level       = "project"
+	  permissions {
+		access {
+		  action   = "pull"
+		  resource = "repository"
+		}
+		access {
+		  action   = "push"
+		  resource = "repository"
+		}
+		kind      = "project"
+		namespace = harbor_project.main.name
 	  }
+	}
 
-	  resource "harbor_project" "main" {
-		name = "test_basic"
-	  }
-	  
+	resource "harbor_project" "main" {
+	  name = "test_basic"
+	}
 	`)
 }
