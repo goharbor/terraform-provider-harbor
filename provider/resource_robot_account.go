@@ -165,7 +165,7 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	return resourceRobotAccountRead(d, m) // @todo muss das nochmal sein, oder einfach nil returnen?
+	return resourceRobotAccountRead(d, m)
 }
 
 func resourceRobotAccountDelete(d *schema.ResourceData, m interface{}) error {
