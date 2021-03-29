@@ -80,6 +80,14 @@ func testAccCheckRobotSystem() string {
 	  level       = "system"
 	  permissions {
 		access {
+		  action   = "create"
+		  resource = "labels"
+		}
+		kind      = "system"
+		namespace = "/"
+	  }
+	  permissions {
+		access {
 		  action   = "push"
 		  resource = "repository"
 		}
