@@ -1,16 +1,29 @@
 # Resource: harbor_robot_account
 
-Harbor supports different level of robot accounts. Currently `system` and `project` level robot accounts are supported.
+Harbor supports different levels of robot accounts. Currently `system` and `project` level robot accounts are supported.
 
-## System Level
+## Example Usage
 
-Introduced in harbor 2.2.0, system level robot accounts can have basically all available permissions in harbor and are not dependent on a single project.
+### System Level
+Introduced in harbor 2.2.0, system level robot accounts can have basically [all available permissions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go) in harbor and are not dependent on a single project.
 
 ```hcl
+resource "harbor_project" "main" {
+    name = "main"
+}
+
 resource "harbor_robot_account" "system" {
   name        = "example-system"
   description = "system level robot account"
   level       = "system"
+  permissions {
+    access {
+      action   = "create"
+      resource = "labels"
+    }
+    kind      = "system"
+    namespace = "/"
+  }
   permissions {
     access {
       action   = "push"
@@ -25,7 +38,7 @@ resource "harbor_robot_account" "system" {
       resource = "helm-chart-version"
     }
     kind      = "project"
-    namespace = "my-project-name"
+    namespace = harbor_project.main.name
   }
   permissions {
     access {
@@ -39,13 +52,16 @@ resource "harbor_robot_account" "system" {
 ```
 
 The above example, creates a system level robot account with permissions to
+- permission to create labels on system level
 - pull repository across all projects
 - push repository to project "my-project-name"
 - read helm-chart and helm-chart-version in project "my-project-name"
 
-## Project Level
+### Project Level
 
 Other than system level robot accounts, project level robot accounts can interact on project level only.
+The [available permissions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go) are mostly the same as for system level robots.
+
 
 ```hcl
 resource "harbor_project" "main" {
@@ -75,8 +91,6 @@ The above example creates a project level robot account with permissions to
 - pull repository on project "main"
 - push repository on project "main"
 
-For a full list of available actions and resources have a look at: https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go
-
 
 ## Argument Reference
 The following arguments are supported:
@@ -91,13 +105,13 @@ The following arguments are supported:
 
 * **disable** - (bool, optional) Disables the robot account when set to `true`.
 
-* **permissions** - (block, required) Permissions to be applied to the robot account.
+* **permissions** - (block, required) [Permissions](#permissions-arguments) to be applied to the robot account. 
   ```
   permissions {
     access {
-      action   = "action"   // eg. `push`, `pull`, `read`, etc.
-      resource = "resource" // eg. `repository`, `helm-chart`, `read`, etc.
-      effect   = "effect"   // either `allow` or `deny`
+      action   = "action"
+      resource = "resource"
+      effect   = "effect"
     }
     access {
       ...
@@ -111,11 +125,24 @@ The following arguments are supported:
   ```
   **Note, that for `project` level accounts, only one `permission` block is allowed!**
 
-  For a full list of available actions and resources have a look at: https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go
+### Permissions Arguments
+* **access** - (block, required) Define one or multiple [access blocks](#access-arguments).
 
+* **kind** - (string, required) Either `system` or `project`.
+
+* **namespace** - (string, required) namespace is the name of your project.
+                  For kind `system` permissions, always use `/` as namespace.
+                  Use `*` to match all projects.
+
+### Access Arguments
+* **action** - (string, required) Eg. `push`, `pull`, `read`, etc. Check [available actions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go).
+
+* **resource** - (string, required) Eg. `repository`, `helm-chart`, `labels`, etc. Check [available resources](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go).
+
+* **effect** - (string, optional) Either `allow` or `deny`. Defaults to `allow`.
 
 
 ## Attributes Reference
 In addition to all argument, the following attributes are exported:
 
-* **token** - The token of the robot account.
+* **secret** - The secret of the robot account used for authentication
