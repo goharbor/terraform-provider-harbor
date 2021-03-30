@@ -24,6 +24,10 @@ func resourceConfigSystem() *schema.Resource {
 				Optional: true,
 				Default:  30,
 			},
+			"robot_name_prefix": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 		Create: resourceConfigSystemCreate,
 		Read:   resourceConfigSystemRead,
