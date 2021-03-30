@@ -146,3 +146,4 @@ The following arguments are supported:
 In addition to all argument, the following attributes are exported:
 
 * **secret** - The secret of the robot account used for authentication
+* **full_name** - Full name of the robot account which harbor generates including the robot prefix. Eg. `robot$project+name` or `harbor@project+name` (depending on your robot prefix).

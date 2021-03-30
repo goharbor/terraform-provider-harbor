@@ -49,6 +49,8 @@ type ConfigBodyPost struct {
 	RobotTokenDuration         int    `json:"robot_token_duration,omitempty"`
 	LdapVerifyCert             bool   `json:"ldap_verify_cert,omitempty"`
 	LdapGroupGID               string `json:"ldap_group_gid,omitempty"`
+	OidcAdminGroup             string `json:"oidc_admin_group,omitempty"`
+	RobotNamePrefix            string `json:"robot_name_prefix,omitempty"`
 }
 
 type ConfigBodyResponse struct {
@@ -210,4 +212,12 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"ldap_group_gid,omitempty"`
+	OidcAdminGroup struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"oidc_admin_group,omitempty"`
+	RobotNamePrefix struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"robot_name_prefix,omitempty"`
 }

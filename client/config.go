@@ -14,6 +14,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodyPost {
 		ReadOnly:                   d.Get("read_only").(bool),
 		RobotTokenDuration:         days2mins(d.Get("robot_token_expiration").(int)),
 		QuotaPerProjectEnable:      true,
+		RobotNamePrefix:            d.Get("robot_name_prefix").(string),
 	}
 }
 
@@ -35,6 +36,7 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyPost {
 			OidcVerifyCert:   d.Get("oidc_verify_cert").(bool),
 			OidcAutoOnboard:  d.Get("oidc_auto_onboard").(bool),
 			OidcUserClaim:    d.Get("oidc_user_claim").(string),
+			OidcAdminGroup:   d.Get("oidc_admin_group").(string),
 		}
 	case "ldap_auth", "ldap":
 		body = models.ConfigBodyPost{
@@ -120,6 +122,7 @@ func SetAuthValues(d *schema.ResourceData, resp string) error {
 		d.Set("oidc_verify_cert", jsonData.OidcVerifyCert.Value)
 		d.Set("oidc_auto_onboard", jsonData.OidcAutoOnboard.Value)
 		d.Set("oidc_user_claim", jsonData.OidcUserClaim.Value)
+		d.Set("oidc_admin_group", jsonData.OidcAdminGroup.Value)
 	case "ldap_auth", "ldap":
 		d.Set("ldap_url", jsonData.LdapURL.Value)
 		d.Set("ldap_base_dn", jsonData.LdapBaseDn.Value)
