@@ -43,6 +43,10 @@ func resourceRobotAccount() *schema.Resource {
 				Optional: true,
 				Default:  -1,
 			},
+			"full_name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"secret": {
 				Type:      schema.TypeString,
 				Computed:  true,
@@ -141,6 +145,7 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("robot_id", strconv.Itoa(robot.ID))
+	d.Set("full_name", robot.Name)
 
 	return nil
 }
