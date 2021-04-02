@@ -81,14 +81,12 @@ func expandRententionRules(d *schema.ResourceData) []models.Rules {
 			tag.Decoration = "matches"
 			tag.Pattern = i["tag_matching"].(string)
 			tag.Extras = "{\"untagged\":" + strconv.FormatBool(i["untagged_artifacts"].(bool)) + "}"
-			log.Printf("[DEBUG] %s\n ", "tag matching")
 		}
 
 		if i["tag_excluding"].(string) != "" {
 			tag.Decoration = "excludes"
 			tag.Pattern = i["tag_excluding"].(string)
 			tag.Extras = "{\"untagged\":" + strconv.FormatBool(i["untagged_artifacts"].(bool)) + "}"
-			log.Printf("[DEBUG] %s\n ", "tag excluding")
 		}
 
 		scopeSelectorsRepository := models.ScopeSelectors{
