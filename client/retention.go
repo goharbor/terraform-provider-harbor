@@ -85,7 +85,7 @@ func expandRententionRules(d *schema.ResourceData) []models.Rules {
 
 		if i["tag_excluding"].(string) != "" {
 			tag.Decoration = "excludes"
-			tag.Pattern = i["tag_matching"].(string)
+			tag.Pattern = i["tag_excluding"].(string)
 			tag.Extras = "{\"untagged\":" + strconv.FormatBool(i["untagged_artifacts"].(bool)) + "}"
 		}
 
