@@ -83,6 +83,12 @@ func expandRententionRules(d *schema.ResourceData) []models.Rules {
 			tag.Extras = "{\"untagged\":" + strconv.FormatBool(i["untagged_artifacts"].(bool)) + "}"
 		}
 
+		if i["tag_excluding"].(string) != "" {
+			tag.Decoration = "excludes"
+			tag.Pattern = i["tag_excluding"].(string)
+			tag.Extras = "{\"untagged\":" + strconv.FormatBool(i["untagged_artifacts"].(bool)) + "}"
+		}
+
 		scopeSelectorsRepository := models.ScopeSelectors{
 			Repository: []models.Repository{},
 		}
@@ -94,6 +100,10 @@ func expandRententionRules(d *schema.ResourceData) []models.Rules {
 		if i["repo_matching"].(string) != "" {
 			repo.Decoration = "repoMatches"
 			repo.Pattern = i["repo_matching"].(string)
+		}
+		if i["repo_excluding"].(string) != "" {
+			repo.Decoration = "repoMExcludes"
+			repo.Pattern = i["repo_excluding"].(string)
 		}
 
 		scopeSelectorsRepository.Repository = append(scopeSelectorsRepository.Repository, repo)
