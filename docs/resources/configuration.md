@@ -13,6 +13,7 @@ resource "harbor_config_auth" "oidc" {
   oidc_verify_cert   = true
   oidc_auto_onboard  = true
   oidc_user_claim    = "name"
+  oidc_admin_group   = "administrators"
 }
 ```
 
@@ -52,7 +53,9 @@ The following arguments are supported:
 
 * `oidc_auto_onboard` - (Optional) Default is **"false"**, set to **"true"** if you want to skip the user onboarding screen, so user cannot change its username
 
-* `idc_user_claim` - (Optional) Default is **"name"**
+* `oidc_user_claim` - (Optional) Default is **"name"**
+  
+* `oidc_admin_group` - (Optional) All members of this group get Harbor admin permissions.
 
 
 * `ldap_url` - (Optional) The ldap server. Required when auth_mode is set to ldap.

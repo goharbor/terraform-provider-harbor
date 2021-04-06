@@ -43,6 +43,11 @@ func resourceConfigAuth() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: oidcConflictsWith(),
 			},
+			"oidc_admin_group": {
+				Type:          schema.TypeString,
+				Optional:      true,
+				ConflictsWith: oidcConflictsWith(),
+			},
 			"oidc_scope": {
 				Type:          schema.TypeString,
 				Optional:      true,

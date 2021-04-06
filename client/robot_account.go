@@ -1,37 +1,37 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func RobotBody(d *schema.ResourceData, projectid string) models.RobotBody {
-	resource := strings.Replace(projectid, "s", "", +1)
-
+func RobotBody(d *schema.ResourceData) models.RobotBody {
 	body := models.RobotBody{
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
+		Disable:     d.Get("disable").(bool),
+		Duration:    d.Get("duration").(int),
+		Level:       d.Get("level").(string),
 	}
 
-	robotAccess := models.RobotBodyAccess{}
+	permissions := d.Get("permissions").(*schema.Set).List()
+	for _, p := range permissions {
 
-	access := d.Get("actions").([]interface{})
-	for _, v := range access {
-
-		switch v.(string) {
-		case "push", "pull":
-			robotAccess.Action = v.(string)
-			robotAccess.Resource = resource + "/repository"
-		case "read":
-			robotAccess.Action = v.(string)
-			robotAccess.Resource = resource + "/helm-chart"
-		case "create":
-			robotAccess.Action = v.(string)
-			robotAccess.Resource = resource + "/helm-chart-version"
+		permission := models.RobotBodyPermission{
+			Kind:      p.(map[string]interface{})["kind"].(string),
+			Namespace: p.(map[string]interface{})["namespace"].(string),
 		}
-		body.Access = append(body.Access, robotAccess)
+
+		for _, a := range p.(map[string]interface{})["access"].(*schema.Set).List() {
+			access := models.RobotBodyAccess{
+				Action:   a.(map[string]interface{})["action"].(string),
+				Resource: a.(map[string]interface{})["resource"].(string),
+				Effect:   a.(map[string]interface{})["effect"].(string),
+			}
+			permission.Access = append(permission.Access, access)
+		}
+
+		body.Permissions = append(body.Permissions, permission)
 	}
 
 	return body
