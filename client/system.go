@@ -47,17 +47,10 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 		return err
 	}
 
-	var jsonData models.SystemBody
-	err = json.Unmarshal([]byte(resp), &jsonData)
-	if err != nil {
-		return err
-	}
-
-	time := jsonData.Schedule.Type
 	requestType := "POST"
 	httpStatusCode := 201
 
-	if time != "" {
+	if resp != "" {
 		log.Printf("Schedule found performing PUT request")
 		requestType = "PUT"
 		httpStatusCode = 200
