@@ -60,7 +60,7 @@ jobs:
           name: Performaning Acceptance Test
           command: |
             source /tmp/secrets.env
-            TF_ACC=1 go test -v ./provider/ -count=1 -tags=external_auth
+            TF_ACC=1 go test -v ./... -count=1 -tags=external_auth
 
   spellchecker:
     docker:
