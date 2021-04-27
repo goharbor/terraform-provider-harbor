@@ -12,7 +12,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodyPost {
 	return models.ConfigBodyPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(bool),
-		RobotTokenDuration:         days2mins(d.Get("robot_token_expiration").(int)),
+		RobotTokenDuration:         d.Get("robot_token_expiration").(int),
 		QuotaPerProjectEnable:      true,
 		RobotNamePrefix:            d.Get("robot_name_prefix").(string),
 	}
@@ -49,9 +49,9 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyPost {
 
 			LdapGroupBaseDn:        d.Get("ldap_group_base_dn").(string),
 			LdapGroupSearchFilter:  d.Get("ldap_group_filter").(string),
-			LdapGroupGID:           d.Get("ldap_group_gid").(string),
+			LdapGroupAttributeName:           d.Get("ldap_group_gid").(string),
 			LdapGroupAdminDn:       d.Get("ldap_group_admin_dn").(string),
-			LdapGroupAttributeName: d.Get("ldap_group_membership").(string),
+			LdapGroupMembershipAttribute: d.Get("ldap_group_membership").(string),
 
 			LdapVerifyCert: d.Get("ldap_verify_cert").(bool),
 		}

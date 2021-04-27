@@ -3,7 +3,6 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -66,7 +65,7 @@ func resourceGCRead(d *schema.ResourceData, m interface{}) error {
 	if jsonData.Schedule.Type == "Custom" {
 		d.Set("schedule", jsonData.Schedule.Cron)
 	} else {
-		d.Set("schedule", strings.ToLower(jsonData.Schedule.Type))
+		d.Set("schedule", jsonData.Schedule.Type)
 	}
 	d.Set("delete_untagged", jsonJobParameters.DeleteUntagged)
 	return nil
