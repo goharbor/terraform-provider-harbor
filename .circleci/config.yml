@@ -138,3 +138,4 @@ workflows:
           requires:
             - secret-injector/dump-secrets
           <<: *release_filter
+          
