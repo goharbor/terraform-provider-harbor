@@ -9,3 +9,6 @@ A Harbor provider for Terraform. Allows you to configure and manage a Harbor ins
 
 ## Usage
 [See the docs for usage information](./docs).
+
+
+# Development Guide
