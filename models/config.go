@@ -32,6 +32,7 @@ type ConfigBodyPost struct {
 	LdapGroupBaseDn                 string `json:"ldap_group_base_dn,omitempty"`
 	LdapGroupAttributeName          string `json:"ldap_group_attribute_name,omitempty"`
 	LdapGroupMembershipAttribute    string `json:"ldap_group_membership_attribute,omitempty"`
+	LdapSearchPassword              string `json:"ldap_search_password,omitempty"`
 	EmailInsecure                   bool   `json:"email_insecure"`
 	LdapGroupAdminDn                string `json:"ldap_group_admin_dn,omitempty"`
 	EmailUsername                   string `json:"email_username,omitempty"`
