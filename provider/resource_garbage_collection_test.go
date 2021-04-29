@@ -45,7 +45,7 @@ func TestAccGCUpdate(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborGCMain),
 					resource.TestCheckResourceAttr(
-						harborGCMain, "schedule", "daily"),
+						harborGCMain, "schedule", "Daily"),
 				),
 			},
 			{
@@ -53,7 +53,7 @@ func TestAccGCUpdate(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborGCMain),
 					resource.TestCheckResourceAttr(
-						harborGCMain, "schedule", "hourly"),
+						harborGCMain, "schedule", "Hourly"),
 					resource.TestCheckResourceAttr(
 						harborGCMain, "delete_untagged", "true"),
 				),
@@ -65,7 +65,7 @@ func TestAccGCUpdate(t *testing.T) {
 func testAccCheckGCBasic() string {
 	return fmt.Sprintf(`
 	resource "harbor_garbage_collection" "main" {
-		schedule        = "daily"
+		schedule        = "Daily"
 	}
 	`)
 }
@@ -73,7 +73,7 @@ func testAccCheckGCBasic() string {
 func testAccCheckGCUpdate() string {
 	return fmt.Sprintf(`
 	resource "harbor_garbage_collection" "main" {
-		schedule        = "hourly"
+		schedule        = "Hourly"
 		delete_untagged = true
 	}
 	`)
