@@ -79,7 +79,7 @@ func resourceConfigAuth() *schema.Resource {
 				Type:          schema.TypeString,
 				Optional:      true,
 				ConflictsWith: ldapConflictsWith(),
-				RequiredWith:  ldapRequiredWith(),
+				RequiredWith:  ldapRequiredWith(),				
 			},
 			"ldap_uid": {
 				Type:          schema.TypeString,

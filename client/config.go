@@ -43,6 +43,7 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyPost {
 			AuthMode:     "ldap_auth",
 			LdapURL:      d.Get("ldap_url").(string),
 			LdapSearchDn: d.Get("ldap_search_dn").(string),
+			LdapSearchPassword: d.Get("ldap_search_password").(string),
 			LdapBaseDn:   d.Get("ldap_base_dn").(string),
 			LdapFilter:   d.Get("ldap_filter").(string),
 			LdapUID:      d.Get("ldap_uid").(string),
