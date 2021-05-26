@@ -89,6 +89,7 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.RegistryBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
+		d.SetId("")
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 

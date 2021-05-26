@@ -20,6 +20,7 @@ func resourceRentention() *schema.Resource {
 			"scope": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true, 
 			},
 			"rule": {
 				Type:     schema.TypeList,
