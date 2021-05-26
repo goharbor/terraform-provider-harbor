@@ -108,7 +108,7 @@ workflows:
     jobs:
       - secret-injector/dump-secrets:
           <<: *dump_secrets_acctest
-          context: *my_context
+          # context: *my_context
           <<: *test_filter
       - acceptance_test:
           requires:
@@ -118,7 +118,7 @@ workflows:
     jobs:
       - secret-injector/dump-secrets:
           <<: *dump_secrets
-          context: *my_context
+          # context: *my_context
           <<: *test_filter
       - build:
           release-type: test
@@ -130,7 +130,7 @@ workflows:
     jobs:
       - secret-injector/dump-secrets:
           <<: *dump_secrets
-          context: *my_context
+          # context: *my_context
           <<: *release_filter
       - build:
           name: build
