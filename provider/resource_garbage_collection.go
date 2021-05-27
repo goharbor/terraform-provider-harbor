@@ -45,7 +45,8 @@ func resourceGCRead(d *schema.ResourceData, m interface{}) error {
 
 	resp, _, err := apiClient.SendRequest("GET", models.PathGC, nil, 200)
 	if err != nil {
-		return err
+		d.SetId("")
+		return nil
 	}
 
 	var jsonData models.SystemBody

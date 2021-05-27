@@ -88,7 +88,8 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 
 	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		d.SetId("")
+		return nil
 	}
 
 	var jsonData models.ProjectsBodyResponses
