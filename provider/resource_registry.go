@@ -85,6 +85,10 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	if err != nil {
+		d.SetId("")
+		return nil
+	}
 
 	var jsonData models.RegistryBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
