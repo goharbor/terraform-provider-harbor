@@ -14,6 +14,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 
 	body := models.ReplicationBody{
 		Name:          d.Get("name").(string),
+		Description:   d.Get("description").(string),
 		Override:      d.Get("override").(bool),
 		Enabled:       d.Get("enabled").(bool),
 		Deletion:      d.Get("deletion").(bool),
