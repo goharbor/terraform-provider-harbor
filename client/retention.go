@@ -102,7 +102,7 @@ func expandRententionRules(d *schema.ResourceData) []models.Rules {
 			repo.Pattern = i["repo_matching"].(string)
 		}
 		if i["repo_excluding"].(string) != "" {
-			repo.Decoration = "repoMExcludes"
+			repo.Decoration = "repoExcludes"
 			repo.Pattern = i["repo_excluding"].(string)
 		}
 
