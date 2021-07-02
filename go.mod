@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/storage v1.12.0 // indirect
 	github.com/aws/aws-sdk-go v1.36.1 // indirect
 	github.com/fatih/color v1.10.0 // indirect
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.6.1
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
 	github.com/mitchellh/mapstructure v1.4.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	golang.org/x/mod v0.4.0 // indirect
