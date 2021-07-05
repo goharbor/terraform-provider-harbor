@@ -18,4 +18,4 @@ The following arguments are supported:
 * **email_password** - (Optional) The password for the email server
 * **email_from** - (Required) - The email from address ie, `dont_reply@acme.com` 
 * **email_ssl** - (Optional) Enable SSL for email server connection
-* **email_insecure** - (Optional) Verify Certificate for email server connection
+* **email_insecure** - (Optional) Disables validation of email server certificate `Default: false`
