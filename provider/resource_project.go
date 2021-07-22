@@ -58,6 +58,11 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"force_destroy": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 		},
 		Create: resourceProjectCreate,
 		Read:   resourceProjectRead,
@@ -145,6 +150,19 @@ func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceProjectDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
+
+	forceDestroy := d.Get("force_destroy").(bool)
+
+	if forceDestroy {
+		// If force_destroy is set delete all repositories within the project
+		// before attempting to delete it.
+		projectName := d.Get("name").(string)
+
+		err := apiClient.DeleteProjectRepositories(projectName)
+		if err != nil {
+			return err
+		}
+	}
 
 	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
