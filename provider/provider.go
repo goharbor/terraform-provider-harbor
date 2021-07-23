@@ -52,7 +52,7 @@ func Provider() *schema.Provider {
 			"harbor_user":                   resourceUser(),
 			"harbor_registry":               resourceRegistry(),
 			"harbor_replication":            resourceReplication(),
-			"harbor_retention_policy":       resourceRentention(),
+			"harbor_retention_policy":       resourceRetention(),
 			"harbor_garbage_collection":     resourceGC(),
 			"harbor_label":                  resourceLabel(),
 		},
