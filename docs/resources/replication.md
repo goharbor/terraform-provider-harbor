@@ -58,7 +58,7 @@ The following arguments are supported:
 * **name** - (Optional) Filter on the name of the resource.
 * **tag** - (Optional) Filter on the tag/version of the resource.
 * **labels** - (Optional) Filter on the resource according to labels.
-* **resource** - (Optional) Filter on the resource type. Can be one of the following types. `image`,`chart`, `artifact`
+* **resource** - (Optional) Filter on the resource type. Can be one of the following types. `chart`, `artifact`
 				
 
 
