@@ -31,7 +31,7 @@ resource "harbor_replication" "alpine" {
     tag = "3.*.*"
   }
   filters {
-    resource = "image"
+    resource = "artifact"
   }
 }
  
