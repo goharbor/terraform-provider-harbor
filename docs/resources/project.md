@@ -39,6 +39,8 @@ The following arguments are supported:
 * `storage_quota` - (Optional) The storage quota of the project in GB's
 
 * `enable_content_trust` - (Optional) Enables Content Trust for project. When enabled it queries the embedded docker notary server. Can be set to `"true"` or `"false"` (Default: false)
+
+* `force_destroy` - (Optional, Default: `false`) A boolean that indicates all repositories should be deleted from the project so that the project can be destroyed without error. These repositories are *not* recoverable.
   
 ## Attributes Reference
 In addition to all argument, the following attributes are exported:
