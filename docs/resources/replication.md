@@ -31,7 +31,7 @@ resource "harbor_replication" "alpine" {
     tag = "3.*.*"
   }
   filters {
-    resource = "image"
+    resource = "artifact"
   }
 }
  
@@ -48,6 +48,7 @@ The following arguments are supported:
 * **override** - (Optional) Specify whether to override the resources at the destination if a resources with the same name exist. Can be set to `true` or `false` (Default: `true`)
 * **enabled** - (Optional) Specify whether the replication is enabled. Can be set to `true` or `false` (Default: `true`)
 * **description** (Optional) Write about description of the replication policy.
+* **dest_namespace** (Optional) Specify the destination namespace. if empty, the resource will be put under the same namespace as the source.
 
 * **filters** - (Optional) A collection of `filters` block as documented below.
 
@@ -58,7 +59,7 @@ The following arguments are supported:
 * **name** - (Optional) Filter on the name of the resource.
 * **tag** - (Optional) Filter on the tag/version of the resource.
 * **labels** - (Optional) Filter on the resource according to labels.
-* **resource** - (Optional) Filter on the resource type. Can be one of the following types. `image`,`chart`, `artifact`
+* **resource** - (Optional) Filter on the resource type. Can be one of the following types. `chart`, `artifact`
 				
 
 
