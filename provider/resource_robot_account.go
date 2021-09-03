@@ -103,7 +103,8 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(id)
-	d.Set("token", jsonData.Token)
+	d.Set("token", jsonData.Secret)
+	d.Set("secret", jsonData.Token)
 	return resourceRobotAccountRead(d, m)
 }
 
@@ -122,10 +123,16 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("robot_id", strconv.Itoa(jsonData.ID))
-	d.Set("name", strings.Replace(jsonData.Name, "robot$", "", -1))
+	d.Set("name", harborToTfName(jsonData.Name))
 	d.Set("description", jsonData.Description)
 
 	return nil
+}
+
+func harborToTfName(harborRobotName string) string {
+	removeRobot := strings.Replace(harborRobotName, "robot$", "", -1)
+	removePlus := strings.Replace(removeRobot, "/.*\\+/", "", -1)
+	return removePlus
 }
 
 func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
