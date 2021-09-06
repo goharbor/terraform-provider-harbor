@@ -104,7 +104,7 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 
 	d.SetId(id)
 	d.Set("token", jsonData.Secret)
-	d.Set("secret", jsonData.Token)
+	d.Set("secret", jsonData.Secret)
 	return resourceRobotAccountRead(d, m)
 }
 
