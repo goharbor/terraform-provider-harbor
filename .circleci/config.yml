@@ -64,7 +64,7 @@ jobs:
 
   spellchecker:
     docker:
-      - image:  circleci/python:latest
+      - image: cimg/python:3.9.7
     steps:
       - checkout
       - run:
