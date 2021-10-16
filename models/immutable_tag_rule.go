@@ -7,6 +7,8 @@ type ImmutableTagRule struct {
 	Disabled                     bool                           `json:"disabled"`
 	ScopeSelectors               ScopeSelectors                 `json:"scope_selectors"`
 	ImmutableTagRuleTagSelectors []ImmutableTagRuleTagSelectors `json:"tag_selectors"`
+	Action                       string                         `json:"action"`
+	Template                     string                         `json:"template"`
 }
 
 type ImmutableTagRuleTagSelectors struct {

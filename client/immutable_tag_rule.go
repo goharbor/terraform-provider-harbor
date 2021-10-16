@@ -12,7 +12,6 @@ func GetImmutableTagRuleBody(d *schema.ResourceData) *models.ImmutableTagRule {
 	tag := models.ImmutableTagRuleTagSelectors{
 		Kind: "doublestar",
 	}
-	tags = append(tags, tag)
 
 	if d.Get("tag_matching").(string) != "" {
 		tag.Decoration = "matches"
@@ -23,6 +22,7 @@ func GetImmutableTagRuleBody(d *schema.ResourceData) *models.ImmutableTagRule {
 		tag.Decoration = "excludes"
 		tag.Pattern = d.Get("tag_excluding").(string)
 	}
+	tags = append(tags, tag)
 
 	scopeSelectorsRepository := models.ScopeSelectors{
 		Repository: []models.Repository{},
@@ -46,6 +46,8 @@ func GetImmutableTagRuleBody(d *schema.ResourceData) *models.ImmutableTagRule {
 		Disabled:                     d.Get("disabled").(bool),
 		ScopeSelectors:               scopeSelectorsRepository,
 		ImmutableTagRuleTagSelectors: tags,
+		Action:                       "immutable",
+		Template:                     "immutable_template",
 	}
 
 	log.Printf("[DEBUG] %+v\n ", body)
