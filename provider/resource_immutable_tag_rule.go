@@ -103,20 +103,15 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	//TODO
-	//if err := d.Set("rule", resolveRules(retentionModel)); err != nil {
-	//	return err
-	//}
-
 	return fmt.Errorf("Resource not found %s", d.Id())
 }
 
 func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.GetImmutableTagRuleBody(d)
-
-	log.Printf("[DEBUG] Update Id: %+v\n", d.Id())
-	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	id := d.Id()
+	log.Printf("[DEBUG] Update Id: %+v\n", id)
+	_, _, err := apiClient.SendRequest("PUT", id, body, 200)
 	if err != nil {
 		return err
 	}
@@ -158,54 +153,3 @@ func resourceImmutableTagRuleDelete(d *schema.ResourceData, m interface{}) error
 	*/
 	return nil
 }
-
-//TODO
-/*
-func resolveRules(model models.Retention) []interface{} {
-	modelRules := &model.Rules
-	if modelRules != nil {
-		flatRules := make([]interface{}, len(*modelRules), len(*modelRules))
-
-		for i, modelRule := range *modelRules {
-			flatRule := make(map[string]interface{})
-
-			flatRule["disabled"] = modelRule.Disabled
-
-			switch modelRule.Template {
-			case "always":
-				flatRule["always_retain"] = true
-			case "latestPulledN":
-				flatRule["most_recently_pulled"] = modelRule.Params.LatestPulledN
-			case "latestPushedK":
-				flatRule["most_recently_pushed"] = modelRule.Params.LatestPushedK
-			case "nDaysSinceLastPull":
-				flatRule["n_days_since_last_pull"] = modelRule.Params.NDaysSinceLastPull
-			case "nDaysSinceLastPush":
-				flatRule["n_days_since_last_push"] = modelRule.Params.NDaysSinceLastPush
-			}
-
-			switch modelRule.TagSelectors[0].Decoration {
-			case "matches":
-				flatRule["tag_matching"] = modelRule.TagSelectors[0].Pattern
-			case "excludes":
-				flatRule["tag_excluding"] = modelRule.TagSelectors[0].Pattern
-			}
-
-			switch modelRule.ScopeSelectors.Repository[0].Decoration {
-			case "repoMatches":
-				flatRule["repo_matching"] = modelRule.ScopeSelectors.Repository[0].Pattern
-			case "repoExcludes":
-				flatRule["repo_excluding"] = modelRule.ScopeSelectors.Repository[0].Pattern
-			}
-
-			flatRule["untagged_artifacts"] = strings.Contains(modelRule.TagSelectors[0].Extras, "true")
-
-			flatRules[i] = flatRule
-		}
-
-		return flatRules
-	}
-
-	return make([]interface{}, 0)
-}
-*/
