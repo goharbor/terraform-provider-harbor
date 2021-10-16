@@ -2,19 +2,12 @@ package client
 
 import (
 	"log"
-	"regexp"
-	"strconv"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func GetTagImmutableRuleBody(d *schema.ResourceData) *models.ImmutableTagRule {
-	scope := d.Get("scope").(string)
-	re := regexp.MustCompile(`(?m)[0-9]+`)
-
-	id, _ := strconv.Atoi(re.FindString(scope))
-
+func GetImmutableTagRuleBody(d *schema.ResourceData) *models.ImmutableTagRule {
 	tags := []models.ImmutableTagRuleTagSelectors{}
 	tag := models.ImmutableTagRuleTagSelectors{
 		Kind: "doublestar",
@@ -50,10 +43,6 @@ func GetTagImmutableRuleBody(d *schema.ResourceData) *models.ImmutableTagRule {
 	scopeSelectorsRepository.Repository = append(scopeSelectorsRepository.Repository, repo)
 
 	body := models.ImmutableTagRule{
-		Scope: models.Scope{
-			Level: "project",
-			Ref:   id,
-		},
 		Disabled:                     d.Get("disabled").(bool),
 		ScopeSelectors:               scopeSelectorsRepository,
 		ImmutableTagRuleTagSelectors: tags,

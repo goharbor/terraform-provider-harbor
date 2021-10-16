@@ -3,7 +3,6 @@ package provider
 import (
 	"encoding/json"
 	"log"
-	"strconv"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -13,7 +12,7 @@ import (
 func resourceImmutableTagRule() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"scope": {
+			"project_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -56,10 +55,14 @@ func resourceImmutableTagRule() *schema.Resource {
 
 func resourceImmutableTagRuleCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	body := client.GetTagImmutableRuleBody(d)
+
+	projectid := checkProjectid(d.Get("project_id").(string))
+	path := projectid + models.PathImmutableTagRules
+
+	body := client.GetImmutableTagRuleBody(d)
 	id := ""
 
-	_, headers, err := apiClient.SendRequest("POST", models.PathImmutableTagRules, body, 201)
+	_, headers, err := apiClient.SendRequest("POST", path, body, 201)
 	if err != nil {
 		return err
 	}
@@ -88,23 +91,17 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 	// log.Printf("[DEBUG] %+v\n", resp)
 	// log.Printf("[DEBUG] %+v\n", jsonData)
 
-	if err := d.Set("scope", resolveImmutableTagRuleScope(immutableTagRuleModel)); err != nil {
-		return err
-	}
 	//TODO
 	//if err := d.Set("rule", resolveRules(retentionModel)); err != nil {
 	//	return err
 	//}
-
-	// SET works
-	// log.Printf("[DEBUG] %+v\n", d.Get("scope"))
 
 	return nil
 }
 
 func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	body := client.GetTagImmutableRuleBody(d)
+	body := client.GetImmutableTagRuleBody(d)
 
 	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
@@ -147,10 +144,6 @@ func resourceImmutableTagRuleDelete(d *schema.ResourceData, m interface{}) error
 		}
 	*/
 	return nil
-}
-
-func resolveImmutableTagRuleScope(model models.ImmutableTagRule) interface{} {
-	return models.PathProjects + "/" + strconv.Itoa(model.Scope.Ref)
 }
 
 //TODO
