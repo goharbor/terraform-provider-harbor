@@ -2,7 +2,10 @@ package provider
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -75,16 +78,29 @@ func resourceImmutableTagRuleCreate(d *schema.ResourceData, m interface{}) error
 func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	log.Printf("[DEBUG] Id: %+v\n", d.Id())
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	lastSlashIndex := strings.LastIndex(d.Id(), "/")
+	projectImmutableTagRulePath := d.Id()[0:lastSlashIndex]
+	tagId, err := strconv.Atoi(d.Id()[lastSlashIndex+1:])
 	if err != nil {
 		return err
 	}
+	log.Printf("[DEBUG] Path to immutable tag rules: %+v\n", projectImmutableTagRulePath)
 
-	var immutableTagRuleModel models.ImmutableTagRule
-	err = json.Unmarshal([]byte(resp), &immutableTagRuleModel)
+	resp, _, err := apiClient.SendRequest("GET", projectImmutableTagRulePath, nil, 200)
+	if err != nil {
+		return fmt.Errorf("Resource not found %s", projectImmutableTagRulePath)
+	}
+
+	var immutableTagRuleModels []models.ImmutableTagRule
+	err = json.Unmarshal([]byte(resp), &immutableTagRuleModels)
 	if err != nil {
 		return err
+	}
+	for _, rule := range immutableTagRuleModels {
+		if rule.Id == tagId {
+			log.Printf("[DEBUG] found tag id %d", tagId)
+			return nil
+		}
 	}
 
 	// GET works
@@ -96,7 +112,7 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 	//	return err
 	//}
 
-	return nil
+	return fmt.Errorf("Resource not found %s", d.Id())
 }
 
 func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error {
