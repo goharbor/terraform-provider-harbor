@@ -6,6 +6,7 @@ The Harbor provider is used to configure an instance of Harbor. The provider nee
 * [Resource: harbor_config_system](resources/config_system.md)
 * [Resource: harbor_config_email](resources/config_email.md)
 * [Resource: harbor_garbage_collection](resources/garbage_collection.md)
+* [Resource: harbor_immutable_tag_rule](resources/immutable_tag_rule.md)
 * [Resource: harbor_interrogation_services](resources/interrogation_services.md)
 * [Resource: harbor_label](resources/label.md)
 * [Resource: harbor_project_member_group](resources/project_member_group.md)
@@ -29,7 +30,7 @@ provider "harbor" {
 ## Argument Reference
 The following arguments are supported:
 
-* **url** - (Required) The url of the harbor 
+* **url** - (Required) The url of the harbor
 * **username** - (Required) The username to be used to access harbor
 * **password** - (Required) The password to be used to access harbor
 * **insecure** - (Optional) Choose to igorne certificate errors
