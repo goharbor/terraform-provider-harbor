@@ -4,7 +4,7 @@
 
 ```hcl
 resource "harbor_project" "main" {
-  name                = "acctest"
+	name = "acctest"
 }
 
 resource "harbor_immutable_tag_rule" "main" {
