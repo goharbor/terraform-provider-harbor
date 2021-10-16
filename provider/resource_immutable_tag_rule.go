@@ -99,6 +99,23 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 	for _, rule := range immutableTagRuleModels {
 		if rule.Id == tagId {
 			log.Printf("[DEBUG] found tag id %d", tagId)
+			d.Set("disabled", rule.Disabled)
+			d.Set("project_id", strings.ReplaceAll(projectImmutableTagRulePath, models.PathImmutableTagRules, ""))
+
+			switch rule.ImmutableTagRuleTagSelectors[0].Decoration {
+			case "matches":
+				d.Set("tag_matching", rule.ImmutableTagRuleTagSelectors[0].Pattern)
+			case "excludes":
+				d.Set("tag_excluding", rule.ImmutableTagRuleTagSelectors[0].Pattern)
+			}
+
+			switch rule.ScopeSelectors.Repository[0].Decoration {
+			case "repoMatches":
+				d.Set("repo_matching", rule.ScopeSelectors.Repository[0].Pattern)
+			case "excludes":
+				d.Set("repo_excluding", rule.ScopeSelectors.Repository[0].Pattern)
+			}
+
 			return nil
 		}
 	}
