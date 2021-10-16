@@ -119,37 +119,12 @@ func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error
 	return resourceImmutableTagRuleRead(d, m)
 }
 
-//TODO
 func resourceImmutableTagRuleDelete(d *schema.ResourceData, m interface{}) error {
-	/*
-		apiClient := m.(*client.Client)
+	apiClient := m.(*client.Client)
 
-		scope := d.Get("scope").(string)
-		project_id, err := strconv.Atoi(strings.ReplaceAll(scope, "/projects/", ""))
-
-		retention := d.Id()
-		retention_id, err := strconv.Atoi(strings.ReplaceAll(retention, "/retentions/", ""))
-
-		body := models.Retention{
-			Algorithm: "or",
-			Scope: models.Scope{
-				Level: "project",
-				Ref:   project_id,
-			},
-			Trigger: models.Trigger{
-				Kind: "Schedule",
-				Settings: models.Settings{
-					Cron: "",
-				},
-			},
-			Rules: []models.Rules{},
-			Id:    retention_id,
-		}
-
-		_, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
-		if err != nil {
-			return err
-		}
-	*/
+	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	if err != nil {
+		return err
+	}
 	return nil
 }
