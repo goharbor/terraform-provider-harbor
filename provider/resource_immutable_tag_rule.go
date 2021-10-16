@@ -103,10 +103,6 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	// GET works
-	// log.Printf("[DEBUG] %+v\n", resp)
-	// log.Printf("[DEBUG] %+v\n", jsonData)
-
 	//TODO
 	//if err := d.Set("rule", resolveRules(retentionModel)); err != nil {
 	//	return err
@@ -119,6 +115,7 @@ func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error
 	apiClient := m.(*client.Client)
 	body := client.GetImmutableTagRuleBody(d)
 
+	log.Printf("[DEBUG] Update Id: %+v\n", d.Id())
 	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
