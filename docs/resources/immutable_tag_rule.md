@@ -25,7 +25,7 @@ The following arguments are supported:
 * `scope` - (Required) The project id of which you would like to apply this policy.
 
 ## Import
-Harbor retention policy can be imported using the `project and immutabletagrule ids` eg,
+Harbor immutable tag rule can be imported using the `project and immutabletagrule ids` eg,
 
 `
 terraform import harbor_immutable_tag_rule.main /projects/4/immutabletagrules/25
