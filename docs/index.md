@@ -14,7 +14,7 @@ The Harbor provider is used to configure an instance of Harbor. The provider nee
 * [Resource: harbor_project](resources/project.md)
 * [Resource: harbor_registry](resources/registry.md)
 * [Resource: harbor_replication](resources/replication.md)
-* [Resource: harbor_retention_policy](resources/retention.md)
+* [Resource: harbor_retention_policy](resources/retention_policy.md)
 * [Resource: harbor_robot_account](resources/robot_account.md)
 * [Resource: harbor_tasks](resources/tasks.md)
 * [Resource: harbor_user](resources/user.md)
