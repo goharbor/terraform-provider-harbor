@@ -55,6 +55,7 @@ func Provider() *schema.Provider {
 			"harbor_retention_policy":       resourceRetention(),
 			"harbor_garbage_collection":     resourceGC(),
 			"harbor_label":                  resourceLabel(),
+			"harbor_immutable_tag_rule":     resourceImmutableTagRule(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"harbor_project":  dataProject(),
