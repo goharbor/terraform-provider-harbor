@@ -34,6 +34,8 @@ The following arguments are supported:
 
 * `vulnerability_scanning` - (Optional) Images will be scanned for vulnerabilities when push to harbor. Can be set to `"true"` or `"false"` (Default: true)
 
+* `deployment_security` - (Optional) Prevent deployment of images with vulnerability severity equal or higher than the specified value. Images must be scanned before this takes effect. Possible values: `critical`, `high`, `medium`, `low`, `none`. (Default: `""` - empty)
+
 * `registry_id` - (Optional) To enabled project as Proxy Cache
 
 * `storage_quota` - (Optional) The storage quota of the project in GB's
