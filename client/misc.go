@@ -10,18 +10,16 @@ func GetSchedule(schedule string) (typefmt string, cronfmt string) {
 	var CronStr string
 
 	switch strings.ToLower(schedule) {
-	case "hourly":
+	case "hourly", "0 0 * * * *":
 		TypeStr = "Hourly"
 		CronStr = "0 0 * * * *"
-	case "daily":
+	case "daily", "0 0 0 * * *":
 		TypeStr = "Daily"
 		CronStr = "0 0 0 * * *"
-	case "weekly":
+	case "weekly", "0 0 0 * * 0":
 		TypeStr = "Weekly"
 		CronStr = "0 0 0 * * 0"
-
-	}
-	if regexCron.MatchString(schedule) {
+	default:
 		TypeStr = "Custom"
 		CronStr = schedule
 	}

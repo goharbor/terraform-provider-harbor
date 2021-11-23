@@ -39,7 +39,7 @@ func TestAccRetentionUpdate(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(resourceHarborRetentionMain),
 					resource.TestCheckResourceAttr(
-						resourceHarborRetentionMain, "schedule", "daily"),
+						resourceHarborRetentionMain, "schedule", "Daily"),
 					resource.TestCheckResourceAttr(
 						resourceHarborRetentionMain, "rule.0.n_days_since_last_pull", "5"),
 					resource.TestCheckResourceAttr(
@@ -92,7 +92,7 @@ func testAccCheckRetentionBasic() string {
 	  
 	  resource "harbor_retention_policy" "main" {
 		  scope = harbor_project.main.id
-		  schedule = "daily"
+		  schedule = "Daily"
 		  rule {
 			  n_days_since_last_pull = 5
 			  repo_matching = "**"
