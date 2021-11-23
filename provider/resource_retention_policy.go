@@ -213,8 +213,12 @@ func resolveScope(model models.Retention) interface{} {
 	return models.PathProjects + "/" + strconv.Itoa(model.Scope.Ref)
 }
 
-func resolveSchedule(model models.Retention) interface{} {
-	return model.Trigger.Settings.Cron
+func resolveSchedule(model models.Retention) string {
+	fmt, _ := client.GetSchedule(model.Trigger.Settings.Cron)
+	if fmt == "Custom" {
+		return model.Trigger.Settings.Cron
+	}
+	return fmt
 }
 
 func resolveRules(model models.Retention) []interface{} {
