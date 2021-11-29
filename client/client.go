@@ -45,6 +45,7 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 
 	if c.insecure == true {
 		tr := &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 		client = &http.Client{Transport: tr}
