@@ -134,6 +134,8 @@ The following arguments are supported:
                   For kind `system` permissions, always use `/` as namespace.
                   Use `*` to match all projects.
 
+* **secret** - (string, optional) The secret of the robot account used for authentication. Defaults to random generated string from Harbor 
+  
 ### Access Arguments
 * **action** - (string, required) Eg. `push`, `pull`, `read`, etc. Check [available actions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go).
 
@@ -145,5 +147,5 @@ The following arguments are supported:
 ## Attributes Reference
 In addition to all argument, the following attributes are exported:
 
-* **secret** - The secret of the robot account used for authentication
+
 * **full_name** - Full name of the robot account which harbor generates including the robot prefix. Eg. `robot$project+name` or `harbor@project+name` (depending on your robot prefix).

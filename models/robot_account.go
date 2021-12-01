@@ -27,3 +27,7 @@ type RobotBodyResponse struct {
 	ExpiresAt    int    `json:"expires_at,omitempty"`
 	CreationTime string `json:"creation_time,omitempty"`
 }
+
+type RobotSecret struct {
+	Secret string `json:"secret"`
+}

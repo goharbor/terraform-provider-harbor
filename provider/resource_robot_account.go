@@ -48,8 +48,9 @@ func resourceRobotAccount() *schema.Resource {
 				Computed: true,
 			},
 			"secret": {
-				Type:      schema.TypeString,
-				Computed:  true,
+				Type:     schema.TypeString,
+				Optional: true,
+				// Computed:  true,
 				Sensitive: true,
 			},
 			"permissions": {
@@ -131,8 +132,20 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	if d.Get("secret").(string) != "" {
+		robotID := strconv.Itoa(jsonData.ID)
+		secret := models.RobotSecret{
+			Secret: d.Get("secret").(string),
+		}
+		_, _, err := apiClient.SendRequest("PATCH", "/robots/"+robotID, secret, 200)
+		if err != nil {
+			return err
+		}
+	} else {
+		d.Set("secret", jsonData.Secret)
+	}
+
 	d.SetId(id)
-	d.Set("secret", jsonData.Secret)
 	return resourceRobotAccountRead(d, m)
 }
 
@@ -168,6 +181,16 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
+	}
+
+	if d.HasChange("secret") {
+		secret := models.RobotSecret{
+			Secret: d.Get("secret").(string),
+		}
+		_, _, err := apiClient.SendRequest("PATCH", d.Id(), secret, 200)
+		if err != nil {
+			return err
+		}
 	}
 
 	return resourceRobotAccountRead(d, m)
