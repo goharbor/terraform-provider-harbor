@@ -5,6 +5,7 @@ package provider
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
@@ -33,7 +34,9 @@ func testAccCheckMemberGroupDestroy(s *terraform.State) error {
 }
 
 func TestAccMemberGroupBasic(t *testing.T) {
-	randStr := RandString(4)
+	randStr := randomString(4)
+	projectName := "acctest_project_" + strings.ToLower(randStr)
+	groupName := "acctest_group_" + strings.ToLower(randStr)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -41,7 +44,7 @@ func TestAccMemberGroupBasic(t *testing.T) {
 		CheckDestroy: testAccCheckMemberGroupDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckMemberGroupBasic("acctest_project_"+strings.ToLower(randStr), "acctest_group_"+strings.ToLower(randStr)),
+				Config: testAccCheckMemberGroupBasic(projectName, groupName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
@@ -53,7 +56,9 @@ func TestAccMemberGroupBasic(t *testing.T) {
 }
 
 func TestAccMemberGroupUpdate(t *testing.T) {
-	randStr := RandString(4)
+	randStr := randomString(4)
+	projectName := "acctest_project_" + strings.ToLower(randStr)
+	groupName := "acctest_group_" + strings.ToLower(randStr)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -61,7 +66,7 @@ func TestAccMemberGroupUpdate(t *testing.T) {
 		CheckDestroy: testAccCheckMemberGroupDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckMemberGroupBasic("acctest_project_"+strings.ToLower(randStr), "acctest_group_"+strings.ToLower(randStr)),
+				Config: testAccCheckMemberGroupBasic(projectName, groupName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
@@ -69,7 +74,7 @@ func TestAccMemberGroupUpdate(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCheckMemberGroupUpdate("acctest_project_"+strings.ToLower(randStr), "acctest_group_"+strings.ToLower(randStr)),
+				Config: testAccCheckMemberGroupUpdate(projectName, groupName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
@@ -80,15 +85,15 @@ func TestAccMemberGroupUpdate(t *testing.T) {
 	})
 }
 
-func testAccCheckMemberGroupBasic(projectName, groupName string) string {
+func testAccCheckMemberGroupBasic(projectName string, groupName string) string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
-		name = "%v"
+		name = "%s"
 	}
 	
 	resource "harbor_project_member_group" "main" {
 	  project_id    = harbor_project.main.id
-	  group_name    = "%v"
+	  group_name    = "%s"
 	  role          = "developer"
 	  type          = "oidc"
 	}
@@ -96,15 +101,15 @@ func testAccCheckMemberGroupBasic(projectName, groupName string) string {
 	`, projectName, groupName)
 }
 
-func testAccCheckMemberGroupUpdate(projectName, groupName string) string {
+func testAccCheckMemberGroupUpdate(projectName string, groupName string) string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
-		name = "%v"
+		name = "%s"
 	}
 	
 	resource "harbor_project_member_group" "main" {
 	  project_id    = harbor_project.main.id
-	  group_name    = "%v"
+	  group_name    = "%s"
 	  role          = "guest"
 	  type          = "oidc"
 	}
