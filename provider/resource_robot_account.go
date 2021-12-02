@@ -48,9 +48,8 @@ func resourceRobotAccount() *schema.Resource {
 				Computed: true,
 			},
 			"secret": {
-				Type:     schema.TypeString,
-				Optional: true,
-				// Computed:  true,
+				Type:      schema.TypeString,
+				Optional:  true,
 				Sensitive: true,
 			},
 			"permissions": {
