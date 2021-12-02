@@ -34,9 +34,7 @@ func testAccCheckMemberGroupDestroy(s *terraform.State) error {
 }
 
 func TestAccMemberGroupBasic(t *testing.T) {
-	randStr := randomString(4)
-	projectName := "acctest_project_" + strings.ToLower(randStr)
-	groupName := "acctest_group_" + strings.ToLower(randStr)
+	projectName, groupName := getProjectNGroupNames()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -56,9 +54,7 @@ func TestAccMemberGroupBasic(t *testing.T) {
 }
 
 func TestAccMemberGroupUpdate(t *testing.T) {
-	randStr := randomString(4)
-	projectName := "acctest_project_" + strings.ToLower(randStr)
-	groupName := "acctest_group_" + strings.ToLower(randStr)
+	projectName, groupName := getProjectNGroupNames()
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -115,4 +111,12 @@ func testAccCheckMemberGroupUpdate(projectName string, groupName string) string 
 	}
 
 	`, projectName, groupName)
+}
+
+func getProjectNGroupNames() (string, string) {
+	randStr := randomString(4)
+	projectName := "acctest_project_" + strings.ToLower(randStr)
+	groupName := "acctest_group_" + strings.ToLower(randStr)
+
+	return projectName, groupName
 }
