@@ -30,13 +30,7 @@ func TestAccProjectWebhook(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						harborProjectWebhook, "name", "acctest_webhook"),
 					resource.TestCheckResourceAttr(
-						harborProjectWebhook, "events_types.0", "DELETE_ARTIFACT"),
-					resource.TestCheckResourceAttr(
-						harborProjectWebhook, "events_types.1", "PULL_ARTIFACT"),
-					resource.TestCheckResourceAttr(
-						harborProjectWebhook, "events_types.2", "PUSH_ARTIFACT"),
-					resource.TestCheckResourceAttr(
-						harborProjectWebhook, "events_types.11", "TAG_RETENTION"),
+						harborProjectWebhook, "events_types.#", "12"),
 				),
 			},
 			{
@@ -46,11 +40,7 @@ func TestAccProjectWebhook(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						harborProjectWebhook, "name", "acctest_webhook"),
 					resource.TestCheckResourceAttr(
-						harborProjectWebhook, "events_types.0", "DELETE_ARTIFACT"),
-					resource.TestCheckResourceAttr(
-						harborProjectWebhook, "events_types.1", "PULL_ARTIFACT"),
-					resource.TestCheckResourceAttr(
-						harborProjectWebhook, "events_types.2", "PUSH_ARTIFACT"),
+						harborProjectWebhook, "events_types.#", "3"),
 				),
 			},
 		},
