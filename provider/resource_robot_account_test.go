@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
@@ -12,13 +13,15 @@ import (
 const harborRobotAccount = "harbor_robot_account.main"
 
 func TestAccRobotSystem(t *testing.T) {
+	randStr := randomString(4)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckRobotDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckRobotSystem(),
+				Config: testAccCheckRobotSystem("acctest_robot_" + strings.ToLower(randStr)),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists("harbor_project.main"),
 
@@ -32,13 +35,15 @@ func TestAccRobotSystem(t *testing.T) {
 }
 
 func TestAccRobotProject(t *testing.T) {
+	randStr := randomString(4)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckRobotDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckRobotProject(),
+				Config: testAccCheckRobotProject("acctest_robot_" + strings.ToLower(randStr)),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists("harbor_project.main"),
 
@@ -72,7 +77,7 @@ func testAccCheckRobotDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckRobotSystem() string {
+func testAccCheckRobotSystem(projectName string) string {
 	return fmt.Sprintf(`
 	resource "harbor_robot_account" "main" {
 	  name        = "test_robot_system"
@@ -113,12 +118,12 @@ func testAccCheckRobotSystem() string {
 	}
 
 	resource "harbor_project" "main" {
-	  name = "test_basic"
+	  name = "%v"
 	}
-	`)
+	`, projectName)
 }
 
-func testAccCheckRobotProject() string {
+func testAccCheckRobotProject(projectName string) string {
 	return fmt.Sprintf(`
 	resource "harbor_robot_account" "main" {
 	  name        = "test_robot_project"
@@ -139,7 +144,7 @@ func testAccCheckRobotProject() string {
 	}
 
 	resource "harbor_project" "main" {
-	  name = "test_basic"
+	  name = "%v"
 	}
-	`)
+	`, projectName)
 }

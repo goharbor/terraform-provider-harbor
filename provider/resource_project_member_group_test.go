@@ -1,9 +1,11 @@
+//go:build external_auth
 // +build external_auth
 
 package provider
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
@@ -32,13 +34,15 @@ func testAccCheckMemberGroupDestroy(s *terraform.State) error {
 }
 
 func TestAccMemberGroupBasic(t *testing.T) {
+	projectName, groupName := getProjectNGroupNames()
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckMemberGroupDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckMemberGroupBasic(),
+				Config: testAccCheckMemberGroupBasic(projectName, groupName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
@@ -50,13 +54,15 @@ func TestAccMemberGroupBasic(t *testing.T) {
 }
 
 func TestAccMemberGroupUpdate(t *testing.T) {
+	projectName, groupName := getProjectNGroupNames()
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckMemberGroupDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckMemberGroupBasic(),
+				Config: testAccCheckMemberGroupBasic(projectName, groupName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
@@ -64,7 +70,7 @@ func TestAccMemberGroupUpdate(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCheckMemberGroupUpdate(),
+				Config: testAccCheckMemberGroupUpdate(projectName, groupName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborProjectMemberGroupMain),
 					resource.TestCheckResourceAttr(
@@ -75,34 +81,42 @@ func TestAccMemberGroupUpdate(t *testing.T) {
 	})
 }
 
-func testAccCheckMemberGroupBasic() string {
+func testAccCheckMemberGroupBasic(projectName string, groupName string) string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
-		name = "test"
+		name = "%s"
 	}
 	
 	resource "harbor_project_member_group" "main" {
 	  project_id    = harbor_project.main.id
-	  group_name    = "testing"
+	  group_name    = "%s"
 	  role          = "developer"
 	  type          = "oidc"
 	}
 	 
-	`)
+	`, projectName, groupName)
 }
 
-func testAccCheckMemberGroupUpdate() string {
+func testAccCheckMemberGroupUpdate(projectName string, groupName string) string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
-		name = "test"
+		name = "%s"
 	}
 	
 	resource "harbor_project_member_group" "main" {
 	  project_id    = harbor_project.main.id
-	  group_name    = "testing"
+	  group_name    = "%s"
 	  role          = "guest"
 	  type          = "oidc"
 	}
 
-	`)
+	`, projectName, groupName)
+}
+
+func getProjectNGroupNames() (string, string) {
+	randStr := randomString(4)
+	projectName := "acctest_project_" + strings.ToLower(randStr)
+	groupName := "acctest_group_" + strings.ToLower(randStr)
+
+	return projectName, groupName
 }
