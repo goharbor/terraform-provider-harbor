@@ -105,7 +105,6 @@ func resourceProjectWebhookRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("name", jsonData.Name)
-	d.Set("project_id", jsonData.ProjectID)
 	d.Set("description", jsonData.Description)
 	d.Set("enabled", jsonData.Enabled)
 	d.Set("event_types", jsonData.EventTypes)
