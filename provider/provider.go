@@ -46,7 +46,7 @@ func Provider() *schema.Provider {
 			"harbor_project":                resourceProject(),
 			"harbor_project_member_group":   resourceMembersGroup(),
 			"harbor_project_member_user":    resourceMembersUser(),
-			"harbor_project_webhook":        resourceProjectWebhookWebhook(),
+			"harbor_project_webhook":        resourceProjectWebhook(),
 			"harbor_tasks":                  resourceTasks(),
 			"harbor_interrogation_services": resourceVuln(),
 			"harbor_robot_account":          resourceRobotAccount(),
