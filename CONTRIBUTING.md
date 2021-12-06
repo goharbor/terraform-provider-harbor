@@ -9,7 +9,7 @@ Create a github [issue](https://github.com/BESTSELLER/terraform-provider-harbor/
 Look through the Github issues for [bugs](https://github.com/BESTSELLER/terraform-provider-harbor/labels/bugs), [new resource](https://github.com/BESTSELLER/terraform-provider-harbor/labels/enhancement) or [help wanted](https://github.com/BESTSELLER/terraform-provider-harbor/labels/help%20wanted)
 
 ### Suggest a new resource or data type
-Create a github [issue](https://github.com/BESTSELLER/terraform-provider-harbor/issues) and label the with enhancement.
+Create a github [issue](https://github.com/BESTSELLER/terraform-provider-harbor/issues) and label the issue with enhancement.
 
 ### Write Documentation
 Create / update documentation to help people understand how to use the data / resource types.
