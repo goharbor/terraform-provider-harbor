@@ -33,6 +33,9 @@ resource "harbor_replication" "alpine" {
   filters {
     resource = "artifact"
   }
+  filters {
+    labels = ["qa"]
+  }
 }
  
 ```
@@ -58,7 +61,7 @@ The following arguments are supported:
 
 * **name** - (Optional) Filter on the name of the resource.
 * **tag** - (Optional) Filter on the tag/version of the resource.
-* **labels** - (Optional) Filter on the resource according to labels.
+* **labels** - (Optional, list ) Filter on the resource according to labels.
 * **resource** - (Optional) Filter on the resource type. Can be one of the following types. `chart`, `artifact`
 				
 

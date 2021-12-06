@@ -7,8 +7,10 @@ require (
 	github.com/aws/aws-sdk-go v1.36.1 // indirect
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.9.0
+	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mitchellh/mapstructure v1.4.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
+	github.com/zclconf/go-cty v1.10.0 // indirect
 	golang.org/x/mod v0.4.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19 // indirect
 	golang.org/x/tools v0.0.0-20210105210202-9ed45478a130 // indirect
