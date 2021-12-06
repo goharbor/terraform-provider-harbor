@@ -15,7 +15,7 @@ Create a github [issue](https://github.com/BESTSELLER/terraform-provider-harbor/
 Create / update documentation to help people understand how use the data / resource types.
 
 ### Write terraform acceptance Tests
-Write terraform acceptance tests so resources can be tested again a test instance of harbor to automatically validate the creation, update and deletion of terraform resources. For more information refer to terraform acceptance tests [here](https://www.terraform.io/docs/extend/testing/acceptance-tests/index.html). 
+Write terraform acceptance tests so resources can be tested against a test instance of harbor to automatically validate the creation, update and deletion of terraform resources. For more information refer to terraform acceptance tests [here](https://www.terraform.io/docs/extend/testing/acceptance-tests/index.html). 
 
 ### Pull requests
 Create meaningful Pull Request titles and link issues as we use these to create release notes.
