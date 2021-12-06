@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -44,7 +45,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 
 		name := data["name"].(string)
 		tag := data["tag"].(string)
-		label := data["label"].(string)
+		label := data["labels"].([]interface{})
 		resource := data["resource"].(string)
 
 		if name != "" {
@@ -55,9 +56,13 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 			filter.Type = "tag"
 			filter.Value = tag
 		}
-		if label != "" {
+		if len(label) > 0 {
 			filter.Type = "label"
-			filter.Value = label
+			filter.Value = make([]string, 0)
+			for _, v := range label {
+				filter.Value = append(filter.Value.([]string), fmt.Sprintf("%v", v))
+			}
+
 		}
 		if resource != "" {
 			filter.Type = "resource"

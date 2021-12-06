@@ -25,6 +25,6 @@ type ReplicationBody struct {
 }
 
 type ReplicationFilters struct {
-	Type  string `json:"type,omitempty"`
-	Value string `json:"value,omitempty"`
+	Type  string      `json:"type,omitempty"`
+	Value interface{} `json:"value,omitempty"`
 }
