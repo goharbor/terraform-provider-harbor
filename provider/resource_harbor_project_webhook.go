@@ -44,14 +44,6 @@ func resourceProjectWebhook() *schema.Resource {
 			"notify_type": {
 				Type:     schema.TypeString,
 				Required: true,
-				// ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
-				// 	v := strings.ToLower(val.(string))
-
-				// 	if v != "http" || v != "slack" {
-				// 		errs = append(errs, fmt.Errorf("%v must be either http or slack, got: %v:", key, v))
-				// 	}
-				// 	return
-				// },
 			},
 			"auth_header": {
 				Type:     schema.TypeString,
