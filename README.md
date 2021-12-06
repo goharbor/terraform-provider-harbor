@@ -9,3 +9,8 @@ A Harbor provider for Terraform. Allows you to configure and manage a Harbor ins
 
 ## Usage
 [See the docs for usage information](./docs).
+
+## Contributing
+Everyone is welcome to contribute to this repository. Feel free to raise [issues](https://github.com/BESTSELLER/terraform-provider-harbor/issues) or to submit [Pull Requests.](https://github.com/BESTSELLER/terraform-provider-harbor/pulls)
+
+See Contributing guide lines [here](./CONTRIBUTING.md)
