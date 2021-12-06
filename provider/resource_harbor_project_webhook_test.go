@@ -13,7 +13,7 @@ import (
 const harborProjectWebhook = "harbor_project_webhook.main"
 
 func TestAccProjectWebhook(t *testing.T) {
-	randStr := randomString(4)
+	randStr := randomString(6)
 	projectName := "acctest_webhook_" + strings.ToLower(randStr)
 
 	resource.Test(t, resource.TestCase{
