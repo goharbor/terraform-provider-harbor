@@ -92,7 +92,8 @@ func testAccCheckProjectWebhook(projectName string) string {
 		  "TAG_RETENTION"
 		]
 	  
-	  }
+	}
+
 	resource "harbor_project" "main" {
 	  name = "%v"
 	}
@@ -114,7 +115,8 @@ func testAccCheckProjectWebhookUpdate(projectName string) string {
 		  "PUSH_ARTIFACT",
 		]
 	  
-	  }
+	}
+
 	resource "harbor_project" "main" {
 	  name = "%v"
 	}
