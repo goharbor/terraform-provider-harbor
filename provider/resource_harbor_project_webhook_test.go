@@ -29,6 +29,8 @@ func TestAccProjectWebhook(t *testing.T) {
 					testAccCheckResourceExists(harborProjectWebhook),
 					resource.TestCheckResourceAttr(
 						harborProjectWebhook, "name", "acctest_webhook"),
+					resource.TestCheckResourceAttr(
+						harborProjectWebhook, "events_types.#", "12"),
 				),
 			},
 			{
@@ -37,6 +39,8 @@ func TestAccProjectWebhook(t *testing.T) {
 					testAccCheckResourceExists(harborProjectWebhook),
 					resource.TestCheckResourceAttr(
 						harborProjectWebhook, "name", "acctest_webhook"),
+					resource.TestCheckResourceAttr(
+						harborProjectWebhook, "events_types.#", "3"),
 				),
 			},
 		},
