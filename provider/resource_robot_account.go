@@ -89,7 +89,6 @@ func resourceRobotAccount() *schema.Resource {
 					},
 				},
 				Required: true,
-				ForceNew: true,
 			},
 		},
 		Create: resourceRobotAccountCreate,
