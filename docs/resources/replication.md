@@ -50,8 +50,9 @@ The following arguments are supported:
 * **schedule** - (Optional) The scheduled time of when the container register will be push / pull. In cron base format. Hourly `"0 0 * * * *"`, Daily `"0 0 0 * * *"`, Monthly `"0 0 0 * * 0"`
 * **override** - (Optional) Specify whether to override the resources at the destination if a resources with the same name exist. Can be set to `true` or `false` (Default: `true`)
 * **enabled** - (Optional) Specify whether the replication is enabled. Can be set to `true` or `false` (Default: `true`)
-* **description** (Optional) Write about description of the replication policy.
-* **dest_namespace** (Optional) Specify the destination namespace. if empty, the resource will be put under the same namespace as the source.
+* **description** - (Optional) Write about description of the replication policy.
+* **dest_namespace** - (Optional) Specify the destination namespace. if empty, the resource will be put under the same namespace as the source.
+* **deletion** - (Optional) Specify whether to delete the remote resources when locally deleted. Can be set to `true` or `false` (Default: `false`)
 
 * **filters** - (Optional) A collection of `filters` block as documented below.
 
