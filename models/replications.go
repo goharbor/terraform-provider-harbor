@@ -5,6 +5,7 @@ var PathReplication = "/replication/policies"
 type ReplicationBody struct {
 	Name        string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
+	ID          int    `json:"id"`
 	SrcRegistry struct {
 		ID int `json:"id,omitempty"`
 	} `json:"src_registry,omitempty"`
@@ -18,7 +19,7 @@ type ReplicationBody struct {
 			Cron string `json:"cron,omitempty"`
 		} `json:"trigger_settings,omitempty"`
 	} `json:"trigger,omitempty"`
-	Enabled  bool                 `json:"enabled,omitempty"`
+	Enabled  bool                 `json:"enabled"`
 	Deletion bool                 `json:"deletion,omitempty"`
 	Override bool                 `json:"override,omitempty"`
 	Filters  []ReplicationFilters `json:"filters,omitempty"`

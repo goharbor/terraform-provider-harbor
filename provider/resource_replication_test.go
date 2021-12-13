@@ -102,7 +102,7 @@ func testAccCheckReplicationUpdate() string {
 }
 
 func TestDestinationNamespace(t *testing.T) {
-	var scheduleType = "event_based"
+	var scheduleType = "* 0/15 * * * *"
 	var destNamepace = "gcp-project"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
