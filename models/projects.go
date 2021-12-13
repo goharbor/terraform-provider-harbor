@@ -33,6 +33,7 @@ type ProjectsBodyResponses struct {
 	Deleted            bool   `json:"deleted"`
 	OwnerID            int    `json:"owner_id"`
 	RepoCount          int    `json:"repo_count"`
+	RegistryID         int    `json:"registry_id"`
 	CreationTime       string `json:"creation_time"`
 	Togglable          bool   `json:"togglable"`
 	ProjectID          int    `json:"project_id"`
