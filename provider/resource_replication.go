@@ -146,7 +146,7 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("registry_id", destRegistryID)
 	}
 
-	if jsonDataReplication.Trigger.Type != "manual" {
+	if jsonDataReplication.Trigger.Type == "scheduled" {
 		d.Set("schedule", jsonDataReplication.Trigger.TriggerSettings.Cron)
 	} else {
 		d.Set("schedule", "manual")
