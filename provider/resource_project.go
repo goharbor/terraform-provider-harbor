@@ -24,8 +24,9 @@ func resourceProject() *schema.Resource {
 			},
 			"registry_id": {
 				Type:     schema.TypeInt,
-				Optional: true,
+				Computed: true,
 				ForceNew: true,
+				Optional: true,
 			},
 			"public": {
 				Type:     schema.TypeString,
@@ -69,7 +70,7 @@ func resourceProject() *schema.Resource {
 		Update: resourceProjectUpdate,
 		Delete: resourceProjectDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }
@@ -127,6 +128,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", jsonData.ProjectID)
+	d.Set("registry_id", jsonData.RegistryID)
 	d.Set("public", jsonData.Metadata.Public)
 	d.Set("vulnerability_scanning", vuln)
 	d.Set("enable_content_trust", trust)
