@@ -146,12 +146,17 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("registry_id", destRegistryID)
 	}
 
+	if jsonDataReplication.Trigger.Type != "manual" {
+		d.Set("schedule", jsonDataReplication.Trigger.TriggerSettings.Cron)
+	} else {
+		d.Set("schedule", "manual")
+	}
+
 	d.Set("replication_policy_id", jsonDataReplication.ID)
 	d.Set("enabled", jsonDataReplication.Enabled)
 	d.Set("name", jsonDataReplication.Name)
 	d.Set("deletion", jsonDataReplication.Deletion)
 	d.Set("override", jsonDataReplication.Override)
-	d.Set("schedule", jsonDataReplication.Trigger.Type)
 
 	return nil
 }
