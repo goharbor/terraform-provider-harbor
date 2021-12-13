@@ -89,6 +89,9 @@ func resourceReplication() *schema.Resource {
 		Read:   resourceReplicationRead,
 		Update: resourceReplicationUpdate,
 		Delete: resourceReplicationDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }
 
@@ -126,7 +129,30 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
-	d.Set("replication_policy_id", jsonData.ID)
+	var jsonDataReplication models.ReplicationBody
+	err = json.Unmarshal([]byte(resp), &jsonDataReplication)
+	if err != nil {
+		return fmt.Errorf("Resource not found %s", d.Id())
+	}
+
+	destRegistryID := jsonDataReplication.DestRegistry.ID
+
+	if destRegistryID == 0 {
+		d.Set("action", "pull")
+		d.Set("registry_id", jsonDataReplication.SrcRegistry.ID)
+
+	} else {
+		d.Set("action", "push")
+		d.Set("registry_id", destRegistryID)
+	}
+
+	d.Set("replication_policy_id", jsonDataReplication.ID)
+	d.Set("enabled", jsonDataReplication.Enabled)
+	d.Set("name", jsonDataReplication.Name)
+	d.Set("deletion", jsonDataReplication.Deletion)
+	d.Set("override", jsonDataReplication.Override)
+	d.Set("schedule", jsonDataReplication.Trigger.Type)
+
 	return nil
 }
 
