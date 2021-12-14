@@ -1,10 +1,18 @@
 package models
 
-type ProjectMembersBody struct {
+type ProjectMembersBodyPost struct {
 	ID          int                     `json:"id,omitempty"`
 	RoleID      int                     `json:"role_id,omitempty"`
 	GroupMember ProjectMembersBodyGroup `json:"member_group,omitempty"`
 	UserMembers ProjectMemberUsersGroup `json:"member_user,omitempty"`
+}
+
+type ProjectMembersBodyResponses struct {
+	ID          int                     `json:"id,omitempty"`
+	RoleID      int                     `json:"role_id,omitempty"`
+	ProjectID   int                     `json:"project_id,omitempty"`
+	EntityType  string                  `json:"entity_type,omitempty"`
+	EntityName  string                  `json:"entity_name,omitempty"`
 }
 
 type ProjectMembersBodyGroup struct {
@@ -17,3 +25,5 @@ type ProjectMembersBodyGroup struct {
 type ProjectMemberUsersGroup struct {
 	UserName string `json:"username,omitempty"`
 }
+
+
