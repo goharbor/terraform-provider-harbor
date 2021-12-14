@@ -88,7 +88,7 @@ func testAccCheckMemberGroupBasic(projectName string, groupName string) string {
 	}
 	
 	resource "harbor_project_member_group" "main" {
-	  project_id    = harbor_project.main.id
+	  project_id    = harbor_project.main.project_id
 	  group_name    = "%s"
 	  role          = "developer"
 	  type          = "oidc"
@@ -104,7 +104,7 @@ func testAccCheckMemberGroupUpdate(projectName string, groupName string) string 
 	}
 	
 	resource "harbor_project_member_group" "main" {
-	  project_id    = harbor_project.main.id
+	  project_id    = harbor_project.main.project_id
 	  group_name    = "%s"
 	  role          = "guest"
 	  type          = "oidc"

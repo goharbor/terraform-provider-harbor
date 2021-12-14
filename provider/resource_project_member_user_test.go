@@ -89,7 +89,7 @@ func testAccCheckMemberUserBasic() string {
 	  }
 
 	  resource "harbor_project_member_user" "main" {
-		project_id = harbor_project.main.id
+		project_id = harbor_project.main.project_id
 		role       = "developer"
 		user_name = harbor_user.main.username
 	  }	  
@@ -111,7 +111,7 @@ func testAccCheckMemberUserUpdate() string {
 	  }
 
 	  resource "harbor_project_member_user" "main" {
-		project_id = harbor_project.main.id
+		project_id = harbor_project.main.project_id
 		role       = "guest"
 		user_name = harbor_user.main.username
 	  }	  
