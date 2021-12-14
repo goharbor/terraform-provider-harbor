@@ -64,6 +64,9 @@ func resourceMembersGroup() *schema.Resource {
 		Read:   resourceMembersGroupRead,
 		Update: resourceMembersGroupUpdate,
 		Delete: resourceMembersGroupDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 	}
 }
 

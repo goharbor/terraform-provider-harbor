@@ -22,3 +22,10 @@ The following arguments are supported:
 * **project_id** - (Required) The project id of the project that the entity will have access to.
 
 * **role** - (Required) The premissions that the entity will be granted.
+
+## Import
+Harbor project member user can be imported using the `project id` and `member id` eg,
+
+`
+terraform import harbor_project_member_user.main /projects/10/members/200
+`

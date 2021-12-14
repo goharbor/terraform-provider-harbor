@@ -43,6 +43,9 @@ func resourceMembersUser() *schema.Resource {
 		Read:   resourceMembersUserRead,
 		Update: resourceMembersUserUpdate,
 		Delete: resourceMembersUserDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 	}
 }
 

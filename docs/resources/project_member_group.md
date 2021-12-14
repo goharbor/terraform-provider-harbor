@@ -29,3 +29,10 @@ The following arguments are supported:
 * **ldap_group_dn** - (Optional) The distinguished name of the group within AD/LDAP 
 
 `NOTE: oidc group type can only be used with harbor version v1.10.1 and above`
+
+## Import
+Harbor project member group can be imported using the `project id` and `member id` eg,
+
+`
+terraform import harbor_project_member_group.main /projects/10/members/200
+`
