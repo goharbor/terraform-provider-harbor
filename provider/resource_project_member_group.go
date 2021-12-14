@@ -3,6 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
@@ -96,13 +97,15 @@ func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
-	var jsonData models.ProjectMembersBody
+	var jsonData models.ProjectMembersBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
 	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
+	d.Set("project_id", strconv.Itoa(jsonData.ProjectID))
+	d.Set("group_name", jsonData.EntityName)
 	return nil
 }
 
