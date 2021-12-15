@@ -86,7 +86,7 @@ func resourceMembersUserRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
-	d.Set("project_id", strconv.Itoa(jsonData.ProjectID))
+	d.Set("project_id", checkProjectid(strconv.Itoa(jsonData.ProjectID)))
 	d.Set("user_name", jsonData.EntityName)
 	return nil
 }
