@@ -8,6 +8,11 @@ Harbor supports different levels of robot accounts. Currently `system` and `proj
 Introduced in harbor 2.2.0, system level robot accounts can have basically [all available permissions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go) in harbor and are not dependent on a single project.
 
 ```hcl
+resource "random_password" "password" {
+  length  = 12
+  special = false
+}
+
 resource "harbor_project" "main" {
     name = "main"
 }
@@ -16,6 +21,7 @@ resource "harbor_robot_account" "system" {
   name        = "example-system"
   description = "system level robot account"
   level       = "system"
+  secret      = resource.random_password.password.result
   permissions {
     access {
       action   = "create"
@@ -125,6 +131,10 @@ The following arguments are supported:
   ```
   **Note, that for `project` level accounts, only one `permission` block is allowed!**
 
+
+
+* **secret** - (string, optional) The secret of the robot account used for authentication. Defaults to random generated string from Harbor
+
 ### Permissions Arguments
 * **access** - (block, required) Define one or multiple [access blocks](#access-arguments).
 
@@ -132,9 +142,7 @@ The following arguments are supported:
 
 * **namespace** - (string, required) namespace is the name of your project.
                   For kind `system` permissions, always use `/` as namespace.
-                  Use `*` to match all projects.
-
-* **secret** - (string, optional) The secret of the robot account used for authentication. Defaults to random generated string from Harbor 
+                  Use `*` to match all projects. 
   
 ### Access Arguments
 * **action** - (string, required) Eg. `push`, `pull`, `read`, etc. Check [available actions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go).
