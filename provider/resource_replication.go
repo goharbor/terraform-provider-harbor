@@ -153,6 +153,7 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
                         d.Set("schedule", "event_based")
                 default:
                         d.Set("schedule", "manual")
+	}
 
 	d.Set("replication_policy_id", jsonDataReplication.ID)
 	d.Set("enabled", jsonDataReplication.Enabled)
