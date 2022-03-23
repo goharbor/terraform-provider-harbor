@@ -46,6 +46,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		name := data["name"].(string)
 		tag := data["tag"].(string)
 		label := data["labels"].([]interface{})
+		decoration := data["decoration"].(string)
 		resource := data["resource"].(string)
 
 		if name != "" {
@@ -55,6 +56,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		if tag != "" {
 			filter.Type = "tag"
 			filter.Value = tag
+			filter.Decoration = decoration
 		}
 		if len(label) > 0 {
 			filter.Type = "label"
@@ -62,7 +64,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 			for _, v := range label {
 				filter.Value = append(filter.Value.([]string), fmt.Sprintf("%v", v))
 			}
-
+			filter.Decoration = decoration
 		}
 		if resource != "" {
 			filter.Type = "resource"

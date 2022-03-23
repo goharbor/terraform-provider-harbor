@@ -77,6 +77,10 @@ func resourceReplication() *schema.Resource {
 								Type: schema.TypeString,
 							},
 						},
+						"decoration": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"resource": {
 							Type:     schema.TypeString,
 							Optional: true,
