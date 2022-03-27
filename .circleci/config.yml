@@ -64,7 +64,7 @@ jobs:
 
   spellchecker:
     docker:
-      - image: cimg/python:3.10.2
+      - image: cimg/python:3.10.3
     steps:
       - checkout
       - run:
