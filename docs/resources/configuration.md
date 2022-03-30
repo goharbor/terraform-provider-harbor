@@ -26,7 +26,7 @@ resource "harbor_config_auth" "ldap" {
   ldap_search_password = "Not@SecurePassw0rd"
   ldap_base_dn         = "dc=example,dc=org"
   ldap_uid             = "email"
-  ldap_verify_cert     = false
+  ldap_verify_cert     = "false"
 }
 ```
 
