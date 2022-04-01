@@ -5,7 +5,7 @@ Harbor supports different levels of robot accounts. Currently `system` and `proj
 ## Example Usage
 
 ### System Level
-Introduced in harbor 2.2.0, system level robot accounts can have basically [all available permissions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go) in harbor and are not dependent on a single project.
+Introduced in harbor 2.2.0, system level robot accounts can have basically [all available permissions](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go) in harbor and are not dependent on a single project.
 
 ```hcl
 resource "random_password" "password" {
@@ -66,7 +66,7 @@ The above example, creates a system level robot account with permissions to
 ### Project Level
 
 Other than system level robot accounts, project level robot accounts can interact on project level only.
-The [available permissions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go) are mostly the same as for system level robots.
+The [available permissions](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go) are mostly the same as for system level robots.
 
 
 ```hcl
@@ -145,9 +145,9 @@ The following arguments are supported:
                   Use `*` to match all projects. 
   
 ### Access Arguments
-* **action** - (string, required) Eg. `push`, `pull`, `read`, etc. Check [available actions](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go).
+* **action** - (string, required) Eg. `push`, `pull`, `read`, etc. Check [available actions](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go).
 
-* **resource** - (string, required) Eg. `repository`, `helm-chart`, `labels`, etc. Check [available resources](https://github.com/goharbor/harbor/blob/master/src/common/rbac/const.go).
+* **resource** - (string, required) Eg. `repository`, `helm-chart`, `labels`, etc. Check [available resources](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go).
 
 * **effect** - (string, optional) Either `allow` or `deny`. Defaults to `allow`.
 
