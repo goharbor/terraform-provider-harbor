@@ -5,7 +5,7 @@ Harbor supports different levels of robot accounts. Currently `system` and `proj
 ## Example Usage
 
 ### System Level
-Introduced in harbor 2.2.0, system level robot accounts can have basically [all available permissions](https://github.com/goharbor/harbor/blob/main/src/common/rbac/const.go) in harbor and are not dependent on a single project.
+Introduced in harbor 2.2.0, system level robot accounts can have basically [all available permissions](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go) in harbor and are not dependent on a single project.
 
 ```hcl
 resource "random_password" "password" {
