@@ -147,7 +147,7 @@ The following arguments are supported:
 ### Access Arguments
 * **action** - (string, required) Eg. `push`, `pull`, `read`, etc. Check [available actions](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go).
 
-* **resource** - (string, required) Eg. `repository`, `helm-chart`, `labels`, etc. Check [available resources](https://github.com/goharbor/harbor/blob/main/src/common/rbac/const.go).
+* **resource** - (string, required) Eg. `repository`, `helm-chart`, `labels`, etc. Check [available resources](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go).
 
 * **effect** - (string, optional) Either `allow` or `deny`. Defaults to `allow`.
 
