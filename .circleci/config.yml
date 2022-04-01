@@ -51,7 +51,7 @@ jobs:
 
   acceptance_test:
     docker:
-      - image: cimg/golang:1.17
+      - image: cimg/go:1.17
     steps:
       - checkout
       - attach_workspace:
