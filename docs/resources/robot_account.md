@@ -66,7 +66,7 @@ The above example, creates a system level robot account with permissions to
 ### Project Level
 
 Other than system level robot accounts, project level robot accounts can interact on project level only.
-The [available permissions](https://github.com/goharbor/harbor/blob/main/src/common/rbac/const.go) are mostly the same as for system level robots.
+The [available permissions](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go) are mostly the same as for system level robots.
 
 
 ```hcl
