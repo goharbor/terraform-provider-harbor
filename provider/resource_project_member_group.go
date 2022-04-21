@@ -42,9 +42,13 @@ func resourceMembersGroup() *schema.Resource {
 				Required: true,
 				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
 					v := val.(string)
-					if v != "projectadmin" && v != "developer" && v != "guest" && v != "master" && v != "limitedguest" {
-						errs = append(errs, fmt.Errorf("%q must be either projectadmin, developer, guest, limitedguest or master, got: %s", key, v))
+					validRoles := []string{"projectadmin", "maintainer", "developer", "guest", "master", "limitedguest"}
+					for _, r := range validRoles {
+						if v == r {
+							return
+						}
 					}
+					errs = append(errs, fmt.Errorf("%q must be one of %v, got: %s", key, validRoles, v))
 					return
 				},
 			},
