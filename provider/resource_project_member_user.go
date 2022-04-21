@@ -32,7 +32,7 @@ func resourceMembersUser() *schema.Resource {
 				Required: true,
 				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
 					v := val.(string)
-					validRoles := []string{"projectadmin", "maintainer", "developer", "guest", "master", "limitedguest"}
+					validRoles := []string{"projectadmin", "developer", "guest", "maintainer", "limitedguest"}
 					for _, r := range validRoles {
 						if v == r {
 							return
