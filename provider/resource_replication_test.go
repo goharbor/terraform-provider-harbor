@@ -128,7 +128,7 @@ func testReplicationPolicyDestinationNamespace(scheduleType string, destNamepace
 	return fmt.Sprintf(`
 	resource "harbor_registry" "main" {
 		provider_name = "harbor"
-		name = "harbor-test"
+		name = "harbor-test-rep-pol"
 		endpoint_url = "%s"
 	  }
 

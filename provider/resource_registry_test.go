@@ -24,7 +24,7 @@ func TestAccRegistryBasic(t *testing.T) {
 
 					testAccCheckResourceExists(harborRegistryMain),
 					resource.TestCheckResourceAttr(
-						harborRegistryMain, "name", "harbor-test"),
+						harborRegistryMain, "name", "harbor-test-reg"),
 				),
 			},
 			{
