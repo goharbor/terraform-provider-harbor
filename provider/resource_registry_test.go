@@ -24,7 +24,7 @@ func TestAccRegistryBasic(t *testing.T) {
 
 					testAccCheckResourceExists(harborRegistryMain),
 					resource.TestCheckResourceAttr(
-						harborRegistryMain, "name", "harbor-test"),
+						harborRegistryMain, "name", "harbor-test-reg"),
 				),
 			},
 			{
@@ -63,7 +63,7 @@ func testAccCheckRegistryBasic() string {
 
 	resource "harbor_registry" "main" {
 		provider_name = "harbor"
-		name = "harbor-test"
+		name = "harbor-test-reg"
 		endpoint_url = "%s"
 	  }
 
