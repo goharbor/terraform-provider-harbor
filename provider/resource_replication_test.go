@@ -86,7 +86,7 @@ func testAccCheckReplicationUpdate() string {
 
 	resource "harbor_registry" "main" {
 		provider_name = "harbor"
-		name = "harbor-test"
+		name = "harbor-test-replication"
 		endpoint_url = "%s"
 	  }
 
