@@ -33,19 +33,19 @@ func NewClient(url string, username string, password string, insecure bool) *Cli
 }
 
 // SendRequest send a http request
-func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, respheaders string, err error) {
+func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, respheaders string, returnedStatusCode int, err error) {
 	url := c.url + path
 	client := &http.Client{}
 
 	b := new(bytes.Buffer)
 	err = json.NewEncoder(b).Encode(payload)
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
 	if c.insecure == true {
 		tr := &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
+			Proxy:           http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 		client = &http.Client{Transport: tr}
@@ -53,7 +53,7 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 
 	req, err := http.NewRequest(method, url, b)
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
 	req.SetBasicAuth(c.username, c.password)
@@ -61,12 +61,12 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", "", err
+		return "", "", resp.StatusCode, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", "", err
+		return "", "", resp.StatusCode, err
 	}
 	resp.Body.Close()
 
@@ -75,17 +75,17 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 	respHeaders := resp.Header
 	headers, err := json.Marshal(respHeaders)
 	if err != nil {
-		return "", "", err
+		return "", "", resp.StatusCode, err
 	}
 
 	if statusCode != 0 {
 		if resp.StatusCode != statusCode {
 
-			return "", "", fmt.Errorf("[ERROR] unexpected status code got: %v expected: %v \n %v", resp.StatusCode, statusCode, strbody)
+			return "", "", 0, fmt.Errorf("[ERROR] unexpected status code got: %v expected: %v \n %v", resp.StatusCode, statusCode, strbody)
 		}
 	}
 
-	return strbody, string(headers), nil
+	return strbody, string(headers), resp.StatusCode, nil
 }
 
 // GetID gets the resource id from location response header
