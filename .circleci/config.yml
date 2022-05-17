@@ -51,7 +51,7 @@ jobs:
 
   acceptance_test:
     docker:
-      - image: circleci/golang:1.14
+      - image: cimg/go:1.17
     steps:
       - checkout
       - attach_workspace:
@@ -64,7 +64,7 @@ jobs:
 
   spellchecker:
     docker:
-      - image: cimg/python:3.9.7
+      - image: cimg/python:3.10.2
     steps:
       - checkout
       - run:

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"encoding/json"
 	"log"
 	"strconv"
@@ -75,20 +76,47 @@ func (client *Client) UpdateStorageQuota(d *schema.ResourceData) (err error) {
 
 	if jsonData.QuotaPerProjectEnable.Value == true {
 		if d.HasChange("storage_quota") {
-			quotaID := "/quotas/" + strings.Replace(d.Id(), "/projects", "", -1)
+			projectID := strings.Replace(d.Id(), "/projects/", "", -1)
+			page := 1
 
-			storage := d.Get("storage_quota").(int)
-			if storage > 0 {
-				storage *= 1073741824 // GB
-			}
-			quota := models.Hard{
-				Storage: int64(storage),
-			}
-			body := models.StorageQuota{quota}
+			for {
+				quotasPath := fmt.Sprintf("/quotas/?page=%d&page_size=100", page)
 
-			_, _, err := client.SendRequest("PUT", quotaID, body, 200)
-			if err != nil {
-				return err
+				resp, _, err := client.SendRequest("GET", quotasPath, nil, 200)
+				if err != nil {
+					return err
+				}
+
+				var quotaResponse []models.QuotaResponse
+				if err := json.Unmarshal([]byte(resp), &quotaResponse); err != nil {
+					return err
+				}
+
+				if len(quotaResponse) == 0 {
+					return nil
+				}
+
+				for _, q := range quotaResponse {
+					pid := strconv.Itoa(q.Ref.ID)
+					if pid == projectID {
+						quotaID := "/quotas/" + strconv.Itoa(q.ID)
+						storage := d.Get("storage_quota").(int)
+						if storage > 0 {
+							storage *= 1073741824 // GB
+						}
+						quota := models.Hard{
+							Storage: int64(storage),
+						}
+						body := models.StorageQuota{quota}
+
+						_, _, err = client.SendRequest("PUT", quotaID, body, 200)
+						if err != nil {
+							return err
+						}
+						break
+					}
+				}
+				page++
 			}
 		}
 

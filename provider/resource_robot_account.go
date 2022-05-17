@@ -103,7 +103,7 @@ func resourceRobotAccount() *schema.Resource {
 
 func checkProjectid(id string) (projecid string) {
 	path := "/projects/"
-	if strings.Contains(id, path) == false {
+	if !strings.Contains(id, path) {
 		id = path + id
 	}
 	return id
@@ -153,7 +153,8 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 
 	robot, err := getRobot(d, apiClient)
 	if err != nil {
-		return err
+		d.SetId("")
+		return nil
 	}
 
 	d.Set("robot_id", strconv.Itoa(robot.ID))
@@ -169,7 +170,7 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 
 	// if name not changed, use robot account name from api, otherwise it would always trigger a recreation,
 	// since harbor does internally attach the robot account prefix to it´s names
-	if false == d.HasChange("name") {
+	if !d.HasChange("name") {
 		robot, err := getRobot(d, apiClient)
 		if err != nil {
 			return err
@@ -212,7 +213,7 @@ func getRobot(d *schema.ResourceData, apiClient *client.Client) (models.RobotBod
 	var jsonData models.RobotBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return models.RobotBody{}, fmt.Errorf("Resource not found %s", d.Id())
+		return models.RobotBody{}, fmt.Errorf("resource not found %s", d.Id())
 	}
 	return jsonData, nil
 }

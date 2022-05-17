@@ -37,7 +37,7 @@ resource "harbor_replication" "alpine" {
     labels = ["qa"]
   }
 }
- 
+
 ```
 
 ## Argument Reference
@@ -62,16 +62,18 @@ The following arguments are supported:
 
 * **name** - (Optional) Filter on the name of the resource.
 * **tag** - (Optional) Filter on the tag/version of the resource.
+  * **decoration** - (Optional) Matches or excludes the result. Can be one of the following. `matches`, `excludes`
 * **labels** - (Optional, list ) Filter on the resource according to labels.
+  * **decoration** - (Optional) Matches or excludes the result. Can be one of the following. `matches`, `excludes`
 * **resource** - (Optional) Filter on the resource type. Can be one of the following types. `chart`, `artifact`
-				
+
 
 
 ## Attributes Reference
 In addition to all argument, the following attributes are exported:
 
 * **replication_policy_id**
-  
+
 ## Import
 Harbor project can be imported using the `replication id` eg,
 
