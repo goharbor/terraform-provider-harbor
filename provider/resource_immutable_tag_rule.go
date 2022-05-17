@@ -65,7 +65,7 @@ func resourceImmutableTagRuleCreate(d *schema.ResourceData, m interface{}) error
 	body := client.GetImmutableTagRuleBody(d)
 	id := ""
 
-	_, headers, err := apiClient.SendRequest("POST", path, body, 201)
+	_, headers, _, err := apiClient.SendRequest("POST", path, body, 201)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 	}
 	log.Printf("[DEBUG] Path to immutable tag rules: %+v\n", projectImmutableTagRulePath)
 
-	resp, _, err := apiClient.SendRequest("GET", projectImmutableTagRulePath, nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", projectImmutableTagRulePath, nil, 200)
 	if err != nil {
 		return fmt.Errorf("Resource not found %s", projectImmutableTagRulePath)
 	}
@@ -128,7 +128,7 @@ func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error
 	body := client.GetImmutableTagRuleBody(d)
 	id := d.Id()
 	log.Printf("[DEBUG] Update Id: %+v\n", id)
-	_, _, err := apiClient.SendRequest("PUT", id, body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", id, body, 200)
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error
 func resourceImmutableTagRuleDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}

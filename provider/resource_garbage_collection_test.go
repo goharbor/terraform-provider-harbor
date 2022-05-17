@@ -1,3 +1,4 @@
+//go:build external_auth
 // +build external_auth
 
 package provider
@@ -21,7 +22,7 @@ func testAccCheckGCDestroy(s *terraform.State) error {
 			continue
 		}
 
-		resp, _, err := apiClient.SendRequest("GET", rs.Primary.ID, nil, 200)
+		resp, _, _, err := apiClient.SendRequest("GET", rs.Primary.ID, nil, 200)
 		if err != nil {
 			return fmt.Errorf("Resouse was not delete \n %s", resp)
 		}

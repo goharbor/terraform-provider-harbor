@@ -50,7 +50,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	registryPath := models.PathRegistries + "?name=" + name
-	resp, _, err := apiClient.SendRequest("GET", registryPath, nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", registryPath, nil, 200)
 	if err != nil {
 		return err
 	}

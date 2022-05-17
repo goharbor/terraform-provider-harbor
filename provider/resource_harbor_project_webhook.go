@@ -71,7 +71,7 @@ func resourceProjectWebhookCreate(d *schema.ResourceData, m interface{}) error {
 	body := client.ProjectWebhookBody(d)
 
 	url := d.Get("project_id").(string) + "/webhook/policies"
-	_, headers, err := apiClient.SendRequest("POST", url, body, 201)
+	_, headers, _, err := apiClient.SendRequest("POST", url, body, 201)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func resourceProjectWebhookCreate(d *schema.ResourceData, m interface{}) error {
 func resourceProjectWebhookRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -111,7 +111,7 @@ func resourceProjectWebhookUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.ProjectWebhookBody(d)
 
-	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func resourceProjectWebhookUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceProjectWebhookDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}

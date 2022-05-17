@@ -81,7 +81,7 @@ func resourceMembersGroupCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.ProjectMembersGroupBody(d)
 
-	_, headers, err := apiClient.SendRequest("POST", path, body, 201)
+	_, headers, _, err := apiClient.SendRequest("POST", path, body, 201)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func resourceMembersGroupCreate(d *schema.ResourceData, m interface{}) error {
 func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -120,7 +120,7 @@ func resourceMembersGroupUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	body := client.ProjectMembersGroupBody(d)
-	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -131,7 +131,7 @@ func resourceMembersGroupUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceMembersGroupDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		fmt.Println(err)
 	}

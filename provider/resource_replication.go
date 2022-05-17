@@ -104,7 +104,7 @@ func resourceReplicationCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.GetReplicationBody(d)
 
-	_, headers, err := apiClient.SendRequest("POST", models.PathReplication, body, 201)
+	_, headers, _, err := apiClient.SendRequest("POST", models.PathReplication, body, 201)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func resourceReplicationCreate(d *schema.ResourceData, m interface{}) error {
 func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -151,12 +151,12 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	switch jsonDataReplication.Trigger.Type {
-                case "scheduled":
-                        d.Set("schedule", jsonDataReplication.Trigger.TriggerSettings.Cron)
-                case "event_based":
-                        d.Set("schedule", "event_based")
-                default:
-                        d.Set("schedule", "manual")
+	case "scheduled":
+		d.Set("schedule", jsonDataReplication.Trigger.TriggerSettings.Cron)
+	case "event_based":
+		d.Set("schedule", "event_based")
+	default:
+		d.Set("schedule", "manual")
 	}
 
 	d.Set("replication_policy_id", jsonDataReplication.ID)
@@ -172,7 +172,7 @@ func resourceReplicationUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.GetReplicationBody(d)
 
-	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,7 @@ func resourceReplicationUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceReplicationDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}

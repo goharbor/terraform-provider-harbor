@@ -49,7 +49,7 @@ func resourceLabelCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.LabelsBody(d)
 
-	_, headers, err := apiClient.SendRequest("POST", models.PathLabel, body, 201)
+	_, headers, _, err := apiClient.SendRequest("POST", models.PathLabel, body, 201)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func resourceLabelCreate(d *schema.ResourceData, m interface{}) error {
 func resourceLabelRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -86,7 +86,7 @@ func resourceLabelUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.LabelsBody(d)
 
-	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func resourceLabelUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceLabelDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}

@@ -56,7 +56,7 @@ func resourceConfigEmailCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.GetConfigEmail(d)
 
-	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func resourceConfigEmailCreate(d *schema.ResourceData, m interface{}) error {
 func resourceConfigEmailRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
 	if err != nil {
 		d.SetId("")
 		return nil

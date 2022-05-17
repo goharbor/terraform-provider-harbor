@@ -9,25 +9,6 @@ import (
 
 const resourceHarborRetentionMain = "harbor_retention_policy.main"
 
-// func testAccCheckRetentionDestroy(s *terraform.State) error {
-// 	apiClient := testAccProvider.Meta().(*client.Client)
-// 	r := "harbor_retention_policy"
-
-// 	for _, rs := range s.RootModule().Resources {
-// 		if rs.Type != r {
-// 			continue
-// 		}
-
-// 		resp, _, err := apiClient.SendRequest("GET", rs.Primary.ID, nil, 404)
-// 		if err != nil {
-// 			return fmt.Errorf("Resouse was not delete \n %s", resp)
-// 		}
-
-// 	}
-
-// 	return nil
-// }
-
 func TestAccRetentionUpdate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },

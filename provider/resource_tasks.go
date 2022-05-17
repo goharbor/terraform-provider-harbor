@@ -58,7 +58,7 @@ func resourceTasksCreate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 
-	resp, _, err := apiClient.SendRequest("GET", pathVuln, nil, 0)
+	resp, _, _, err := apiClient.SendRequest("GET", pathVuln, nil, 0)
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func resourceTasksCreate(d *schema.ResourceData, m interface{}) error {
 	} else {
 		log.Printf("No schedule found performing POST request")
 	}
-	_, _, err = apiClient.SendRequest(requestType, pathVuln, body, 0)
+	_, _, _, err = apiClient.SendRequest(requestType, pathVuln, body, 0)
 	if err != nil {
 		return err
 

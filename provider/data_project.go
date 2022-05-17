@@ -39,7 +39,7 @@ func dataProjectRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 	projectPath := models.PathProjects + "?name=" + name
 
-	resp, _, err := apiClient.SendRequest("GET", projectPath, nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", projectPath, nil, 200)
 	if err != nil {
 		return err
 	}

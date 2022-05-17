@@ -43,7 +43,7 @@ func resourceGCCreate(d *schema.ResourceData, m interface{}) error {
 func resourceGCRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, err := apiClient.SendRequest("GET", models.PathGC, nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", models.PathGC, nil, 200)
 	if err != nil {
 		d.SetId("")
 		return nil
@@ -80,7 +80,7 @@ func resourceGCDelete(d *schema.ResourceData, m interface{}) error {
 	body.Schedule.Type = "None"
 	body.Parameters.DeleteUntagged = false
 
-	_, _, err := apiClient.SendRequest("PUT", models.PathGC, body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", models.PathGC, body, 200)
 	if err != nil {
 		return err
 	}

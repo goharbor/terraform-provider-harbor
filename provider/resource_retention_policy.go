@@ -104,10 +104,10 @@ func resourceRetentionCreate(d *schema.ResourceData, m interface{}) error {
 	body := client.GetRententionBody(d)
 	id := ""
 
-	_, headers, err := apiClient.SendRequest("POST", models.PathRetentions, body, 201)
+	_, headers, _, err := apiClient.SendRequest("POST", models.PathRetentions, body, 201)
 	if err != nil {
 		project_id := strconv.Itoa(body.Scope.Ref)
-		resp, _, err := apiClient.SendRequest("GET", models.PathProjects+"/"+project_id, nil, 200)
+		resp, _, _, err := apiClient.SendRequest("GET", models.PathProjects+"/"+project_id, nil, 200)
 
 		var jsonData models.ProjectsBodyResponses
 		err = json.Unmarshal([]byte(resp), &jsonData)
@@ -115,7 +115,7 @@ func resourceRetentionCreate(d *schema.ResourceData, m interface{}) error {
 		if err != nil {
 			return err
 		}
-		_, headers, err = apiClient.SendRequest("PUT", models.PathRetentions+"/"+jsonData.Metadata.RetentionId, body, 200)
+		_, headers, _, err = apiClient.SendRequest("PUT", models.PathRetentions+"/"+jsonData.Metadata.RetentionId, body, 200)
 		if err != nil {
 			return err
 		}
@@ -132,7 +132,7 @@ func resourceRetentionRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	log.Printf("[DEBUG] Id: %+v\n", d.Id())
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}
@@ -169,7 +169,7 @@ func resourceRetentionUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.GetRententionBody(d)
 
-	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
@@ -202,7 +202,7 @@ func resourceRetentionDelete(d *schema.ResourceData, m interface{}) error {
 		Id:    retention_id,
 	}
 
-	_, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}

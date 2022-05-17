@@ -115,7 +115,7 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.RobotBody(d)
 
-	resp, headers, err := apiClient.SendRequest("POST", "/robots", body, 201)
+	resp, headers, _, err := apiClient.SendRequest("POST", "/robots", body, 201)
 	if err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 		secret := models.RobotSecret{
 			Secret: d.Get("secret").(string),
 		}
-		_, _, err := apiClient.SendRequest("PATCH", "/robots/"+robotID, secret, 200)
+		_, _, _, err := apiClient.SendRequest("PATCH", "/robots/"+robotID, secret, 200)
 		if err != nil {
 			return err
 		}
@@ -178,7 +178,7 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 		body.Name = robot.Name
 	}
 
-	_, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
@@ -187,7 +187,7 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 		secret := models.RobotSecret{
 			Secret: d.Get("secret").(string),
 		}
-		_, _, err := apiClient.SendRequest("PATCH", d.Id(), secret, 200)
+		_, _, _, err := apiClient.SendRequest("PATCH", d.Id(), secret, 200)
 		if err != nil {
 			return err
 		}
@@ -198,7 +198,7 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourceRobotAccountDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}
@@ -206,7 +206,7 @@ func resourceRobotAccountDelete(d *schema.ResourceData, m interface{}) error {
 }
 
 func getRobot(d *schema.ResourceData, apiClient *client.Client) (models.RobotBody, error) {
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		return models.RobotBody{}, err
 	}

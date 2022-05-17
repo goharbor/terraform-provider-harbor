@@ -79,7 +79,7 @@ func resourceConfigAuth() *schema.Resource {
 				Type:          schema.TypeString,
 				Optional:      true,
 				ConflictsWith: ldapConflictsWith(),
-				RequiredWith:  ldapRequiredWith(),				
+				RequiredWith:  ldapRequiredWith(),
 			},
 			"ldap_uid": {
 				Type:          schema.TypeString,
@@ -155,7 +155,7 @@ func resourceConfigAuthCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.GetConfigAuth(d)
 
-	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func resourceConfigAuthCreate(d *schema.ResourceData, m interface{}) error {
 func resourceConfigAuthRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
 	if err != nil {
 		d.SetId("")
 		return nil

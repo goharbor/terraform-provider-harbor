@@ -29,12 +29,6 @@ func testProvider(t *testing.T) {
 
 func testAccPreCheck(t *testing.T) {
 
-	// apiClient := testAccProvider.Meta().(*client.Client)
-	// _, _, err := apiClient.SendRequest("GET", "/health", nil, 200)
-	// if err != nil {
-	// 	t.Fatal("Harbor instamce is not healthy")
-	// }
-
 	if v := os.Getenv("HARBOR_URL"); v == "" {
 		t.Fatal("HARBOR_URL must be set for acceptance tests")
 	}

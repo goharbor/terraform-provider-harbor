@@ -53,7 +53,7 @@ func resourceVulnDelete(d *schema.ResourceData, m interface{}) error {
 	body.Schedule.Cron = ""
 	body.Schedule.Type = "None"
 
-	_, _, err := apiClient.SendRequest("PUT", models.PathVuln, body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", models.PathVuln, body, 200)
 	if err != nil {
 		return err
 	}

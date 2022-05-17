@@ -17,10 +17,10 @@ func resourceGroup() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-                        "group_type": {
-                                Type:     schema.TypeInt,
-                                Required: true,
-                        },
+			"group_type": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
 		},
 		Create: resourceGroupCreate,
 		Read:   resourceGroupRead,
@@ -37,7 +37,7 @@ func resourceGroupCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.GroupBody(d)
 
-	_, header, err := apiClient.SendRequest("POST", models.PathGroups, &body, 201)
+	_, header, _, err := apiClient.SendRequest("POST", models.PathGroups, &body, 201)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func resourceGroupCreate(d *schema.ResourceData, m interface{}) error {
 
 func resourceGroupRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	resp, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func resourceGroupUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceGroupDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
 		return err
 	}

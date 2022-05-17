@@ -41,7 +41,7 @@ func resourceConfigSystemCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.GetConfigSystem(d)
 
-	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
 		return err
 	}
@@ -53,19 +53,6 @@ func resourceConfigSystemRead(d *schema.ResourceData, m interface{}) error {
 	d.SetId("configuration/system")
 	return nil
 }
-
-// func resourceConfigSystemUpdate(d *schema.ResourceData, m interface{}) error {
-// 	apiClient := m.(*client.Client)
-
-// 	body := client.GetConfigSystem(d)
-
-// 	_, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return resourceConfigSystemRead(d, m)
-// }
 
 func resourceConfigSystemDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
