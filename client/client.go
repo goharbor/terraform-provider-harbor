@@ -33,7 +33,7 @@ func NewClient(url string, username string, password string, insecure bool) *Cli
 }
 
 // SendRequest send a http request
-func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, respheaders string, returnedStatusCode int, err error) {
+func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, respheaders string, respCode int, err error) {
 	url := c.url + path
 	client := &http.Client{}
 

@@ -19,7 +19,7 @@ func (c *Client) GetProjectRepositories(projectName string) ([]models.Repository
 	for {
 		reposPath := fmt.Sprintf("/projects/%s/repositories?page=%d&page_size=100", projectName, page)
 
-		resp, _, err := c.SendRequest("GET", reposPath, nil, 200)
+		resp, _, _, err := c.SendRequest("GET", reposPath, nil, 200)
 		if err != nil {
 			return nil, err
 		}
@@ -58,7 +58,7 @@ func (c *Client) DeleteProjectRepositories(projectName string) error {
 
 		repoPath := fmt.Sprintf("/projects/%s/repositories/%s", projectName, repoName)
 
-		_, _, err := c.SendRequest("DELETE", repoPath, nil, 200)
+		_, _, _, err := c.SendRequest("DELETE", repoPath, nil, 200)
 		if err != nil {
 			return err
 		}

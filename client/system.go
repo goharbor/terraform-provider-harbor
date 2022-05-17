@@ -42,7 +42,7 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 
 	body := GetSystemBoby(d, scheduleType)
 
-	resp, _, err := client.SendRequest("GET", path, nil, 200)
+	resp, _, _, err := client.SendRequest("GET", path, nil, 200)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 		log.Printf("No Schedule found performing POST request")
 	}
 
-	_, _, err = client.SendRequest(requestType, path, body, httpStatusCode)
+	_, _, _, err = client.SendRequest(requestType, path, body, httpStatusCode)
 	if err != nil {
 		return err
 
@@ -68,7 +68,7 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 
 // SetDefaultScanner set the default scanner within harbor
 func (client *Client) SetDefaultScanner(scanner string) (err error) {
-	resp, _, err := client.SendRequest("GET", models.PathScanners, nil, 0)
+	resp, _, _, err := client.SendRequest("GET", models.PathScanners, nil, 0)
 
 	body := models.ScannerBody{
 		IsDefault: true,
@@ -83,7 +83,7 @@ func (client *Client) SetDefaultScanner(scanner string) (err error) {
 	for _, v := range jsonData {
 
 		if v.Name == strings.Title(scanner) {
-			_, _, err = client.SendRequest("PATCH", models.PathScanners+"/"+v.UUID, body, 0)
+			_, _, _, err = client.SendRequest("PATCH", models.PathScanners+"/"+v.UUID, body, 0)
 		}
 		if err != nil {
 			return err
