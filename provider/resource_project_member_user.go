@@ -77,12 +77,11 @@ func resourceMembersUserCreate(d *schema.ResourceData, m interface{}) error {
 func resourceMembersUserRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if err != nil {
+	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	if respCode == 404 && err != nil {
 		d.SetId("")
-		return nil
+		return fmt.Errorf("Resource not found %s", d.Id())
 	}
-
 	var jsonData models.ProjectMembersBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {

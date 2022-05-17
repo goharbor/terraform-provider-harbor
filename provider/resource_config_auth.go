@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
 	"github.com/BESTSELLER/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -166,10 +168,10 @@ func resourceConfigAuthCreate(d *schema.ResourceData, m interface{}) error {
 func resourceConfigAuthRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	resp, _, _, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
-	if err != nil {
+	resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
+	if respCode == 404 && err != nil {
 		d.SetId("")
-		return nil
+		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
 	err = client.SetAuthValues(d, resp)
