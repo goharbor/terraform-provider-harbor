@@ -51,6 +51,7 @@ func Provider() *schema.Provider {
 			"harbor_interrogation_services": resourceVuln(),
 			"harbor_robot_account":          resourceRobotAccount(),
 			"harbor_user":                   resourceUser(),
+			"harbor_group":                  resourceGroup(),
 			"harbor_registry":               resourceRegistry(),
 			"harbor_replication":            resourceReplication(),
 			"harbor_retention_policy":       resourceRetention(),
