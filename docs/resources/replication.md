@@ -38,6 +38,19 @@ resource "harbor_replication" "alpine" {
   }
 }
 
+resource "harbor_replication" "alpine" {
+  name        = "alpine"
+  action      = "pull"
+  registry_id = harbor_registry.main.registry_id
+  schedule = "event_based"
+  filters {
+    name = "library/alpine"
+  }
+  filters {
+    tag = "3.*.*"
+  }
+}
+
 ```
 
 ## Argument Reference
@@ -47,7 +60,7 @@ The following arguments are supported:
 
 * **action** - (Required)
 
-* **schedule** - (Optional) The scheduled time of when the container register will be push / pull. In cron base format. Hourly `"0 0 * * * *"`, Daily `"0 0 0 * * *"`, Monthly `"0 0 0 * * 0"`
+* **schedule** - (Optional) The scheduled time of when the container register will be push / pull. In cron base format. Hourly `"0 0 * * * *"`, Daily `"0 0 0 * * *"`, Monthly `"0 0 0 * * 0"`. Can be one of the follow. `event_based`, `manual`, `cron format` (Default: `manual`)
 * **override** - (Optional) Specify whether to override the resources at the destination if a resources with the same name exist. Can be set to `true` or `false` (Default: `true`)
 * **enabled** - (Optional) Specify whether the replication is enabled. Can be set to `true` or `false` (Default: `true`)
 * **description** - (Optional) Write about description of the replication policy.
