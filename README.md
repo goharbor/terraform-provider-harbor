@@ -1,3 +1,8 @@
+> :warning: As we are no longer using Harbor ourselves, we are looking for someone to take over the ownership of this provider.
+>
+> If you are interested in taking the ownership of this provider, please create an issue and tag **@BESTSELLER/engineering-services**
+
+
 # Terraform Harbor Provider
 [![GitHub release](https://img.shields.io/github/release/BESTSELLER/terraform-provider-harbor.svg)](https://github.com/BESTSELLER/terraform-provider-harbor/releases/)
 [![CircleCI](https://circleci.com/gh/BESTSELLER/terraform-provider-harbor.svg?style=svg)](https://circleci.com/gh/BESTSELLER/terraform-provider-harbor)
