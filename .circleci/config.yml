@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  secret-injector: bestsellerit/secret-injector@1.6.5
+  secret-injector: bestsellerit/secret-injector@1.7.6
 
 commands:
   goreleaser:
@@ -18,14 +18,14 @@ commands:
       - run:
           name: Import private key
           command: |
-            source /tmp/secrets.env
+            source /tmp/secrets
             apk add gnupg
             echo -e "$GPG_PRIVATE_KEY" | base64 -d > $HOME/private.key
             gpg --pinentry-mode loopback --batch --yes --import $HOME/private.key
       - run:
           name: Run GoReleaser
           command: |
-            source /tmp/secrets.env
+            source /tmp/secrets
             if [ "<< parameters.release-type >>" = "test" ] ; then
               goreleaser release --snapshot --rm-dist
             else
@@ -59,7 +59,7 @@ jobs:
       - run:
           name: Performaning Acceptance Test
           command: |
-            source /tmp/secrets.env
+            source /tmp/secrets
             TF_ACC=1 go test -v ./... -count=1 -tags=external_auth
 
   spellchecker:
@@ -80,12 +80,10 @@ tag_filter: &tag_filter /v[0-9]+.[0-9]+.[0-9]+/
 my_context: &my_context es02-prod
 
 dump_secrets: &dump_secrets
-  vault-path: ES/terraform-provider/prod
-  output-type: env
+  vault-path: ES/data/terraform-provider/prod
 
 dump_secrets_acctest: &dump_secrets_acctest
-  vault-path: ES/terraform-provider/harbor/accTest
-  output-type: env
+  vault-path: ES/data/terraform-provider/harbor/accTest
 
 test_filter: &test_filter
   filters:
