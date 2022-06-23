@@ -18,14 +18,14 @@ commands:
       - run:
           name: Import private key
           command: |
-            source /tmp/secrets.env
+            source /tmp/secrets
             apk add gnupg
             echo -e "$GPG_PRIVATE_KEY" | base64 -d > $HOME/private.key
             gpg --pinentry-mode loopback --batch --yes --import $HOME/private.key
       - run:
           name: Run GoReleaser
           command: |
-            source /tmp/secrets.env
+            source /tmp/secrets
             if [ "<< parameters.release-type >>" = "test" ] ; then
               goreleaser release --snapshot --rm-dist
             else
@@ -59,7 +59,7 @@ jobs:
       - run:
           name: Performaning Acceptance Test
           command: |
-            source /tmp/secrets.env
+            source /tmp/secrets
             TF_ACC=1 go test -v ./... -count=1 -tags=external_auth
 
   spellchecker:
