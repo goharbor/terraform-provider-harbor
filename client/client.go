@@ -64,7 +64,7 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 		if resp != nil {
 			return "", "", resp.StatusCode, err
 		} else {
-			return "", "", 502, err
+			return "", "", http. StatusBadGateway, err
 		}
 	}
 
