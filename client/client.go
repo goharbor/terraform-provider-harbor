@@ -61,7 +61,11 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", "", resp.StatusCode, err
+		if resp != nil {
+			return "", "", resp.StatusCode, err
+		} else {
+			return "", "", 502, err
+		}
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
