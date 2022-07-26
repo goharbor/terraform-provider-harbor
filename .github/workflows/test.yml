@@ -126,7 +126,7 @@ jobs:
     - name: Wait for harbor to be ready
       run: |
         attempt_counter=0
-        max_attempts=20
+        max_attempts=120 # Max wait will be 10m
         while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' $HARBOR_URL)" != "401" ]]; do
             if [ ${attempt_counter} -eq ${max_attempts} ];then
               echo "Max attempts reached"
@@ -156,13 +156,5 @@ jobs:
         
     - name: TF acceptance tests
       timeout-minutes: 10
-      # env:
-      #   TF_ACC: "1"
-
-        # Set whatever additional acceptance test env vars here. You can
-        # optionally use data from your repository secrets using the
-        # following syntax:
-        # SOME_VAR: ${{ secrets.SOME_VAR }}
-
       run: |
        go test -v -cover -timeout 30m ./provider/
