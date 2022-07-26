@@ -60,6 +60,11 @@ jobs:
     name: Matrix Test
     needs: build
     runs-on: ubuntu-latest
+    env:
+      TF_ACC: "1"
+      HARBOR_URL: "http://harbor.local"
+      HARBOR_USERNAME: "admin"
+      HARBOR_PASSWORD: "Harbor12345"
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -76,6 +81,45 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
+
+    - name: Setup Docker
+      uses: docker-practice/actions-setup-docker@v1
+      with:
+        docker_version: "20.10"
+        docker_channel: stable
+        docker_daemon_json: '{"insecure-registries":["0.0.0.0/0"]}'
+    
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.1.0
+      with:
+        version: v0.11.1
+        node_image: kindest/node:v1.22.0
+        cluster_name: kind-cluster-v1.22.0
+        config: kind-cluster.yaml
+    
+    - name: Install Nginx ingress controller
+      run: |
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/kind/deploy.yaml
+        kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
+
+    - uses: azure/setup-helm@v3
+      with:
+        version: 'latest' # default is latest (stable)
+        token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
+      id: install
+    
+    - name: Install Harbor Helm chart
+      run: |
+        helm repo add harbor https://helm.goharbor.io
+        helm install my-release \
+          --set harborAdminPassword="$HARBOR_PASSWORD" \
+          --set expose.tls.enabled="false" \
+          --set expose.ingress.hosts.core="harbor.local" \
+          harbor/harbor
+
+    - name: Set /etc/hosts
+      run: |
+        sudo -- sh -c "echo '127.0.0.1 harbor.local' >> /etc/hosts"
 
     - name: Set up Go
       uses: actions/setup-go@v3
@@ -95,8 +139,8 @@ jobs:
         
     - name: TF acceptance tests
       timeout-minutes: 10
-      env:
-        TF_ACC: "1"
+      # env:
+      #   TF_ACC: "1"
 
         # Set whatever additional acceptance test env vars here. You can
         # optionally use data from your repository secrets using the
