@@ -123,6 +123,21 @@ jobs:
       run: |
         sudo -- sh -c "echo '127.0.0.1 harbor.local' >> /etc/hosts"
 
+    - name: Wait for harbor to be ready
+      run: |
+        attempt_counter=0
+        max_attempts=20
+        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' $HARBOR_URL)" != "401" ]]; do
+            if [ ${attempt_counter} -eq ${max_attempts} ];then
+              echo "Max attempts reached"
+              exit 1
+            fi
+
+            printf '.'
+            attempt_counter=$(($attempt_counter+1))
+            sleep 5
+        done
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
@@ -150,4 +165,4 @@ jobs:
         # SOME_VAR: ${{ secrets.SOME_VAR }}
 
       run: |
-        go test -v -cover ./provider/
+       go test -v -cover -timeout 30m ./provider/

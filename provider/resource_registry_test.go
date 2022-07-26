@@ -2,7 +2,6 @@ package provider
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/BESTSELLER/terraform-provider-harbor/client"
@@ -24,7 +23,7 @@ func TestAccRegistryBasic(t *testing.T) {
 
 					testAccCheckResourceExists(harborRegistryMain),
 					resource.TestCheckResourceAttr(
-						harborRegistryMain, "name", "harbor-test-reg"),
+						harborRegistryMain, "name", "docker-hub-test-reg"),
 				),
 			},
 			{
@@ -32,7 +31,7 @@ func TestAccRegistryBasic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckResourceExists(harborRegistryMain),
 					resource.TestCheckResourceAttr(
-						harborRegistryMain, "name", "harbor-test-update"),
+						harborRegistryMain, "name", "docker-hub-test-update"),
 				),
 			},
 		},
@@ -58,12 +57,13 @@ func testAccCheckRegistryDestroy(s *terraform.State) error {
 }
 
 func testAccCheckRegistryBasic() string {
-	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	// endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	endpoint := "https://hub.docker.com"
 	config := fmt.Sprintf(`
 
 	resource "harbor_registry" "main" {
-		provider_name = "harbor"
-		name = "harbor-test-reg"
+		provider_name = "docker-hub"
+		name = "docker-hub-test-reg"
 		endpoint_url = "%s"
 	  }
 
@@ -72,12 +72,13 @@ func testAccCheckRegistryBasic() string {
 }
 
 func testAccCheckRegistryUpdate() string {
-	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	// endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	endpoint := "https://hub.docker.com"
 	config := fmt.Sprintf(`
 
 	resource "harbor_registry" "main" {
-		provider_name = "harbor"
-		name = "harbor-test-update"
+		provider_name = "docker-hub"
+		name = "docker-hub-test-update"
 		endpoint_url = "%s"
 	  }
 
