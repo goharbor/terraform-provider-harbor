@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/BESTSELLER/terraform-provider-harbor/models"
+	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -40,18 +40,18 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyPost {
 		}
 	case "ldap_auth", "ldap":
 		body = models.ConfigBodyPost{
-			AuthMode:     "ldap_auth",
-			LdapURL:      d.Get("ldap_url").(string),
-			LdapSearchDn: d.Get("ldap_search_dn").(string),
+			AuthMode:           "ldap_auth",
+			LdapURL:            d.Get("ldap_url").(string),
+			LdapSearchDn:       d.Get("ldap_search_dn").(string),
 			LdapSearchPassword: d.Get("ldap_search_password").(string),
-			LdapBaseDn:   d.Get("ldap_base_dn").(string),
-			LdapFilter:   d.Get("ldap_filter").(string),
-			LdapUID:      d.Get("ldap_uid").(string),
+			LdapBaseDn:         d.Get("ldap_base_dn").(string),
+			LdapFilter:         d.Get("ldap_filter").(string),
+			LdapUID:            d.Get("ldap_uid").(string),
 
-			LdapGroupBaseDn:        d.Get("ldap_group_base_dn").(string),
-			LdapGroupSearchFilter:  d.Get("ldap_group_filter").(string),
-			LdapGroupAttributeName:           d.Get("ldap_group_gid").(string),
-			LdapGroupAdminDn:       d.Get("ldap_group_admin_dn").(string),
+			LdapGroupBaseDn:              d.Get("ldap_group_base_dn").(string),
+			LdapGroupSearchFilter:        d.Get("ldap_group_filter").(string),
+			LdapGroupAttributeName:       d.Get("ldap_group_gid").(string),
+			LdapGroupAdminDn:             d.Get("ldap_group_admin_dn").(string),
 			LdapGroupMembershipAttribute: d.Get("ldap_group_membership").(string),
 
 			LdapVerifyCert: d.Get("ldap_verify_cert").(bool),
