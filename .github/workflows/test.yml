@@ -63,7 +63,7 @@ jobs:
     env:
       TF_ACC: "1"
       HARBOR_URL: "http://harbor.local"
-      HARBOR_REPLICATION_ENDPOINT: "http://harbor.local"
+      HARBOR_REPLICATION_ENDPOINT: "http://demo.harbor.com"
       HARBOR_USERNAME: "admin"
       HARBOR_PASSWORD: "Harbor12345"
     timeout-minutes: 15
@@ -116,6 +116,7 @@ jobs:
           --set harborAdminPassword="$HARBOR_PASSWORD" \
           --set expose.tls.enabled="false" \
           --set expose.ingress.hosts.core="harbor.local" \
+          --set expose.ingress.hosts.notary="harbor.local" \
           harbor/harbor
 
     - name: Set /etc/hosts
