@@ -63,6 +63,7 @@ jobs:
     env:
       TF_ACC: "1"
       HARBOR_URL: "http://harbor.local"
+      HARBOR_REPLICATION_ENDPOINT: "http://harbor.local"
       HARBOR_USERNAME: "admin"
       HARBOR_PASSWORD: "Harbor12345"
     timeout-minutes: 15
