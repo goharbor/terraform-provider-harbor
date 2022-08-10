@@ -1,0 +1,157 @@
+# This GitHub action runs your tests for each commit push and/or PR. Optionally
+# you can turn it on using a cron schedule for regular testing.
+#
+name: Tests
+on:
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+  push:
+    paths-ignore:
+      - 'README.md'
+  # For systems with an upstream API that could drift unexpectedly (like most SaaS systems, etc.),
+  # we recommend testing at a regular interval not necessarily tied to code changes. This will 
+  # ensure you are alerted to something breaking due to an API change, even if the code did not
+  # change.
+  # schedule:
+  #   - cron: '0 13 * * *'
+jobs:
+  # ensure the code builds...
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: 'go.mod'
+        cache: true
+      id: go
+
+    - name: Get dependencies
+      run: |
+        go mod download
+
+    - name: Build
+      run: |
+        go build -v .
+
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - run: go generate ./...
+      - name: git diff
+        run: |
+          git diff --compact-summary --exit-code || \
+            (echo; echo "Unexpected difference in directories after code generation. Run 'go generate ./...' command and commit."; exit 1)
+
+  # run acceptance tests in a matrix with Terraform core versions
+  test:
+    name: Matrix Test
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      TF_ACC: "1"
+      HARBOR_URL: "http://harbor.local"
+      HARBOR_REPLICATION_ENDPOINT: "http://demo.harbor.com"
+      HARBOR_USERNAME: "admin"
+      HARBOR_PASSWORD: "Harbor12345"
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # list whatever Terraform versions here you would like to support
+        terraform:
+          - '0.15.*'
+          - '1.0.*'
+          - '1.1.*'
+    steps:
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
+    - name: Setup Docker
+      uses: docker-practice/actions-setup-docker@v1
+      with:
+        docker_version: "20.10"
+        docker_channel: stable
+        docker_daemon_json: '{"insecure-registries":["0.0.0.0/0"]}'
+    
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.1.0
+      with:
+        version: v0.11.1
+        node_image: kindest/node:v1.22.0
+        cluster_name: kind-cluster-v1.22.0
+        config: kind-cluster.yaml
+    
+    - name: Install Nginx ingress controller
+      run: |
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/kind/deploy.yaml
+        kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
+
+    - uses: azure/setup-helm@v3
+      with:
+        version: 'latest' # default is latest (stable)
+        token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
+      id: install
+    
+    - name: Install Harbor Helm chart
+      run: |
+        helm repo add harbor https://helm.goharbor.io
+        helm install my-release \
+          --set harborAdminPassword="$HARBOR_PASSWORD" \
+          --set expose.tls.enabled="false" \
+          --set expose.ingress.hosts.core="harbor.local" \
+          --set expose.ingress.hosts.notary="harbor.local" \
+          harbor/harbor
+
+    - name: Set /etc/hosts
+      run: |
+        sudo -- sh -c "echo '127.0.0.1 harbor.local' >> /etc/hosts"
+
+    - name: Wait for harbor to be ready
+      run: |
+        attempt_counter=0
+        max_attempts=120 # Max wait will be 10m
+        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' $HARBOR_URL)" != "401" ]]; do
+            if [ ${attempt_counter} -eq ${max_attempts} ];then
+              echo "Max attempts reached"
+              exit 1
+            fi
+
+            printf '.'
+            attempt_counter=$(($attempt_counter+1))
+            sleep 5
+        done
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: 'go.mod'
+        cache: true
+      id: go
+
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ matrix.terraform }}
+        terraform_wrapper: false
+
+    - name: Get dependencies
+      run: |
+        go mod download
+        
+    - name: TF acceptance tests
+      timeout-minutes: 10
+      run: |
+       go test -v -cover -timeout 30m ./provider/

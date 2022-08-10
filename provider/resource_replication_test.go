@@ -2,10 +2,9 @@ package provider
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
-	"github.com/BESTSELLER/terraform-provider-harbor/client"
+	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -64,11 +63,12 @@ func testAccCheckReplicationDestroy(s *terraform.State) error {
 }
 
 func testAccCheckReplicationBasic() string {
-	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	// endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	endpoint := "https://hub.docker.com"
 	config := fmt.Sprintf(`
 	resource "harbor_registry" "main" {
-		provider_name = "harbor"
-		name          = "harbor-test-replication"
+		provider_name = "docker-hub"
+		name          = "docker-hub-test-replication"
 		endpoint_url  = "%s"
 	  }
 	  
@@ -81,12 +81,13 @@ func testAccCheckReplicationBasic() string {
 }
 
 func testAccCheckReplicationUpdate() string {
-	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	// endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	endpoint := "https://hub.docker.com"
 	config := fmt.Sprintf(`
 
 	resource "harbor_registry" "main" {
-		provider_name = "harbor"
-		name = "harbor-test-replication"
+		provider_name = "docker-hub"
+		name = "docker-hub-test-replication"
 		endpoint_url = "%s"
 	  }
 
@@ -124,11 +125,12 @@ func TestDestinationNamespace(t *testing.T) {
 }
 
 func testReplicationPolicyDestinationNamespace(scheduleType string, destNamepace string) string {
-	endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	// endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	endpoint := "https://hub.docker.com"
 	return fmt.Sprintf(`
 	resource "harbor_registry" "main" {
-		provider_name = "harbor"
-		name = "harbor-test-rep-pol"
+		provider_name = "docker-hub"
+		name = "docker-hub-test-rep-pol"
 		endpoint_url = "%s"
 	  }
 
