@@ -2,7 +2,7 @@ module github.com/goharbor/terraform-provider-harbor
 
 go 1.18
 
-require github.com/hashicorp/terraform-plugin-sdk/v2 v2.19.0
+require github.com/hashicorp/terraform-plugin-sdk/v2 v2.20.0
 
 require (
 	github.com/agext/levenshtein v1.2.3 // indirect
@@ -26,7 +26,7 @@ require (
 	github.com/hashicorp/terraform-exec v0.17.2 // indirect
 	github.com/hashicorp/terraform-json v0.14.0 // indirect
 	github.com/hashicorp/terraform-plugin-go v0.12.0 // indirect
-	github.com/hashicorp/terraform-plugin-log v0.6.0 // indirect
+	github.com/hashicorp/terraform-plugin-log v0.7.0 // indirect
 	github.com/hashicorp/terraform-registry-address v0.0.0-20220623143253-7d51757b572c // indirect
 	github.com/hashicorp/terraform-svchost v0.0.0-20200729002733-f050f53b9734 // indirect
 	github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87 // indirect
