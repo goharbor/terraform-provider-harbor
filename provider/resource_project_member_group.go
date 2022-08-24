@@ -1,8 +1,11 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 	"strconv"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -64,50 +67,54 @@ func resourceMembersGroup() *schema.Resource {
 				},
 			},
 		},
-		Create: resourceMembersGroupCreate,
-		Read:   resourceMembersGroupRead,
-		Update: resourceMembersGroupUpdate,
-		Delete: resourceMembersGroupDelete,
+		CreateContext: resourceMembersGroupCreate,
+		ReadContext:   resourceMembersGroupRead,
+		UpdateContext: resourceMembersGroupUpdate,
+		DeleteContext: resourceMembersGroupDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceMembersGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceMembersGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	projectid := checkProjectid(d.Get("project_id").(string))
 	path := projectid + "/members"
 
 	body := client.ProjectMembersGroupBody(d)
 
-	_, headers, _, err := apiClient.SendRequest("POST", path, body, 201)
+	_, headers, _, err := apiClient.SendRequest(ctx, "POST", path, body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err := client.GetID(headers)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(id)
-	return resourceMembersGroupRead(d, m)
+	return resourceMembersGroupRead(ctx, d, m)
 }
 
-func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceMembersGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Project member group %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making read request on project member group %s : %+v", d.Id(), err)
 	}
 
 	var jsonData models.ProjectMembersBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return diag.FromErr(err)
 	}
 
 	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
@@ -116,24 +123,28 @@ func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceMembersGroupUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceMembersGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.ProjectMembersGroupBody(d)
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		fmt.Println(err)
+		return diag.FromErr(err)
 	}
 
-	return resourceMembersGroupRead(d, m)
+	return resourceMembersGroupRead(ctx, d, m)
 }
 
-func resourceMembersGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceMembersGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		fmt.Println(err)
+		if respCode == 404 {
+			log.Printf("[DEBUG] Project member group %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on project member group %s : %+v", d.Id(), err)
 	}
 	return nil
 }

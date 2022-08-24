@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -54,7 +55,7 @@ func testAccCheckResourceExists(resource string) resource.TestCheckFunc {
 		name := rs.Primary.ID
 
 		apiClient := testAccProvider.Meta().(*client.Client)
-		_, _, _, err := apiClient.SendRequest("GET", name, nil, 200)
+		_, _, _, err := apiClient.SendRequest(context.Background(), "GET", name, nil, 200)
 		if err != nil {
 			return fmt.Errorf("error fetching item with resource %s. %s", resource, err)
 		}

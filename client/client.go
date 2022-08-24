@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -33,7 +34,7 @@ func NewClient(url string, username string, password string, insecure bool) *Cli
 }
 
 // SendRequest send a http request
-func (c *Client) SendRequest(method string, path string, payload interface{}, statusCode int) (value string, respheaders string, respCode int, err error) {
+func (c *Client) SendRequest(ctx context.Context, method string, path string, payload interface{}, statusCode int) (value string, respheaders string, respCode int, err error) {
 	url := c.url + path
 	client := &http.Client{}
 
@@ -51,7 +52,7 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 		client = &http.Client{Transport: tr}
 	}
 
-	req, err := http.NewRequest(method, url, b)
+	req, err := http.NewRequestWithContext(ctx, method, url, b)
 	if err != nil {
 		return "", "", 0, err
 	}
@@ -63,14 +64,7 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 	if err != nil {
 		return "", "", resp.StatusCode, err
 	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", "", resp.StatusCode, err
-	}
-	resp.Body.Close()
-
-	strbody := string(body)
+	defer resp.Body.Close()
 
 	respHeaders := resp.Header
 	headers, err := json.Marshal(respHeaders)
@@ -78,14 +72,28 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 		return "", "", resp.StatusCode, err
 	}
 
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", "", resp.StatusCode, err
+	}
+
+	strbody := string(body)
+
 	if statusCode != 0 {
 		if resp.StatusCode != statusCode {
-
 			return "", "", 0, fmt.Errorf("[ERROR] unexpected status code got: %v expected: %v \n %v", resp.StatusCode, statusCode, strbody)
 		}
 	}
 
 	return strbody, string(headers), resp.StatusCode, nil
+}
+
+func ResponseNotFound(respCode int) bool {
+	return respCode == 404
+}
+
+func ResponseOk(respCode int) bool {
+	return respCode == 200
 }
 
 // GetID gets the resource id from location response header

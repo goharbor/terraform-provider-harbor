@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -21,38 +23,42 @@ func resourceGC() *schema.Resource {
 				Optional: true,
 			},
 		},
-		Create: resourceGCCreate,
-		Read:   resourceGCRead,
-		Update: resourceGCCreate,
-		Delete: resourceGCDelete,
+		CreateContext: resourceGCCreateUpdate,
+		ReadContext:   resourceGCRead,
+		UpdateContext: resourceGCCreateUpdate,
+		DeleteContext: resourceGCDelete,
 	}
 }
 
-func resourceGCCreate(d *schema.ResourceData, m interface{}) error {
+func resourceGCCreateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	err := apiClient.SetSchedule(d, "gc")
+	err := apiClient.SetSchedule(ctx, d, "gc")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId("/system/gc/schedule")
-	return resourceGCRead(d, m)
+	return resourceGCRead(ctx, d, m)
 }
 
-func resourceGCRead(d *schema.ResourceData, m interface{}) error {
+func resourceGCRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", models.PathGC, nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", models.PathGC, nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Garbage collection %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making Read request on garbage collection %s : %+v", d.Id(), err)
 	}
 
 	var jsonData models.SystemBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	jobParameters := jsonData.JobParameters
@@ -60,7 +66,7 @@ func resourceGCRead(d *schema.ResourceData, m interface{}) error {
 	var jsonJobParameters models.JobParameters
 	err = json.Unmarshal([]byte(jobParameters), &jsonJobParameters)
 	if err != nil {
-		fmt.Println(err)
+		return diag.FromErr(err)
 	}
 
 	if jsonData.Schedule.Type == "Custom" {
@@ -72,7 +78,7 @@ func resourceGCRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceGCDelete(d *schema.ResourceData, m interface{}) error {
+func resourceGCDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := models.SystemBody{}
@@ -80,9 +86,9 @@ func resourceGCDelete(d *schema.ResourceData, m interface{}) error {
 	body.Schedule.Type = "None"
 	body.Parameters.DeleteUntagged = false
 
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathGC, body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", models.PathGC, body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	return nil
 }

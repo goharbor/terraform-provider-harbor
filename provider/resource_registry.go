@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -52,49 +54,52 @@ func resourceRegistry() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Create: resourceRegistryCreate,
-		Read:   resourceRegistryRead,
-		Update: resourceRegistryUpdate,
-		Delete: resourceRegistryDelete,
+		CreateContext: resourceRegistryCreate,
+		ReadContext:   resourceRegistryRead,
+		UpdateContext: resourceRegistryUpdate,
+		DeleteContext: resourceRegistryDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
+func resourceRegistryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.GetRegistryBody(d)
 
-	_, headers, _, err := apiClient.SendRequest("POST", models.PathRegistries, body, 201)
+	_, headers, _, err := apiClient.SendRequest(ctx, "POST", models.PathRegistries, body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err := client.GetID(headers)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(id)
-	return resourceRegistryRead(d, m)
+	return resourceRegistryRead(ctx, d, m)
 }
 
-func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
+func resourceRegistryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Registry %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making read request on registry %s : %+v", d.Id(), err)
 	}
 
 	var jsonData models.RegistryBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	if err != nil {
+		return diag.FromErr(err)
 	}
 
 	registryName, _ := client.GetRegistryType(jsonData.Type)
@@ -111,24 +116,28 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceRegistryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.GetRegistryBody(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceRegistryRead(d, m)
+	return resourceRegistryRead(ctx, d, m)
 }
 
-func resourceRegistryDelete(d *schema.ResourceData, m interface{}) error {
+func resourceRegistryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Registry %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on registry %s : %+v", d.Id(), err)
 	}
 	return nil
 }

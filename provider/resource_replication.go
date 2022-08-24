@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -89,53 +91,58 @@ func resourceReplication() *schema.Resource {
 				},
 			},
 		},
-		Create: resourceReplicationCreate,
-		Read:   resourceReplicationRead,
-		Update: resourceReplicationUpdate,
-		Delete: resourceReplicationDelete,
+		CreateContext: resourceReplicationCreate,
+		ReadContext:   resourceReplicationRead,
+		UpdateContext: resourceReplicationUpdate,
+		DeleteContext: resourceReplicationDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }
 
-func resourceReplicationCreate(d *schema.ResourceData, m interface{}) error {
+func resourceReplicationCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.GetReplicationBody(d)
 
-	_, headers, _, err := apiClient.SendRequest("POST", models.PathReplication, body, 201)
+	_, headers, _, err := apiClient.SendRequest(ctx, "POST", models.PathReplication, body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err := client.GetID(headers)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(id)
-	return resourceReplicationRead(d, m)
+	return resourceReplicationRead(ctx, d, m)
 }
 
-func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
+func resourceReplicationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Replication %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making Read request on replication m %s : %+v", d.Id(), err)
 	}
+
 	var jsonData models.RegistryBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return diag.FromErr(err)
 	}
 
 	var jsonDataReplication models.ReplicationBody
 	err = json.Unmarshal([]byte(resp), &jsonDataReplication)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return diag.FromErr(err)
 	}
 
 	destRegistryID := jsonDataReplication.DestRegistry.ID
@@ -167,24 +174,28 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceReplicationUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceReplicationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.GetReplicationBody(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceReplicationRead(d, m)
+	return resourceReplicationRead(ctx, d, m)
 }
 
-func resourceReplicationDelete(d *schema.ResourceData, m interface{}) error {
+func resourceReplicationDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Replication %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on replication %s : %+v", d.Id(), err)
 	}
 	return nil
 }

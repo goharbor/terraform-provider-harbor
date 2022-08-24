@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -40,24 +42,24 @@ func resourceUser() *schema.Resource {
 				Optional: true,
 			},
 		},
-		Create: resourceUserCreate,
-		Read:   resourceUserRead,
-		Update: resourceUserUpdate,
-		Delete: resourceUserDelete,
+		CreateContext: resourceUserCreate,
+		ReadContext:   resourceUserRead,
+		UpdateContext: resourceUserUpdate,
+		DeleteContext: resourceUserDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
+func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.UserBody(d)
 
-	_, header, _, err := apiClient.SendRequest("POST", models.PathUsers, &body, 201)
+	_, header, _, err := apiClient.SendRequest(ctx, "POST", models.PathUsers, &body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err := client.GetID(header)
@@ -66,19 +68,25 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(id)
-	return resourceUserRead(d, m)
+	return resourceUserRead(ctx, d, m)
 }
 
-func resourceUserRead(d *schema.ResourceData, m interface{}) error {
+func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
-	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] User %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making read request on user %s : %+v", d.Id(), err)
 	}
+
 	var jsonData models.UserBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return diag.FromErr(err)
 	}
 
 	d.Set("username", jsonData.Username)
@@ -90,36 +98,40 @@ func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceUserUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.UserBody(d)
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	_, _, _, err = apiClient.SendRequest("PUT", d.Id()+"/sysadmin", body, 200)
+	_, _, _, err = apiClient.SendRequest(ctx, "PUT", d.Id()+"/sysadmin", body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	if d.HasChange("password") == true {
-		_, _, _, err = apiClient.SendRequest("PUT", d.Id()+"/password", body, 200)
+		_, _, _, err = apiClient.SendRequest(ctx, "PUT", d.Id()+"/password", body, 200)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
-	return resourceUserRead(d, m)
+	return resourceUserRead(ctx, d, m)
 }
 
-func resourceUserDelete(d *schema.ResourceData, m interface{}) error {
+func resourceUserDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] User %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on user %s : %+v", d.Id(), err)
 	}
 	return nil
 }

@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -22,24 +24,24 @@ func resourceGroup() *schema.Resource {
 				Required: true,
 			},
 		},
-		Create: resourceGroupCreate,
-		Read:   resourceGroupRead,
-		Update: resourceGroupUpdate,
-		Delete: resourceGroupDelete,
+		CreateContext: resourceGroupCreateUpdate,
+		ReadContext:   resourceGroupRead,
+		UpdateContext: resourceGroupCreateUpdate,
+		DeleteContext: resourceGroupDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceGroupCreate(d *schema.ResourceData, m interface{}) error {
+func resourceGroupCreateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.GroupBody(d)
 
-	_, header, _, err := apiClient.SendRequest("POST", models.PathGroups, &body, 201)
+	_, header, _, err := apiClient.SendRequest(ctx, "POST", models.PathGroups, &body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err := client.GetID(header)
@@ -48,19 +50,25 @@ func resourceGroupCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(id)
-	return resourceGroupRead(d, m)
+	return resourceGroupRead(ctx, d, m)
 }
 
-func resourceGroupRead(d *schema.ResourceData, m interface{}) error {
+func resourceGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
-	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Resource group %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making Read request on resource group %s : %+v", d.Id(), err)
 	}
+
 	var jsonData models.GroupBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return diag.FromErr(err)
 	}
 
 	d.Set("group_name", jsonData.Groupname)
@@ -69,16 +77,17 @@ func resourceGroupRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceGroupUpdate(d *schema.ResourceData, m interface{}) error {
-	return resourceGroupRead(d, m)
-}
-
-func resourceGroupDelete(d *schema.ResourceData, m interface{}) error {
+func resourceGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Resource group %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on resource group %s : %+v", d.Id(), err)
 	}
+
 	return nil
 }

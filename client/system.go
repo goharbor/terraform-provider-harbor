@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"strings"
@@ -31,7 +32,7 @@ func GetSystemBoby(d *schema.ResourceData, scheduleType string) models.SystemBod
 }
 
 // SetSchedule sets the schedule time to perform Vuln scanning and GC
-func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (err error) {
+func (client *Client) SetSchedule(ctx context.Context, d *schema.ResourceData, scheduleType string) (err error) {
 	var path string
 
 	if scheduleType == "gc" {
@@ -42,7 +43,7 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 
 	body := GetSystemBoby(d, scheduleType)
 
-	resp, _, _, err := client.SendRequest("GET", path, nil, 200)
+	resp, _, _, err := client.SendRequest(ctx, "GET", path, nil, 200)
 	if err != nil {
 		return err
 	}
@@ -58,7 +59,7 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 		log.Printf("No Schedule found performing POST request")
 	}
 
-	_, _, _, err = client.SendRequest(requestType, path, body, httpStatusCode)
+	_, _, _, err = client.SendRequest(ctx, requestType, path, body, httpStatusCode)
 	if err != nil {
 		return err
 
@@ -67,8 +68,8 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 }
 
 // SetDefaultScanner set the default scanner within harbor
-func (client *Client) SetDefaultScanner(scanner string) (err error) {
-	resp, _, _, err := client.SendRequest("GET", models.PathScanners, nil, 0)
+func (client *Client) SetDefaultScanner(ctx context.Context, scanner string) (err error) {
+	resp, _, _, err := client.SendRequest(ctx, "GET", models.PathScanners, nil, 0)
 
 	body := models.ScannerBody{
 		IsDefault: true,
@@ -83,7 +84,7 @@ func (client *Client) SetDefaultScanner(scanner string) (err error) {
 	for _, v := range jsonData {
 
 		if v.Name == strings.Title(scanner) {
-			_, _, _, err = client.SendRequest("PATCH", models.PathScanners+"/"+v.UUID, body, 0)
+			_, _, _, err = client.SendRequest(ctx, "PATCH", models.PathScanners+"/"+v.UUID, body, 0)
 		}
 		if err != nil {
 			return err

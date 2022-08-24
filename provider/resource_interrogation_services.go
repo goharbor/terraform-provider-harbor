@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -18,44 +20,44 @@ func resourceVuln() *schema.Resource {
 				Optional: true,
 			},
 		},
-		Create: resourceVulnCreate,
-		Read:   resourceVulnRead,
-		Update: resourceVulnCreate,
-		Delete: resourceVulnDelete,
+		CreateContext: resourceVulnCreateUpdate,
+		ReadContext:   resourceVulnRead,
+		UpdateContext: resourceVulnCreateUpdate,
+		DeleteContext: resourceVulnDelete,
 	}
 }
 
-func resourceVulnCreate(d *schema.ResourceData, m interface{}) error {
+func resourceVulnCreateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	err := apiClient.SetSchedule(d, "vuln")
+	err := apiClient.SetSchedule(ctx, d, "vuln")
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	scanner := d.Get("default_scanner").(string)
 	if scanner != "" {
-		apiClient.SetDefaultScanner(scanner)
+		apiClient.SetDefaultScanner(ctx, scanner)
 	}
 
-	return resourceVulnRead(d, m)
+	return resourceVulnRead(ctx, d, m)
 }
 
-func resourceVulnRead(d *schema.ResourceData, m interface{}) error {
+func resourceVulnRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	d.SetId("/system/scanAll/schedule")
 	return nil
 }
 
-func resourceVulnDelete(d *schema.ResourceData, m interface{}) error {
+func resourceVulnDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := models.SystemBody{}
 	body.Schedule.Cron = ""
 	body.Schedule.Type = "None"
 
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathVuln, body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", models.PathVuln, body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	return nil
 }

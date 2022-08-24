@@ -1,7 +1,9 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
 	"strconv"
 	"strings"
@@ -89,35 +91,35 @@ func resourceRetention() *schema.Resource {
 				},
 			},
 		},
-		Create: resourceRetentionCreate,
-		Read:   resourceRetentionRead,
-		Update: resourceRetentionUpdate,
-		Delete: resourceRetentionDelete,
+		CreateContext: resourceRetentionCreate,
+		ReadContext:   resourceRetentionRead,
+		UpdateContext: resourceRetentionUpdate,
+		DeleteContext: resourceRetentionDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }
 
-func resourceRetentionCreate(d *schema.ResourceData, m interface{}) error {
+func resourceRetentionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.GetRententionBody(d)
 	id := ""
 
-	_, headers, _, err := apiClient.SendRequest("POST", models.PathRetentions, body, 201)
+	_, headers, _, err := apiClient.SendRequest(ctx, "POST", models.PathRetentions, body, 201)
 	if err != nil {
 		project_id := strconv.Itoa(body.Scope.Ref)
-		resp, _, _, err := apiClient.SendRequest("GET", models.PathProjects+"/"+project_id, nil, 200)
+		resp, _, _, err := apiClient.SendRequest(ctx, "GET", models.PathProjects+"/"+project_id, nil, 200)
 
 		var jsonData models.ProjectsBodyResponses
 		err = json.Unmarshal([]byte(resp), &jsonData)
 
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
-		_, headers, _, err = apiClient.SendRequest("PUT", models.PathRetentions+"/"+jsonData.Metadata.RetentionId, body, 200)
+		_, headers, _, err = apiClient.SendRequest(ctx, "PUT", models.PathRetentions+"/"+jsonData.Metadata.RetentionId, body, 200)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 		id = models.PathRetentions + "/" + jsonData.Metadata.RetentionId
 	} else {
@@ -125,59 +127,55 @@ func resourceRetentionCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(id)
-	return resourceRetentionRead(d, m)
+	return resourceRetentionRead(ctx, d, m)
 }
 
-func resourceRetentionRead(d *schema.ResourceData, m interface{}) error {
+func resourceRetentionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	log.Printf("[DEBUG] Id: %+v\n", d.Id())
-	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Retention policy %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making read request on retention policy %s : %+v", d.Id(), err)
 	}
 
 	var retentionModel models.Retention
 	err = json.Unmarshal([]byte(resp), &retentionModel)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-
-	// GET works
-	// log.Printf("[DEBUG] %+v\n", resp)
-	// log.Printf("[DEBUG] %+v\n", jsonData)
 
 	if err := d.Set("scope", resolveScope(retentionModel)); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("schedule", resolveSchedule(retentionModel)); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	if err := d.Set("rule", resolveRules(retentionModel)); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
-
-	// SET works
-	// log.Printf("[DEBUG] %+v\n", d.Get("scope"))
-	// log.Printf("[DEBUG] %+v\n", d.Get("schedule"))
-	// log.Printf("[DEBUG] %+v\n", d.Get("rule"))
 
 	return nil
 }
 
-func resourceRetentionUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceRetentionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.GetRententionBody(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceRetentionRead(d, m)
+	return resourceRetentionRead(ctx, d, m)
 }
 
-func resourceRetentionDelete(d *schema.ResourceData, m interface{}) error {
+func resourceRetentionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	scope := d.Get("scope").(string)
@@ -202,9 +200,9 @@ func resourceRetentionDelete(d *schema.ResourceData, m interface{}) error {
 		Id:    retention_id,
 	}
 
-	_, _, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err = apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	return nil
 }
