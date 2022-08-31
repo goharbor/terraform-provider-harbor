@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/BESTSELLER/terraform-provider-harbor/models"
+	"github.com/goharbor/terraform-provider-harbor/models"
 )
 
 type Client struct {

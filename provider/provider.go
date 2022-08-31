@@ -3,7 +3,7 @@ package provider
 import (
 	"strings"
 
-	"github.com/BESTSELLER/terraform-provider-harbor/client"
+	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
