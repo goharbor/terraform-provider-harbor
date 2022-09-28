@@ -132,7 +132,7 @@ func SetAuthValues(d *schema.ResourceData, resp string) error {
 		d.Set("ldap_url", jsonData.LdapURL.Value)
 		d.Set("ldap_base_dn", jsonData.LdapBaseDn.Value)
 		d.Set("ldap_uid", jsonData.LdapUID.Value)
-		d.Set("ldap_verify_cert", jsonData.VerifyRemoteCert.Value)
+		d.Set("ldap_verify_cert", jsonData.LdapVerifyCert.Value)
 		d.Set("ldap_search_dn", jsonData.LdapSearchDn.Value)
 		d.Set("ldap_scope", jsonData.LdapScope.Value)
 		d.Set("ldap_group_base_dn", jsonData.LdapGroupBaseDn.Value)
