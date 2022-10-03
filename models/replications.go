@@ -12,8 +12,9 @@ type ReplicationBody struct {
 	DestRegistry struct {
 		ID int `json:"id,omitempty"`
 	} `json:"dest_registry,omitempty"`
-	DestNamespace string `json:"dest_namespace,omitempty"`
-	Trigger       struct {
+	DestNamespace        string `json:"dest_namespace,omitempty"`
+	DestNamespaceReplace int    `json:"dest_namespace_replace_count"`
+	Trigger              struct {
 		Type            string `json:"type,omitempty"`
 		TriggerSettings struct {
 			Cron string `json:"cron,omitempty"`
@@ -26,7 +27,7 @@ type ReplicationBody struct {
 }
 
 type ReplicationFilters struct {
-	Type  string      `json:"type,omitempty"`
-	Value interface{} `json:"value,omitempty"`
+	Type       string      `json:"type,omitempty"`
+	Value      interface{} `json:"value,omitempty"`
 	Decoration string      `json:"decoration,omitempty"`
 }
