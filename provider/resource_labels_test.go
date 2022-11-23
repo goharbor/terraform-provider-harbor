@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -20,7 +21,7 @@ func testAccCheckLabelDestroy(s *terraform.State) error {
 			continue
 		}
 
-		resp, _, _, err := apiClient.SendRequest("GET", rs.Primary.ID, nil, 404)
+		resp, _, _, err := apiClient.SendRequest(context.Background(), "GET", rs.Primary.ID, nil, 404)
 		if err != nil {
 			return fmt.Errorf("Resouse was not delete \n %s", resp)
 		}

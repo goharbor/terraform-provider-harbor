@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -29,31 +31,31 @@ func resourceConfigSystem() *schema.Resource {
 				Optional: true,
 			},
 		},
-		Create: resourceConfigSystemCreate,
-		Read:   resourceConfigSystemRead,
-		Update: resourceConfigSystemCreate,
-		Delete: resourceConfigSystemDelete,
+		CreateContext: resourceConfigSystemCreateUpdate,
+		ReadContext:   resourceConfigSystemRead,
+		UpdateContext: resourceConfigSystemCreateUpdate,
+		DeleteContext: resourceConfigSystemDelete,
 	}
 }
 
-func resourceConfigSystemCreate(d *schema.ResourceData, m interface{}) error {
+func resourceConfigSystemCreateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.GetConfigSystem(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", models.PathConfig, body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceConfigSystemRead(d, m)
+	return resourceConfigSystemRead(ctx, d, m)
 }
 
-func resourceConfigSystemRead(d *schema.ResourceData, m interface{}) error {
+func resourceConfigSystemRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	d.SetId("configuration/system")
 	return nil
 }
 
-func resourceConfigSystemDelete(d *schema.ResourceData, m interface{}) error {
+func resourceConfigSystemDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return nil
 }

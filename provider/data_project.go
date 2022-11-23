@@ -1,8 +1,9 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"strconv"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -12,7 +13,7 @@ import (
 
 func dataProject() *schema.Resource {
 	return &schema.Resource{
-		Read: dataProjectRead,
+		ReadContext: dataProjectRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -34,20 +35,20 @@ func dataProject() *schema.Resource {
 	}
 }
 
-func dataProjectRead(d *schema.ResourceData, m interface{}) error {
+func dataProjectRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	projectPath := models.PathProjects + "?name=" + name
 
-	resp, _, _, err := apiClient.SendRequest("GET", projectPath, nil, 200)
+	resp, _, _, err := apiClient.SendRequest(ctx, "GET", projectPath, nil, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	var jsonData []models.ProjectsBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Unable to find the project named: %s", name)
+		return diag.FromErr(err)
 	}
 
 	for _, v := range jsonData {
@@ -56,7 +57,7 @@ func dataProjectRead(d *schema.ResourceData, m interface{}) error {
 			id := models.PathProjects + "/" + strconv.Itoa(v.ProjectID)
 			public, err := strconv.ParseBool(v.Metadata.Public)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			var autoScan bool
@@ -66,7 +67,7 @@ func dataProjectRead(d *schema.ResourceData, m interface{}) error {
 			} else {
 				autoScan, err = strconv.ParseBool(scan)
 				if err != nil {
-					return err
+					return diag.FromErr(err)
 				}
 			}
 

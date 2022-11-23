@@ -1,15 +1,17 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/models"
 )
 
 // GetProjectRepositories returns a list of repositories for the given project.
-func (c *Client) GetProjectRepositories(projectName string) ([]models.RepositoryBody, error) {
+func (c *Client) GetProjectRepositories(ctx context.Context, projectName string) ([]models.RepositoryBody, error) {
 	var allRepos []models.RepositoryBody
 
 	page := 1
@@ -19,7 +21,7 @@ func (c *Client) GetProjectRepositories(projectName string) ([]models.Repository
 	for {
 		reposPath := fmt.Sprintf("/projects/%s/repositories?page=%d&page_size=100", projectName, page)
 
-		resp, _, _, err := c.SendRequest("GET", reposPath, nil, 200)
+		resp, _, _, err := c.SendRequest(ctx, "GET", reposPath, nil, 200)
 		if err != nil {
 			return nil, err
 		}
@@ -40,8 +42,8 @@ func (c *Client) GetProjectRepositories(projectName string) ([]models.Repository
 }
 
 // DeleteProjectRepositories deletes all repositories of a given project.
-func (c *Client) DeleteProjectRepositories(projectName string) error {
-	repos, err := c.GetProjectRepositories(projectName)
+func (c *Client) DeleteProjectRepositories(ctx context.Context, projectName string) error {
+	repos, err := c.GetProjectRepositories(ctx, projectName)
 	if err != nil {
 		return err
 	}
@@ -58,9 +60,13 @@ func (c *Client) DeleteProjectRepositories(projectName string) error {
 
 		repoPath := fmt.Sprintf("/projects/%s/repositories/%s", projectName, repoName)
 
-		_, _, _, err := c.SendRequest("DELETE", repoPath, nil, 200)
+		_, _, respCode, err := c.SendRequest(ctx, "DELETE", repoPath, nil, 200)
 		if err != nil {
-			return err
+			if respCode == 404 {
+				log.Printf("[DEBUG] Project repository %q for project %q was not found - already deleted!", repoName, projectName)
+				return nil
+			}
+			return fmt.Errorf("making delete request on project repository %s for project %s : %+v", repoName, projectName, err)
 		}
 	}
 

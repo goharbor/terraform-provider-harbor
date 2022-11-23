@@ -1,8 +1,9 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"strconv"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -12,7 +13,7 @@ import (
 
 func dataRegistry() *schema.Resource {
 	return &schema.Resource{
-		Read: dataRegistryRead,
+		ReadContext: dataRegistryRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -46,19 +47,19 @@ func dataRegistry() *schema.Resource {
 	}
 }
 
-func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
+func dataRegistryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	name := d.Get("name").(string)
 	registryPath := models.PathRegistries + "?name=" + name
-	resp, _, _, err := apiClient.SendRequest("GET", registryPath, nil, 200)
+	resp, _, _, err := apiClient.SendRequest(ctx, "GET", registryPath, nil, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	var jsonData []models.RegistryBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Unable to find the registry named: %s", name)
+		return diag.FromErr(err)
 	}
 
 	for _, v := range jsonData {

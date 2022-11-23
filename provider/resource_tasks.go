@@ -1,7 +1,9 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -38,14 +40,14 @@ func resourceTasks() *schema.Resource {
 				Required: true,
 			},
 		},
-		Create: resourceTasksCreate,
-		Read:   resourceTasksRead,
-		Update: resourceTasksUpdate,
-		Delete: resourceTasksDelete,
+		CreateContext: resourceTasksCreate,
+		ReadContext:   resourceTasksRead,
+		UpdateContext: resourceTasksUpdate,
+		DeleteContext: resourceTasksDelete,
 	}
 }
 
-func resourceTasksCreate(d *schema.ResourceData, m interface{}) error {
+func resourceTasksCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	vulnSchedule := d.Get("vulnerability_scan_policy").(string)
@@ -58,9 +60,9 @@ func resourceTasksCreate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 
-	resp, _, _, err := apiClient.SendRequest("GET", pathVuln, nil, 0)
+	resp, _, _, err := apiClient.SendRequest(ctx, "GET", pathVuln, nil, 0)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	var jsonData Info
 
@@ -74,22 +76,22 @@ func resourceTasksCreate(d *schema.ResourceData, m interface{}) error {
 	} else {
 		log.Printf("No schedule found performing POST request")
 	}
-	_, _, _, err = apiClient.SendRequest(requestType, pathVuln, body, 0)
+	_, _, _, err = apiClient.SendRequest(ctx, requestType, pathVuln, body, 0)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 
 	}
 
 	d.SetId(randomString(15))
-	return resourceTasksRead(d, m)
+	return resourceTasksRead(ctx, d, m)
 }
 
-func resourceTasksRead(d *schema.ResourceData, m interface{}) error {
+func resourceTasksRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	return nil
 }
 
-func resourceTasksUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceTasksUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	vulnSchedule := d.Get("vulnerability_scan_policy").(string)
@@ -102,19 +104,19 @@ func resourceTasksUpdate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 
-	apiClient.SendRequest("PUT", pathVuln, body, 0)
+	apiClient.SendRequest(ctx, "PUT", pathVuln, body, 0)
 
-	return resourceTasksRead(d, m)
+	return resourceTasksRead(ctx, d, m)
 }
 
-func resourceTasksDelete(d *schema.ResourceData, m interface{}) error {
+func resourceTasksDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := schedule{
 		Schedule: cron{Cron: ""},
 	}
 
-	apiClient.SendRequest("PUT", pathVuln, body, 0)
+	apiClient.SendRequest(ctx, "PUT", pathVuln, body, 0)
 	return nil
 }
 

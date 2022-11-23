@@ -1,12 +1,13 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
-
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 )
 
 func resourceConfigEmail() *schema.Resource {
@@ -45,39 +46,43 @@ func resourceConfigEmail() *schema.Resource {
 				Default:  false,
 			},
 		},
-		Create: resourceConfigEmailCreate,
-		Read:   resourceConfigEmailRead,
-		Update: resourceConfigEmailCreate,
-		Delete: resourceConfigEmailDelete,
+		CreateContext: resourceConfigEmailCreateUpdate,
+		ReadContext:   resourceConfigEmailRead,
+		UpdateContext: resourceConfigEmailCreateUpdate,
+		DeleteContext: resourceConfigEmailDelete,
 	}
 }
 
-func resourceConfigEmailCreate(d *schema.ResourceData, m interface{}) error {
+func resourceConfigEmailCreateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.GetConfigEmail(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", models.PathConfig, body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceConfigEmailRead(d, m)
+	return resourceConfigEmailRead(ctx, d, m)
 }
 
-func resourceConfigEmailRead(d *schema.ResourceData, m interface{}) error {
+func resourceConfigEmailRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", models.PathConfig, nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Config Email %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making Read request on Config Email %s : %+v", d.Id(), err)
 	}
 
 	var jsonData models.ConfigBodyResponse
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId("/configurations")
@@ -89,6 +94,6 @@ func resourceConfigEmailRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceConfigEmailDelete(d *schema.ResourceData, m interface{}) error {
+func resourceConfigEmailDelete(ctx context.Context, data *schema.ResourceData, i interface{}) diag.Diagnostics {
 	return nil
 }

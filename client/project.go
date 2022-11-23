@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -65,8 +66,8 @@ func expandCveAllowList(cveAllowlist []interface{}) models.CveAllowlistItems {
 	return allowlist
 }
 
-func (client *Client) UpdateStorageQuota(d *schema.ResourceData) (err error) {
-	resp, _, _, err := client.SendRequest("GET", models.PathConfig, nil, 200)
+func (client *Client) UpdateStorageQuota(ctx context.Context, d *schema.ResourceData) (err error) {
+	resp, _, _, err := client.SendRequest(ctx, "GET", models.PathConfig, nil, 200)
 
 	var jsonData models.ConfigBodyResponse
 	err = json.Unmarshal([]byte(resp), &jsonData)
@@ -82,7 +83,7 @@ func (client *Client) UpdateStorageQuota(d *schema.ResourceData) (err error) {
 			for {
 				quotasPath := fmt.Sprintf("/quotas/?page=%d&page_size=100", page)
 
-				resp, _, _, err := client.SendRequest("GET", quotasPath, nil, 200)
+				resp, _, _, err := client.SendRequest(ctx, "GET", quotasPath, nil, 200)
 				if err != nil {
 					return err
 				}
@@ -109,7 +110,7 @@ func (client *Client) UpdateStorageQuota(d *schema.ResourceData) (err error) {
 						}
 						body := models.StorageQuota{quota}
 
-						_, _, _, err = client.SendRequest("PUT", quotaID, body, 200)
+						_, _, _, err = client.SendRequest(ctx, "PUT", quotaID, body, 200)
 						if err != nil {
 							return err
 						}

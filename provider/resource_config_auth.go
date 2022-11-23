@@ -1,11 +1,12 @@
 package provider
 
 import (
-	"fmt"
-
+	"context"
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 )
 
 func resourceConfigAuth() *schema.Resource {
@@ -145,45 +146,49 @@ func resourceConfigAuth() *schema.Resource {
 				Optional: true,
 			},
 		},
-		Create: resourceConfigAuthCreate,
-		Read:   resourceConfigAuthRead,
-		Update: resourceConfigAuthCreate,
-		Delete: resourceConfigAuthDelete,
+		CreateContext: resourceConfigAuthCreateUpdate,
+		ReadContext:   resourceConfigAuthRead,
+		UpdateContext: resourceConfigAuthCreateUpdate,
+		DeleteContext: resourceConfigAuthDelete,
 	}
 }
 
-func resourceConfigAuthCreate(d *schema.ResourceData, m interface{}) error {
+func resourceConfigAuthCreateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	body := client.GetConfigAuth(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", models.PathConfig, body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceConfigAuthRead(d, m)
+	return resourceConfigAuthRead(ctx, d, m)
 }
 
-func resourceConfigAuthRead(d *schema.ResourceData, m interface{}) error {
+func resourceConfigAuthRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", models.PathConfig, nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Config Auth %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making Read request on Config Auth %s : %+v", d.Id(), err)
 	}
 
 	err = client.SetAuthValues(d, resp)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(models.PathConfig)
 	return nil
 }
 
-func resourceConfigAuthDelete(d *schema.ResourceData, m interface{}) error {
+func resourceConfigAuthDelete(ctx context.Context, data *schema.ResourceData, i interface{}) diag.Diagnostics {
 	return nil
 }
 

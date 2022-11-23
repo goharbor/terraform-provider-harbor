@@ -1,8 +1,9 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
 	"strconv"
 	"strings"
@@ -46,17 +47,17 @@ func resourceImmutableTagRule() *schema.Resource {
 				// ConflictsWith: []string{".tag_matching"},
 			},
 		},
-		Create: resourceImmutableTagRuleCreate,
-		Read:   resourceImmutableTagRuleRead,
-		Update: resourceImmutableTagRuleUpdate,
-		Delete: resourceImmutableTagRuleDelete,
+		CreateContext: resourceImmutableTagRuleCreate,
+		ReadContext:   resourceImmutableTagRuleRead,
+		UpdateContext: resourceImmutableTagRuleUpdate,
+		DeleteContext: resourceImmutableTagRuleDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }
 
-func resourceImmutableTagRuleCreate(d *schema.ResourceData, m interface{}) error {
+func resourceImmutableTagRuleCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	projectid := checkProjectid(d.Get("project_id").(string))
@@ -65,37 +66,43 @@ func resourceImmutableTagRuleCreate(d *schema.ResourceData, m interface{}) error
 	body := client.GetImmutableTagRuleBody(d)
 	id := ""
 
-	_, headers, _, err := apiClient.SendRequest("POST", path, body, 201)
+	_, headers, _, err := apiClient.SendRequest(ctx, "POST", path, body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err = client.GetID(headers)
 	d.SetId(id)
-	return resourceImmutableTagRuleRead(d, m)
+	return resourceImmutableTagRuleRead(ctx, d, m)
 }
 
-func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
+func resourceImmutableTagRuleRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	lastSlashIndex := strings.LastIndex(d.Id(), "/")
 	projectImmutableTagRulePath := d.Id()[0:lastSlashIndex]
 	tagId, err := strconv.Atoi(d.Id()[lastSlashIndex+1:])
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	log.Printf("[DEBUG] Path to immutable tag rules: %+v\n", projectImmutableTagRulePath)
 
-	resp, _, _, err := apiClient.SendRequest("GET", projectImmutableTagRulePath, nil, 200)
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", projectImmutableTagRulePath, nil, 200)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", projectImmutableTagRulePath)
+		if respCode == 404 {
+			log.Printf("[DEBUG] Immutable tag rule %q was not found - removing from state!", tagId)
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making Read request on immutable tag rule %d : %+v", tagId, err)
 	}
 
 	var immutableTagRuleModels []models.ImmutableTagRule
 	err = json.Unmarshal([]byte(resp), &immutableTagRuleModels)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
+
 	for _, rule := range immutableTagRuleModels {
 		if rule.Id == tagId {
 			log.Printf("[DEBUG] found tag id %d", tagId)
@@ -120,28 +127,35 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	return fmt.Errorf("Resource not found %s", d.Id())
+	log.Printf("[DEBUG] Immutable tag rule %q was not found - removing from state!", tagId)
+	d.SetId("")
+	return nil
 }
 
-func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceImmutableTagRuleUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.GetImmutableTagRuleBody(d)
 	id := d.Id()
 	log.Printf("[DEBUG] Update Id: %+v\n", id)
-	_, _, _, err := apiClient.SendRequest("PUT", id, body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", id, body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceImmutableTagRuleRead(d, m)
+	return resourceImmutableTagRuleRead(ctx, d, m)
 }
 
-func resourceImmutableTagRuleDelete(d *schema.ResourceData, m interface{}) error {
+func resourceImmutableTagRuleDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Immutable tag %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on immutable tag %s : %+v", d.Id(), err)
 	}
+
 	return nil
 }

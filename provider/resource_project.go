@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 	"strconv"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -65,43 +67,47 @@ func resourceProject() *schema.Resource {
 				Default:  false,
 			},
 		},
-		Create: resourceProjectCreate,
-		Read:   resourceProjectRead,
-		Update: resourceProjectUpdate,
-		Delete: resourceProjectDelete,
+		CreateContext: resourceProjectCreate,
+		ReadContext:   resourceProjectRead,
+		UpdateContext: resourceProjectUpdate,
+		DeleteContext: resourceProjectDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }
 
-func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
+func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.ProjectBody(d)
 
-	_, headers, _, err := apiClient.SendRequest("POST", models.PathProjects, body, 201)
+	_, headers, _, err := apiClient.SendRequest(ctx, "POST", models.PathProjects, body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err := client.GetID(headers)
 	d.SetId(id)
-	return resourceProjectRead(d, m)
+	return resourceProjectRead(ctx, d, m)
 }
 
-func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
+func resourceProjectRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Project %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making read request on project %s : %+v", d.Id(), err)
 	}
 
 	var jsonData models.ProjectsBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return diag.FromErr(err)
 	}
 
 	autoScan := jsonData.Metadata.AutoScan
@@ -111,7 +117,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	} else {
 		vuln, err = strconv.ParseBool(autoScan)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -122,7 +128,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	} else {
 		trust, err = strconv.ParseBool(trustContent)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -136,21 +142,21 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.ProjectBody(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	apiClient.UpdateStorageQuota(d)
+	apiClient.UpdateStorageQuota(ctx, d)
 
-	return resourceProjectRead(d, m)
+	return resourceProjectRead(ctx, d, m)
 }
 
-func resourceProjectDelete(d *schema.ResourceData, m interface{}) error {
+func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
 	forceDestroy := d.Get("force_destroy").(bool)
@@ -160,15 +166,20 @@ func resourceProjectDelete(d *schema.ResourceData, m interface{}) error {
 		// before attempting to delete it.
 		projectName := d.Get("name").(string)
 
-		err := apiClient.DeleteProjectRepositories(projectName)
+		err := apiClient.DeleteProjectRepositories(ctx, projectName)
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Resource project %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on resource project %s : %+v", d.Id(), err)
 	}
+
 	return nil
 }

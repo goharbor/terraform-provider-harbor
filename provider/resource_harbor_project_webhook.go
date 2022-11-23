@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -56,44 +58,48 @@ func resourceProjectWebhook() *schema.Resource {
 				Default:  true,
 			},
 		},
-		Create: resourceProjectWebhookCreate,
-		Read:   resourceProjectWebhookRead,
-		Update: resourceProjectWebhookUpdate,
-		Delete: resourceProjectWebhookDelete,
+		CreateContext: resourceProjectWebhookCreate,
+		ReadContext:   resourceProjectWebhookRead,
+		UpdateContext: resourceProjectWebhookUpdate,
+		DeleteContext: resourceProjectWebhookDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceProjectWebhookCreate(d *schema.ResourceData, m interface{}) error {
+func resourceProjectWebhookCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.ProjectWebhookBody(d)
 
 	url := d.Get("project_id").(string) + "/webhook/policies"
-	_, headers, _, err := apiClient.SendRequest("POST", url, body, 201)
+	_, headers, _, err := apiClient.SendRequest(ctx, "POST", url, body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err := client.GetID(headers)
 	d.SetId(id)
-	return resourceProjectWebhookRead(d, m)
+	return resourceProjectWebhookRead(ctx, d, m)
 }
 
-func resourceProjectWebhookRead(d *schema.ResourceData, m interface{}) error {
+func resourceProjectWebhookRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Web hook %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making Read request on web hook %s : %+v", d.Id(), err)
 	}
 
 	var jsonData models.ProjectWebhook
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return diag.FromErr(err)
 	}
 
 	d.Set("name", jsonData.Name)
@@ -107,24 +113,29 @@ func resourceProjectWebhookRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceProjectWebhookUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceProjectWebhookUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.ProjectWebhookBody(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceProjectWebhookRead(d, m)
+	return resourceProjectWebhookRead(ctx, d, m)
 }
 
-func resourceProjectWebhookDelete(d *schema.ResourceData, m interface{}) error {
+func resourceProjectWebhookDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Project webhook %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on project webhook %s : %+v", d.Id(), err)
 	}
+
 	return nil
 }

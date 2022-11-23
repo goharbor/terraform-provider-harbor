@@ -1,8 +1,10 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -35,43 +37,47 @@ func resourceLabel() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Create: resourceLabelCreate,
-		Read:   resourceLabelRead,
-		Update: resourceLabelUpdate,
-		Delete: resourceLabelDelete,
+		CreateContext: resourceLabelCreate,
+		ReadContext:   resourceLabelRead,
+		UpdateContext: resourceLabelUpdate,
+		DeleteContext: resourceLabelDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceLabelCreate(d *schema.ResourceData, m interface{}) error {
+func resourceLabelCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.LabelsBody(d)
 
-	_, headers, _, err := apiClient.SendRequest("POST", models.PathLabel, body, 201)
+	_, headers, _, err := apiClient.SendRequest(ctx, "POST", models.PathLabel, body, 201)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	id, err := client.GetID(headers)
 	d.SetId(id)
-	return resourceLabelRead(d, m)
+	return resourceLabelRead(ctx, d, m)
 }
 
-func resourceLabelRead(d *schema.ResourceData, m interface{}) error {
+func resourceLabelRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if respCode == 404 && err != nil {
-		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+	resp, _, respCode, err := apiClient.SendRequest(ctx, "GET", d.Id(), nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			log.Printf("[DEBUG] Label %q was not found - removing from state!", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("making Read request on label %s : %+v", d.Id(), err)
 	}
 
 	var jsonData models.Labels
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return diag.FromErr(err)
 	}
 
 	d.Set("name", jsonData.Name)
@@ -82,24 +88,28 @@ func resourceLabelRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceLabelUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceLabelUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 	body := client.LabelsBody(d)
 
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest(ctx, "PUT", d.Id(), body, 200)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return resourceLabelRead(d, m)
+	return resourceLabelRead(ctx, d, m)
 }
 
-func resourceLabelDelete(d *schema.ResourceData, m interface{}) error {
+func resourceLabelDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	_, _, respCode, err := apiClient.SendRequest(ctx, "DELETE", d.Id(), nil, 200)
 	if err != nil {
-		return err
+		if respCode == 404 {
+			log.Printf("[DEBUG] Label %q was not found - already deleted!", d.Id())
+			return nil
+		}
+		return diag.Errorf("making delete request on label %s : %+v", d.Id(), err)
 	}
 	return nil
 }
