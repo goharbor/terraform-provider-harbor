@@ -14,12 +14,13 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 	schedule := d.Get("schedule").(string)
 
 	body := models.ReplicationBody{
-		Name:          d.Get("name").(string),
-		Description:   d.Get("description").(string),
-		Override:      d.Get("override").(bool),
-		Enabled:       d.Get("enabled").(bool),
-		Deletion:      d.Get("deletion").(bool),
-		DestNamespace: d.Get("dest_namespace").(string),
+		Name:                 d.Get("name").(string),
+		Description:          d.Get("description").(string),
+		Override:             d.Get("override").(bool),
+		Enabled:              d.Get("enabled").(bool),
+		Deletion:             d.Get("deletion").(bool),
+		DestNamespace:        d.Get("dest_namespace").(string),
+		DestNamespaceReplace: d.Get("dest_namespace_replace").(int),
 	}
 
 	if action == "push" {

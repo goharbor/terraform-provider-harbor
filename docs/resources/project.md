@@ -28,7 +28,7 @@ resource "harbor_registry" "docker" {
 ## Argument Reference
 The following arguments are supported:
 
-* `name` - (Required) The of the project that will be created in harbor.
+* `name` - (Required) The name of the project that will be created in harbor.
 
 * `public` - (Optional) The project will be public accessibility. Can be set to `"true"` or `"false"` (Default: false)
 
