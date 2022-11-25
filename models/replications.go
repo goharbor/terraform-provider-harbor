@@ -24,6 +24,7 @@ type ReplicationBody struct {
 	Deletion bool                 `json:"deletion,omitempty"`
 	Override bool                 `json:"override,omitempty"`
 	Filters  []ReplicationFilters `json:"filters,omitempty"`
+	Speed    int                  `json:"speed,omitempty"`
 }
 
 type ReplicationFilters struct {
