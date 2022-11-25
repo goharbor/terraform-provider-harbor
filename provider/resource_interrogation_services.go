@@ -1,6 +1,9 @@
 package provider
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -42,7 +45,22 @@ func resourceVulnCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceVulnRead(d *schema.ResourceData, m interface{}) error {
-	d.SetId("/system/scanAll/schedule")
+	apiClient := m.(*client.Client)
+	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+
+	if respCode == 404 && err != nil {
+		d.SetId("")
+		return fmt.Errorf("Resource not found %s", d.Id())
+	}
+
+	var jsonData models.InterogationsBodyResponse
+	err = json.Unmarshal([]byte(resp), &jsonData)
+	if err != nil {
+		return fmt.Errorf("Resource not found %s", d.Id())
+	}
+
+	d.Set("vulnerability_scan_policy", jsonData.Schedule.Type)
+
 	return nil
 }
 
