@@ -45,6 +45,7 @@ func resourceVulnCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceVulnRead(d *schema.ResourceData, m interface{}) error {
+	d.SetId("/system/scanAll/schedule")
 	apiClient := m.(*client.Client)
 	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 
