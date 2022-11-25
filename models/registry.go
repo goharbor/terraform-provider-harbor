@@ -18,3 +18,13 @@ type RegistryBody struct {
 	ID           int    `json:"id,omitempty"`
 	Description  string `json:"description,omitempty"`
 }
+
+type RegistryUpdateBody struct {
+	AccessKey      string `json:"access_key,omitempty"`
+	CredentialType string `json:"credential_type,omitempty"`
+	Name           string `json:"name,omitempty"`
+	AccessSecret   string `json:"access_secret,omitempty"`
+	URL            string `json:"url,omitempty"`
+	Insecure       bool   `json:"insecure,omitempty"`
+	Description    string `json:"description,omitempty"`
+}

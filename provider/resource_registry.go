@@ -113,7 +113,7 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	body := client.GetRegistryBody(d)
+	body := client.GetRegistryUpdateBody(d)
 
 	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
