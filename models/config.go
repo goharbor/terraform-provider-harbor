@@ -223,4 +223,8 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"robot_name_prefix,omitempty"`
+	LdapVerifyCert struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    bool `json:"value,omitempty"`
+	} `json:"ldap_verify_cert,omitempty"`
 }
