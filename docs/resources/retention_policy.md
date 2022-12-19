@@ -29,7 +29,7 @@ The following arguments are supported:
 
 * `scope` - (Required) The project id of which you would like to apply this policy.
 
-* `schedule` - (Optional) The schedule of when you would like the policy to run. This can be `daily`, `weekly`, `monthly` or can be a custom cron string.
+* `schedule` - (Optional) The schedule of when you would like the policy to run. This can be `hourly`, `daily`, `weekly` or can be a custom cron string.
 
 * `rule` - (Required) Al collection of rule blocks as documented below.
 
