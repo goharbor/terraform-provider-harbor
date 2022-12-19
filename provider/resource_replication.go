@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/BESTSELLER/terraform-provider-harbor/client"
-	"github.com/BESTSELLER/terraform-provider-harbor/models"
+	"github.com/goharbor/terraform-provider-harbor/client"
+	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -51,6 +51,11 @@ func resourceReplication() *schema.Resource {
 			"dest_namespace": {
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"dest_namespace_replace": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  0,
 			},
 			"override": {
 				Type:     schema.TypeBool,

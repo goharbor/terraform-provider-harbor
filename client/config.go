@@ -4,28 +4,31 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/BESTSELLER/terraform-provider-harbor/models"
+	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func GetConfigSystem(d *schema.ResourceData) models.ConfigBodyPost {
-	return models.ConfigBodyPost{
+func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
+	var body models.ConfigBodySystemPost
+	body = models.ConfigBodySystemPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(bool),
 		RobotTokenDuration:         d.Get("robot_token_expiration").(int),
 		QuotaPerProjectEnable:      true,
 		RobotNamePrefix:            d.Get("robot_name_prefix").(string),
 	}
+	log.Printf("[DEBUG] %+v\n ", body)
+	return body
 }
 
-func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyPost {
-	var body models.ConfigBodyPost
+func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
+	var body models.ConfigBodyAuthPost
 
 	auth := d.Get("auth_mode").(string)
 
 	switch auth {
 	case "oidc_auth", "oidc":
-		body = models.ConfigBodyPost{
+		body = models.ConfigBodyAuthPost{
 			AuthMode:         "oidc_auth",
 			OidcName:         d.Get("oidc_name").(string),
 			OidcEndpoint:     d.Get("oidc_endpoint").(string),
@@ -39,22 +42,20 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyPost {
 			OidcAdminGroup:   d.Get("oidc_admin_group").(string),
 		}
 	case "ldap_auth", "ldap":
-		body = models.ConfigBodyPost{
-			AuthMode:     "ldap_auth",
-			LdapURL:      d.Get("ldap_url").(string),
-			LdapSearchDn: d.Get("ldap_search_dn").(string),
-			LdapSearchPassword: d.Get("ldap_search_password").(string),
-			LdapBaseDn:   d.Get("ldap_base_dn").(string),
-			LdapFilter:   d.Get("ldap_filter").(string),
-			LdapUID:      d.Get("ldap_uid").(string),
-
-			LdapGroupBaseDn:        d.Get("ldap_group_base_dn").(string),
-			LdapGroupSearchFilter:  d.Get("ldap_group_filter").(string),
-			LdapGroupAttributeName:           d.Get("ldap_group_gid").(string),
-			LdapGroupAdminDn:       d.Get("ldap_group_admin_dn").(string),
+		body = models.ConfigBodyAuthPost{
+			AuthMode:                     "ldap_auth",
+			LdapURL:                      d.Get("ldap_url").(string),
+			LdapSearchDn:                 d.Get("ldap_search_dn").(string),
+			LdapSearchPassword:           d.Get("ldap_search_password").(string),
+			LdapBaseDn:                   d.Get("ldap_base_dn").(string),
+			LdapFilter:                   d.Get("ldap_filter").(string),
+			LdapUID:                      d.Get("ldap_uid").(string),
+			LdapGroupBaseDn:              d.Get("ldap_group_base_dn").(string),
+			LdapGroupSearchFilter:        d.Get("ldap_group_filter").(string),
+			LdapGroupAttributeName:       d.Get("ldap_group_gid").(string),
+			LdapGroupAdminDn:             d.Get("ldap_group_admin_dn").(string),
 			LdapGroupMembershipAttribute: d.Get("ldap_group_membership").(string),
-
-			LdapVerifyCert: d.Get("ldap_verify_cert").(bool),
+			LdapVerifyCert:               d.Get("ldap_verify_cert").(bool),
 		}
 
 		ldapScope := d.Get("ldap_scope").(string)
@@ -72,8 +73,9 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyPost {
 	return body
 }
 
-func GetConfigEmail(d *schema.ResourceData) models.ConfigBodyPost {
-	return models.ConfigBodyPost{
+func GetConfigEmail(d *schema.ResourceData) models.ConfigBodyEmailPost {
+	var body models.ConfigBodyEmailPost
+	body = models.ConfigBodyEmailPost{
 		EmailHost:     d.Get("email_host").(string),
 		EmailPort:     d.Get("email_port").(int),
 		EmailUsername: d.Get("email_username").(string),
@@ -82,6 +84,8 @@ func GetConfigEmail(d *schema.ResourceData) models.ConfigBodyPost {
 		EmailSsl:      d.Get("email_ssl").(bool),
 		EmailInsecure: d.Get("email_insecure").(bool),
 	}
+	log.Printf("[DEBUG] %+v\n ", body)
+	return body
 }
 
 func days2mins(days int) int {
@@ -128,7 +132,7 @@ func SetAuthValues(d *schema.ResourceData, resp string) error {
 		d.Set("ldap_url", jsonData.LdapURL.Value)
 		d.Set("ldap_base_dn", jsonData.LdapBaseDn.Value)
 		d.Set("ldap_uid", jsonData.LdapUID.Value)
-		d.Set("ldap_verify_cert", jsonData.VerifyRemoteCert.Value)
+		d.Set("ldap_verify_cert", jsonData.LdapVerifyCert.Value)
 		d.Set("ldap_search_dn", jsonData.LdapSearchDn.Value)
 		d.Set("ldap_scope", jsonData.LdapScope.Value)
 		d.Set("ldap_group_base_dn", jsonData.LdapGroupBaseDn.Value)

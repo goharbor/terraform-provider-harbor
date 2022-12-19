@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/BESTSELLER/terraform-provider-harbor/client"
+	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )

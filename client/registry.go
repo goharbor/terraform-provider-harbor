@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/BESTSELLER/terraform-provider-harbor/models"
+	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -33,6 +33,7 @@ func GetRegistryType(regType string) (regName string, err error) {
 		"docker-hub":      "docker-hub",
 		"docker-registry": "docker-registry",
 		"gitlab":          "gitlab",
+		"github":          "github-ghcr",
 		"google":          "google-gcr",
 		"harbor":          "harbor",
 		"helm":            "helm-hub",
@@ -43,6 +44,7 @@ func GetRegistryType(regType string) (regName string, err error) {
 		"ali-acr":           "alibaba",
 		"aws-ecr":           "aws",
 		"azure-acr":         "azure",
+		"github-ghcr":	     "github",
 		"google-gcr":        "google",
 		"helm-hub":          "helm",
 		"huawei-SWR":        "huawei",
