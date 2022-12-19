@@ -27,6 +27,7 @@ func GetRegistryType(regType string) (regName string, err error) {
 
 	registryType := map[string]string{
 		"alibaba":         "ali-acr",
+		"artifact-hub":    "artifact-hub",
 		"aws":             "aws-ecr",
 		"azure":           "azure-acr",
 		"docker-hub":      "docker-hub",
