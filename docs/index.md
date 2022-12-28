@@ -30,8 +30,8 @@ provider "harbor" {
 ## Argument Reference
 The following arguments are supported:
 
-* **url** - (Required) The url of the harbor
+* **url** - (Required) The url of harbor
 * **username** - (Required) The username to be used to access harbor
 * **password** - (Required) The password to be used to access harbor
-* **insecure** - (Optional) Choose to igorne certificate errors
+* **insecure** - (Optional) Choose to ignore certificate errors
 * **api_version** - (Optional) Choose which version of the api you would like to use 1 or 2. Default is `2`
