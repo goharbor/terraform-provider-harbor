@@ -15,7 +15,7 @@ resource "harbor_registry" "main" {
 ## Argument Reference
 The following arguments are supported:
 
-* **provider_name** - (Required) The name of the provider type. Supported values include `alibaba`, `aws`, `azure`, `docker-hub`, `docker-registry`, `gitlab`, `github`, `google`, `harbor`, `helm`, `huawei`, `jfrog`
+* **provider_name** - (Required) The name of the provider type. Supported values include `alibaba`, `artifact-hub`, `aws`, `azure`, `docker-hub`, `docker-registry`, `gitlab`, `github`, `google`, `harbor`, `helm`, `huawei`, `jfrog`
 
 * **name** - (Required) The name of the register.
 
@@ -42,5 +42,5 @@ In addition to all argument, the following attributes are exported:
 Harbor project can be imported using the `registry id` eg,
 
 `
-terraform import harbor_project.main /registries/7
+terraform import harbor_registry.main /registries/7
 `
