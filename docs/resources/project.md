@@ -5,8 +5,8 @@
 resource "harbor_project" "main" {
     name                    = "main"
     public                  = false               # (Optional) Default value is false
-    vulnerability_scanning  = true                # (Optional) Default vale is true. Automatically scan images on push 
-    enable_content_trust    = true                # (Optional) Default vale is false. Deny unsigned images from being pulled 
+    vulnerability_scanning  = true                # (Optional) Default vale is true. Automatically scan images on push
+    enable_content_trust    = true                # (Optional) Default vale is false. Deny unsigned images from being pulled
 }
 ```
 
@@ -43,11 +43,14 @@ The following arguments are supported:
 * `enable_content_trust` - (Optional) Enables Content Trust for project. When enabled it queries the embedded docker notary server. Can be set to `"true"` or `"false"` (Default: false)
 
 * `force_destroy` - (Optional, Default: `false`) A boolean that indicates all repositories should be deleted from the project so that the project can be destroyed without error. These repositories are *not* recoverable.
-  
+
+* `cve_allowlist` - (Optional) Project allowlist allows vulnerabilities in this list to be ignored in this project when pushing and pulling images. Should be in the format or `["CVE-123", "CVE-145"]` or `["CVE-123"]`
+
 ## Attributes Reference
 In addition to all argument, the following attributes are exported:
 
 * `project_id` - The id of the project with harbor.
+* `cve_allowlist` - A list of allowed CVE IDs.
 
 ## Import
 Harbor project can be imported using the `project id` eg,
