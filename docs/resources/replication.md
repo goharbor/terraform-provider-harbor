@@ -60,6 +60,10 @@ The following arguments are supported:
 
 * **action** - (Required)
 
+* **registry_id** - (Required) The registry ID of the Registry Endpoint
+
+* **speed** - (Optional) The Maximum network bandwidth in Kbps for each execution. Default is `0` (unlimited).
+
 * **schedule** - (Optional) The scheduled time of when the container register will be push / pull. In cron base format. Hourly `"0 0 * * * *"`, Daily `"0 0 0 * * *"`, Monthly `"0 0 0 * * 0"`. Can be one of the following: `event_based`, `manual`, `cron format` (Default: `manual`)
 * **override** - (Optional) Specify whether to override the resources at the destination if a resources with the same name exist. Can be set to `true` or `false` (Default: `true`)
 * **enabled** - (Optional) Specify whether the replication is enabled. Can be set to `true` or `false` (Default: `true`)
