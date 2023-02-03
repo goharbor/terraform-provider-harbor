@@ -57,7 +57,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		}
 		if tag != "" {
 			filter.Type = "tag"
-			filter.Value = tag
+			filter.Value = strings.ReplaceAll(tag, " ", "")
 			filter.Decoration = decoration
 		}
 		if len(label) > 0 {
