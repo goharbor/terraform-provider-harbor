@@ -13,7 +13,7 @@ type ReplicationBody struct {
 		ID int `json:"id,omitempty"`
 	} `json:"dest_registry,omitempty"`
 	DestNamespace        string `json:"dest_namespace,omitempty"`
-	DestNamespaceReplace int    `json:"dest_namespace_replace_count"`
+	DestNamespaceReplace int    `json:"dest_namespace_replace_count,omitempty"`
 	Trigger              struct {
 		Type            string `json:"type,omitempty"`
 		TriggerSettings struct {
@@ -24,6 +24,7 @@ type ReplicationBody struct {
 	Deletion bool                 `json:"deletion,omitempty"`
 	Override bool                 `json:"override,omitempty"`
 	Filters  []ReplicationFilters `json:"filters,omitempty"`
+	Speed    int                  `json:"speed,omitempty"`
 }
 
 type ReplicationFilters struct {
