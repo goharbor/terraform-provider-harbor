@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -21,6 +22,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		Deletion:             d.Get("deletion").(bool),
 		DestNamespace:        d.Get("dest_namespace").(string),
 		DestNamespaceReplace: d.Get("dest_namespace_replace").(int),
+		Speed:                d.Get("speed").(int),
 	}
 
 	if action == "push" {
@@ -56,7 +58,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		}
 		if tag != "" {
 			filter.Type = "tag"
-			filter.Value = tag
+			filter.Value = strings.ReplaceAll(tag, " ", "")
 			filter.Decoration = decoration
 		}
 		if len(label) > 0 {
