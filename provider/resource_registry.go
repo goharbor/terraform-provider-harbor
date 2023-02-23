@@ -24,6 +24,7 @@ func resourceRegistry() *schema.Resource {
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "",
 			},
 			"endpoint_url": {
 				Type:     schema.TypeString,
@@ -32,11 +33,13 @@ func resourceRegistry() *schema.Resource {
 			"access_id": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "",
 			},
 			"access_secret": {
 				Type:      schema.TypeString,
 				Sensitive: true,
 				Optional:  true,
+				Default:  "",
 			},
 			"insecure": {
 				Type:     schema.TypeBool,
@@ -113,7 +116,7 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	body := client.GetRegistryBody(d)
+	body := client.GetRegistryUpdateBody(d)
 
 	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
