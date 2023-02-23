@@ -9,9 +9,10 @@ func ProjectWebhookBody(d *schema.ResourceData) models.ProjectWebhook {
 	eventTypes := d.Get("events_types").([]interface{})
 
 	body := models.ProjectWebhook{
-		Name:       d.Get("name").(string),
-		Enabled:    d.Get("enabled").(bool),
-		EventTypes: eventTypes,
+		Name:        d.Get("name").(string),
+		Description: d.Get("description").(string),
+		Enabled:     d.Get("enabled").(bool),
+		EventTypes:  eventTypes,
 	}
 	targets := models.WebHookTargets{
 		Type:           d.Get("notify_type").(string),
