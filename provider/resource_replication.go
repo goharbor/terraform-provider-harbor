@@ -96,7 +96,7 @@ func resourceReplication() *schema.Resource {
 			"speed": {
 				Type:     schema.TypeInt,
 				Optional: true,
-				Default:  0,
+				Default: -1,
 			},
 		},
 		Create: resourceReplicationCreate,
