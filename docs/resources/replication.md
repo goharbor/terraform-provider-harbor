@@ -96,5 +96,5 @@ In addition to all argument, the following attributes are exported:
 Harbor project can be imported using the `replication id` eg,
 
 `
-terraform import harbor_project.main /replication/policies/1
+terraform import harbor_replication.main /replication/policies/1
 `
