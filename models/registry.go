@@ -20,11 +20,11 @@ type RegistryBody struct {
 }
 
 type RegistryUpdateBody struct {
-	AccessKey      string `json:"access_key,omitempty"`
+	AccessKey      string `json:"access_key"`
 	CredentialType string `json:"credential_type,omitempty"`
 	Name           string `json:"name,omitempty"`
-	AccessSecret   string `json:"access_secret,omitempty"`
+	AccessSecret   string `json:"access_secret"`
 	URL            string `json:"url,omitempty"`
-	Insecure       bool   `json:"insecure,omitempty"`
-	Description    string `json:"description,omitempty"`
+	Insecure       bool   `json:"insecure"`
+	Description    string `json:"description"`
 }

@@ -24,6 +24,7 @@ func resourceRegistry() *schema.Resource {
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "",
 			},
 			"endpoint_url": {
 				Type:     schema.TypeString,
@@ -32,11 +33,13 @@ func resourceRegistry() *schema.Resource {
 			"access_id": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "",
 			},
 			"access_secret": {
 				Type:      schema.TypeString,
 				Sensitive: true,
 				Optional:  true,
+				Default:  "",
 			},
 			"insecure": {
 				Type:     schema.TypeBool,
