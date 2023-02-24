@@ -23,6 +23,22 @@ func GetRegistryBody(d *schema.ResourceData) models.RegistryBody {
 	return body
 }
 
+func GetRegistryUpdateBody(d *schema.ResourceData) models.RegistryUpdateBody {
+	regType, _ := GetRegistryType(d.Get("provider_name").(string))
+
+	body := models.RegistryUpdateBody{
+		AccessKey:      d.Get("access_id").(string),
+		CredentialType: regType,
+		AccessSecret:   d.Get("access_secret").(string),
+		Description:    d.Get("description").(string),
+		Insecure:       d.Get("insecure").(bool),
+		Name:           d.Get("name").(string),
+		URL:            d.Get("endpoint_url").(string),
+	}
+
+	return body
+}
+
 func GetRegistryType(regType string) (regName string, err error) {
 
 	registryType := map[string]string{
@@ -44,7 +60,7 @@ func GetRegistryType(regType string) (regName string, err error) {
 		"ali-acr":           "alibaba",
 		"aws-ecr":           "aws",
 		"azure-acr":         "azure",
-		"github-ghcr":	     "github",
+		"github-ghcr":       "github",
 		"google-gcr":        "google",
 		"helm-hub":          "helm",
 		"huawei-SWR":        "huawei",
