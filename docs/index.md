@@ -27,6 +27,15 @@ provider "harbor" {
   password = "insert_password_here"
 }
 ```
+
+Alternatively, these environment variables can be used to set the provider config values:
+```
+HARBOR_URL
+HARBOR_USERNAME
+HARBOR_PASSWORD
+HARBOR_IGNORE_CERT
+```
+
 ## Argument Reference
 The following arguments are supported:
 
