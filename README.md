@@ -5,7 +5,7 @@
 ![GitHub All Releases](https://img.shields.io/github/downloads/goharbor/terraform-provider-harbor/total)
 ![GitHub Releases](https://img.shields.io/github/downloads/goharbor/terraform-provider-harbor/latest/total)
 
-Configure and manage Harbor with Terraform.
+Configure and manage Harbor with Terraform and [Pulumi](https://github.com/pulumiverse/pulumi-harbor).
 
 
 ## Usage
