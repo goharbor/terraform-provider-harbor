@@ -18,7 +18,7 @@ resource "harbor_retention_policy" "main" {
 	rule {
 		n_days_since_last_push = 10
 		repo_matching = "**"
-		tag_matching = "latest"
+		tag_matching = "{latest,snapshot}"
 	}
 
 }
@@ -46,6 +46,8 @@ The following arguments are supported:
 * `tag_matching`- (Optional) For the tag matching.
 * `tag_excluding` - (Optional) For the tag excuding.
 * `untagged_artifacts`- (Optional) with untagged artifacts. Defaults to `true`
+
+~> Multiple tags or repositories must be provided as a comma-separated list wrapped into curly brackets `{ }`. Otherwise, the value is interpreted as a single value.
 
 ---
 
