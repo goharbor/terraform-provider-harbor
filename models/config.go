@@ -31,6 +31,7 @@ type ConfigBodyAuthPost struct {
 	LdapGroupAdminDn             string `json:"ldap_group_admin_dn,omitempty"`
 	OidcEndpoint                 string `json:"oidc_endpoint,omitempty"`
 	OidcClientSecret             string `json:"oidc_client_secret,omitempty"`
+	OidcGroupFilter              string `json:"oidc_group_filter,omitempty"`
 	OidcGroupsClaim              string `json:"oidc_groups_claim,omitempty"`
 	LdapScope                    int    `json:"ldap_scope,omitempty"`
 	TokenExpiration              int    `json:"token_expiration,omitempty"`
@@ -73,6 +74,10 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"oidc_user_claim,omitempty"`
+	OidcGroupFilter struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"oidc_group_filter,omitempty"`
 	OidcGroupsClaim struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`

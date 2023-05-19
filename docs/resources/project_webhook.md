@@ -12,9 +12,6 @@ resource "harbor_project_webhook" "main" {
     "DELETE_ARTIFACT",
     "PULL_ARTIFACT",
     "PUSH_ARTIFACT",
-    "DELETE_CHART",
-    "DOWNLOAD_CHART",
-    "UPLOAD_CHART",
     "QUOTA_EXCEED",
     "QUOTA_WARNING",
     "REPLICATION",
@@ -39,6 +36,6 @@ The following arguments are supported:
 * `enabled` - (Optional, bool), To enable / disable the webhook. Default `true` 
 * `project_id` - (Required, string) The project id of the harbor that webhook related to.
 * `notify_type` - (Required, string) The notification type either `http` or `slack`
-* `events_types` - (Required, list(string)) The type events you want to subscript to can be `DELETE_ARTIFACT`, `PULL_ARTIFACT`, `PUSH_ARTIFACT`, `DELETE_CHART`, `DOWNLOAD_CHART`, `UPLOAD_CHART`, `QUOTA_EXCEED`, `QUOTA_WARNING`, `REPLICATION`, `SCANNING_FAILED`, `SCANNING_COMPLETED`, `TAG_RETENTION`
+* `events_types` - (Required, list(string)) The type events you want to subscript to can be `DELETE_ARTIFACT`, `PULL_ARTIFACT`, `PUSH_ARTIFACT`, `QUOTA_EXCEED`, `QUOTA_WARNING`, `REPLICATION`, `SCANNING_FAILED`, `SCANNING_COMPLETED`, `TAG_RETENTION`
 * `auth_header` - (Required, string) authentication header for you the webhook
 * `skip_cert_verify` - (Optional - bool) checks the for validate SSL certificate.
