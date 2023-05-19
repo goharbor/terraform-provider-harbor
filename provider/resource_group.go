@@ -21,6 +21,10 @@ func resourceGroup() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
+			"ldap_group_dn": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 		Create: resourceGroupCreate,
 		Read:   resourceGroupRead,
