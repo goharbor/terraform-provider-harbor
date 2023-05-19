@@ -30,7 +30,7 @@ func TestAccProjectWebhook(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						harborProjectWebhook, "name", "acctest_webhook"),
 					resource.TestCheckResourceAttr(
-						harborProjectWebhook, "events_types.#", "12"),
+						harborProjectWebhook, "events_types.#", "9"),
 				),
 			},
 			{
@@ -81,9 +81,6 @@ func testAccCheckProjectWebhook(projectName string) string {
 		  "DELETE_ARTIFACT",
 		  "PULL_ARTIFACT",
 		  "PUSH_ARTIFACT",
-		  "DELETE_CHART",
-		  "DOWNLOAD_CHART",
-		  "UPLOAD_CHART",
 		  "QUOTA_EXCEED",
 		  "QUOTA_WARNING",
 		  "REPLICATION",
