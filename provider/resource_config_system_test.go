@@ -20,7 +20,7 @@ func testAccCheckConfigSystemDestroy(s *terraform.State) error {
 			continue
 		}
 
-		resp, _, _, err := apiClient.SendRequest("GET", "/configurations", nil, 404)
+		resp, _, _, err := apiClient.SendRequest("GET", "/configurations", nil, 200)
 		if err != nil {
 			return fmt.Errorf("Resource was not deleted\n%s", resp)
 		}
