@@ -13,6 +13,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 	body = models.ConfigBodySystemPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(bool),
+		ScannerSkipUpdatePulltime:  d.Get("scanner_skip_update_pulltime").(bool),
 		RobotTokenDuration:         d.Get("robot_token_expiration").(int),
 		QuotaPerProjectEnable:      true,
 		RobotNamePrefix:            d.Get("robot_name_prefix").(string),
@@ -34,6 +35,7 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
 			OidcEndpoint:     d.Get("oidc_endpoint").(string),
 			OidcClientID:     d.Get("oidc_client_id").(string),
 			OidcClientSecret: d.Get("oidc_client_secret").(string),
+			OidcGroupFilter:  d.Get("oidc_group_filter").(string),
 			OidcGroupsClaim:  d.Get("oidc_groups_claim").(string),
 			OidcScope:        d.Get("oidc_scope").(string),
 			OidcVerifyCert:   d.Get("oidc_verify_cert").(bool),

@@ -3,6 +3,7 @@ package provider
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -52,6 +53,10 @@ func testAccCheckResourceExists(resource string) resource.TestCheckFunc {
 			return fmt.Errorf("No Record ID is set")
 		}
 		name := rs.Primary.ID
+
+		if strings.HasPrefix(name, "configuration/") {
+			name = "/configurations"
+		}
 
 		apiClient := testAccProvider.Meta().(*client.Client)
 		_, _, _, err := apiClient.SendRequest("GET", name, nil, 200)
