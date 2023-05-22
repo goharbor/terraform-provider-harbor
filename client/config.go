@@ -13,6 +13,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 	body = models.ConfigBodySystemPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(bool),
+		ScannerSkipUpdatePulltime:  d.Get("scanner_skip_update_pulltime").(bool),
 		RobotTokenDuration:         d.Get("robot_token_expiration").(int),
 		QuotaPerProjectEnable:      true,
 		RobotNamePrefix:            d.Get("robot_name_prefix").(string),
