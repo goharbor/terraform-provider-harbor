@@ -31,6 +31,7 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
 	case "oidc_auth", "oidc":
 		body = models.ConfigBodyAuthPost{
 			AuthMode:         "oidc_auth",
+			PrimaryAuthMode:  d.Get("primary_auth_mode").(bool),
 			OidcName:         d.Get("oidc_name").(string),
 			OidcEndpoint:     d.Get("oidc_endpoint").(string),
 			OidcClientID:     d.Get("oidc_client_id").(string),
@@ -46,6 +47,7 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
 	case "ldap_auth", "ldap":
 		body = models.ConfigBodyAuthPost{
 			AuthMode:                     "ldap_auth",
+			PrimaryAuthMode:              d.Get("primary_auth_mode").(bool),
 			LdapURL:                      d.Get("ldap_url").(string),
 			LdapSearchDn:                 d.Get("ldap_search_dn").(string),
 			LdapSearchPassword:           d.Get("ldap_search_password").(string),
@@ -118,6 +120,7 @@ func SetAuthValues(d *schema.ResourceData, resp string) error {
 
 	auth := jsonData.AuthMode.Value
 	d.Set("auth_mode", auth)
+	d.Set("primary_auth_mode", jsonData.PrimaryAuthMode.Value)
 
 	switch auth {
 	case "oidc_auth", "oidc":
