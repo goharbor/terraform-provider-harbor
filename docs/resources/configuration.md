@@ -38,6 +38,7 @@ The following arguments are supported:
 * `auth_mode` - (Required) Harbor authentication mode. Can be `"oidc_auth"`, `"db_auth"` or `"ldap_auth"`. (Default: **"db_auth"**)
 
 * `primary_auth_mode` - (Optional) Default is **"false"**, set to **"true"** if you want to use the OIDC or LDAP mode as the primary auth mode.
+`NOTE: "primary_auth_mode" can only be used with Harbor version v2.8.0 and above`
 
 * `oidc_name` - (Optional) The name of the oidc provider name. (Required - if auth_mode set to **oidc_auth**)
 
