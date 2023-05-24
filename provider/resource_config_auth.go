@@ -15,6 +15,11 @@ func resourceConfigAuth() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"primary_auth_mode": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"oidc_name": {
 				Type:          schema.TypeString,
 				Optional:      true,

@@ -8,6 +8,7 @@ type ConfigBodyAuthPost struct {
 	OidcUserClaim         string `json:"oidc_user_claim,omitempty"`
 	LdapGroupSearchFilter string `json:"ldap_group_search_filter,omitempty"`
 	AuthMode              string `json:"auth_mode,omitempty"`
+	PrimaryAuthMode       bool   `json:"primary_auth_mode,omitempty"`
 	SelfRegistration      bool   `json:"self_registration"`
 	OidcScope             string `json:"oidc_scope,omitempty"`
 	LdapSearchDn          string `json:"ldap_search_dn,omitempty"`
@@ -95,6 +96,10 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"auth_mode,omitempty"`
+	PrimaryAuthMode struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    bool `json:"value,omitempty"`
+	} `json:"primary_auth_mode,omitempty"`
 	SelfRegistration struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`
