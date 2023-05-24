@@ -16,6 +16,8 @@ The following arguments are supported:
 
 * **group_type** - (Required) 3. Note: group type 3 is OIDC group.
 
+* **ldap_group_dn** - (Optional) The distinguished name of the group within AD/LDAP 
+
 ## Import
 An OIDC group can be imported using the `group id` eg,
 

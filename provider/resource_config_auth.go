@@ -15,6 +15,11 @@ func resourceConfigAuth() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"primary_auth_mode": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"oidc_name": {
 				Type:          schema.TypeString,
 				Optional:      true,
@@ -38,6 +43,11 @@ func resourceConfigAuth() *schema.Resource {
 				Optional:      true,
 				Sensitive:     true,
 				RequiredWith:  oidcRequiredWith(),
+				ConflictsWith: oidcConflictsWith(),
+			},
+			"oidc_group_filter": {
+				Type:          schema.TypeString,
+				Optional:      true,
 				ConflictsWith: oidcConflictsWith(),
 			},
 			"oidc_groups_claim": {

@@ -13,6 +13,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 	body = models.ConfigBodySystemPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(bool),
+		ScannerSkipUpdatePulltime:  d.Get("scanner_skip_update_pulltime").(bool),
 		RobotTokenDuration:         d.Get("robot_token_expiration").(int),
 		QuotaPerProjectEnable:      true,
 		RobotNamePrefix:            d.Get("robot_name_prefix").(string),
@@ -30,10 +31,12 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
 	case "oidc_auth", "oidc":
 		body = models.ConfigBodyAuthPost{
 			AuthMode:         "oidc_auth",
+			PrimaryAuthMode:  d.Get("primary_auth_mode").(bool),
 			OidcName:         d.Get("oidc_name").(string),
 			OidcEndpoint:     d.Get("oidc_endpoint").(string),
 			OidcClientID:     d.Get("oidc_client_id").(string),
 			OidcClientSecret: d.Get("oidc_client_secret").(string),
+			OidcGroupFilter:  d.Get("oidc_group_filter").(string),
 			OidcGroupsClaim:  d.Get("oidc_groups_claim").(string),
 			OidcScope:        d.Get("oidc_scope").(string),
 			OidcVerifyCert:   d.Get("oidc_verify_cert").(bool),
@@ -44,6 +47,7 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
 	case "ldap_auth", "ldap":
 		body = models.ConfigBodyAuthPost{
 			AuthMode:                     "ldap_auth",
+			PrimaryAuthMode:              d.Get("primary_auth_mode").(bool),
 			LdapURL:                      d.Get("ldap_url").(string),
 			LdapSearchDn:                 d.Get("ldap_search_dn").(string),
 			LdapSearchPassword:           d.Get("ldap_search_password").(string),
@@ -116,6 +120,7 @@ func SetAuthValues(d *schema.ResourceData, resp string) error {
 
 	auth := jsonData.AuthMode.Value
 	d.Set("auth_mode", auth)
+	d.Set("primary_auth_mode", jsonData.PrimaryAuthMode.Value)
 
 	switch auth {
 	case "oidc_auth", "oidc":

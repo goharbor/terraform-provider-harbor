@@ -28,6 +28,7 @@ func resourceProjectWebhook() *schema.Resource {
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "",
 			},
 			"enabled": {
 				Type:     schema.TypeBool,

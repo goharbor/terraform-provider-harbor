@@ -5,6 +5,7 @@ How to configure oidc
 ```hcl
 resource "harbor_config_auth" "oidc" {
   auth_mode          = "oidc_auth"
+  primary_auth_mode  = true
   oidc_name          = "azure"
   oidc_endpoint      = "https://login.microsoftonline.com/{GUID goes here}/v2.0"
   oidc_client_id     = "OIDC Client ID goes here"
@@ -21,6 +22,7 @@ How to configure ldap
 ```hcl
 resource "harbor_config_auth" "ldap" {
   auth_mode            = "ldap_auth"
+  primary_auth_mode    = true
   ldap_url             = "openldap.default.svc.cluster.local:389"
   ldap_search_dn       = "cn=admin,dc=example,dc=org"
   ldap_search_password = "Not@SecurePassw0rd"
@@ -35,6 +37,9 @@ The following arguments are supported:
 
 * `auth_mode` - (Required) Harbor authentication mode. Can be `"oidc_auth"`, `"db_auth"` or `"ldap_auth"`. (Default: **"db_auth"**)
 
+* `primary_auth_mode` - (Optional) Default is **"false"**, set to **"true"** if you want to use the OIDC or LDAP mode as the primary auth mode.
+`NOTE: "primary_auth_mode" can only be used with Harbor version v2.8.0 and above`
+
 * `oidc_name` - (Optional) The name of the oidc provider name. (Required - if auth_mode set to **oidc_auth**)
 
 * `oidc_endpoint` - (Optional) The URL of an OIDC-complaint server. (Required - if auth_mode set to **oidc_auth**)
@@ -42,6 +47,8 @@ The following arguments are supported:
 * `oidc_client_id` - (Optional) The client id for the oidc server. (Required - if auth_mode set to **oidc_auth**)
 
 * `oidc_client_serect` - (Optional) The client secert for the oidc server. (Required - if auth_mode set to **oidc_auth**)
+
+* `oidc_group_filter` - (Optional) The OIDC group filter to filter which groups could be onboarded to Harbor.
 
 * `oidc_groups_claim` - (Optional) The name of the claim in the token whose values is the list of group names.
 
@@ -54,12 +61,12 @@ The following arguments are supported:
 * `oidc_auto_onboard` - (Optional) Default is **"false"**, set to **"true"** if you want to skip the user onboarding screen, so user cannot change its username
 
 * `oidc_user_claim` - (Optional) Default is **"name"**
-  
+
 * `oidc_admin_group` - (Optional) All members of this group get Harbor admin permissions.
 
 
 * `ldap_url` - (Optional) The ldap server. Required when auth_mode is set to ldap.
-* `ldap_base_dn` - (Optional) A user's DN who has the permission to search the LDAP/AD server. 
+* `ldap_base_dn` - (Optional) A user's DN who has the permission to search the LDAP/AD server.
 * `ldap_uid`- (Optional) The attribute used in a search to match a user. It could be uid, cn, email, sAMAccountName or other attributes depending on your LDAP/AD.
 * `ldap_verify_cert`- (Optional) Verify Cert from LDAP Server.
 * `ldap_search_dn` - (Optional) The base DN from which to look up a user in LDAP/AD.
@@ -72,4 +79,3 @@ The following arguments are supported:
 * `ldap_group_admin_dn` - (Optional) Specify an LDAP group DN. All LDAP user in this group will have harbor admin privilege
 * `ldap_group_membership` - (Optional) The attribute indicates the membership of LDAP group
 * `ldap_group_scope` - (Optional) The scope to search for groups
-			

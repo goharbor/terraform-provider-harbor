@@ -9,6 +9,7 @@ type ConfigBodyAuthPost struct {
 	OidcUserClaim         string `json:"oidc_user_claim,omitempty"`
 	LdapGroupSearchFilter string `json:"ldap_group_search_filter,omitempty"`
 	AuthMode              string `json:"auth_mode,omitempty"`
+	PrimaryAuthMode       bool   `json:"primary_auth_mode,omitempty"`
 	SelfRegistration      bool   `json:"self_registration"`
 	OidcScope             string `json:"oidc_scope,omitempty"`
 	LdapSearchDn          string `json:"ldap_search_dn,omitempty"`
@@ -32,6 +33,7 @@ type ConfigBodyAuthPost struct {
 	LdapGroupAdminDn             string `json:"ldap_group_admin_dn,omitempty"`
 	OidcEndpoint                 string `json:"oidc_endpoint,omitempty"`
 	OidcClientSecret             string `json:"oidc_client_secret,omitempty"`
+	OidcGroupFilter              string `json:"oidc_group_filter,omitempty"`
 	OidcGroupsClaim              string `json:"oidc_groups_claim,omitempty"`
 	LdapScope                    int    `json:"ldap_scope,omitempty"`
 	TokenExpiration              int    `json:"token_expiration,omitempty"`
@@ -48,6 +50,7 @@ type ConfigBodySystemPost struct {
 	QuotaPerProjectEnable      bool   `json:"quota_per_project_enable"`
 	RobotNamePrefix            string `json:"robot_name_prefix,omitempty"`
 	StoragePerProject          string `json:"storage_per_project,omitempty"`
+	ScannerSkipUpdatePulltime  bool   `json:"scanner_skip_update_pulltime"`
 }
 
 type ConfigBodyEmailPost struct {
@@ -74,6 +77,10 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"oidc_user_claim,omitempty"`
+	OidcGroupFilter struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"oidc_group_filter,omitempty"`
 	OidcGroupsClaim struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
@@ -90,6 +97,10 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"auth_mode,omitempty"`
+	PrimaryAuthMode struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    bool `json:"value,omitempty"`
+	} `json:"primary_auth_mode,omitempty"`
 	SelfRegistration struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`
@@ -224,8 +235,16 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"robot_name_prefix,omitempty"`
+	RobotTokenDuration struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    int  `json:"value,omitempty"`
+	} `json:"robot_token_duration,omitempty"`
 	LdapVerifyCert struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`
 	} `json:"ldap_verify_cert,omitempty"`
+	ScannerSkipUpdatePulltime struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    bool `json:"value,omitempty"`
+	} `json:"scanner_skip_update_pulltime,omitempty"`
 }
