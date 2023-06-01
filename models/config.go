@@ -1,7 +1,6 @@
 package models
 
 var PathConfig = "/configurations"
-var PathSystemCVEAllowList = "/system/CVEAllowlist"
 
 type ConfigBodyAuthPost struct {
 	OidcVerifyCert        bool   `json:"oidc_verify_cert"`

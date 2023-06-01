@@ -13,7 +13,7 @@ resource "harbor_config_security" "main" {
 
 The following arguments are supported:
 
-* `cve_allowlist` - (Optional) System allowlist. Vulnerabilities in this list will be ignored when pushing and pulling images. Should be in the format or `["CVE-123", "CVE-145"]` or `["CVE-123"]`
+* `cve_allowlist` - (Required) System allowlist. Vulnerabilities in this list will be ignored when pushing and pulling images. Should be in the format or `["CVE-123", "CVE-145"]` or `["CVE-123"]`
 
 * `expires_at` - (Optional) The time for expiration of the allowlist, in the form of seconds since epoch. This is an optional attribute, if it's not set the CVE allowlist does not expire.
 

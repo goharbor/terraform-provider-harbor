@@ -1,9 +1,8 @@
 package models
-
+var PathSystemCVEAllowList = "/system/CVEAllowlist"
 type SystemCveAllowListBodyPost struct {
-	ID           int                     `json:"id,omitempty"`
+	ID           string                  `json:"id,omitempty"`
 	Items        SystemCveAllowlistItems `json:"items,omitempty"`
-	ProjectID    string                  `json:"project_id,omitempty"`
 	UpdateTime   string                  `json:"update_time,omitempty"`
 	CreationTime string                  `json:"creation_time,omitempty"`
 	ExpiresAt    int                     `json:"expires_at,omitempty"`
