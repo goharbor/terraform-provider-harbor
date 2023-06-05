@@ -3,7 +3,7 @@
 ## Example Usage
 ```hcl
 resource "harbor_interrogation_services" "main" {
-  vulnerability_scan_policy = "daily"
+  vulnerability_scan_policy = "Daily"
 
 }
 ```
@@ -12,4 +12,4 @@ resource "harbor_interrogation_services" "main" {
 The following arguments are supported:
 * `default_scanner` - (Optional) Sets the default interrogation service **Clair**
 
-* `vulnerability_scan_policy` - (Optional) The frequency of the vulnerability scanning is done. This can be `daily`, `weekly`, `monthly` or can be a custom cron string.
+* `vulnerability_scan_policy` - (Optional) The frequency of the vulnerability scanning is done. This can be `Daily`, `Weekly`, `Monthly` or can be a custom cron string.
