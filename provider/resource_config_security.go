@@ -85,27 +85,11 @@ func resourceConfigSecurityRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceConfigSecurityUpdate(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(*client.Client)
-	body := client.SystemCVEAllowListBody(d)
-
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathSystemCVEAllowList, body, 200)
-	if err != nil {
-		return err
-	}
-
-	return resourceConfigSecurityRead(d, m)
+	return resourceConfigSecurityCreate(d, m)
 }
 
 func resourceConfigSecurityDelete(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(*client.Client)
 	d.Set("expires_at", nil)
 	d.Set("cve_allowlist", []string{})
-	body := client.SystemCVEAllowListBody(d)
-
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathSystemCVEAllowList, body, 200)
-	if err != nil {
-		return err
-	}
-
-	return resourceConfigSecurityRead(d, m)
+	return resourceConfigSecurityCreate(d, m)
 }
