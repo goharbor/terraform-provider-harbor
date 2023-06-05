@@ -43,6 +43,7 @@ func Provider() *schema.Provider {
 			"harbor_config_auth":            resourceConfigAuth(),
 			"harbor_config_email":           resourceConfigEmail(),
 			"harbor_config_system":          resourceConfigSystem(),
+			"harbor_config_security":        resourceConfigSecurity(),
 			"harbor_project":                resourceProject(),
 			"harbor_project_member_group":   resourceMembersGroup(),
 			"harbor_project_member_user":    resourceMembersUser(),
