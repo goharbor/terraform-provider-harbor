@@ -8,9 +8,7 @@ import (
 )
 
 func SystemCVEAllowListBody(d *schema.ResourceData) models.SystemCveAllowListBodyPost {
-	body := models.SystemCveAllowListBodyPost{
-		ProjectID: d.Get("project_id").(string),
-	}
+	body := models.SystemCveAllowListBodyPost{}
 
 	expires_at, expires_at_true := d.GetOk("expires_at")
 

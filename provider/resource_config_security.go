@@ -66,18 +66,19 @@ func resourceConfigSecurityRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.SystemCveAllowListBodyPost
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("resource not found %s", d.Id())
+		return fmt.Errorf("resource not found %s", models.PathSystemCVEAllowList)
 	}
 
-
-	expires_at, expires_at_true := d.GetOk("expires_at")
-
-	if expires_at_true {
-		d.Set("expires_at", expires_at)
+	// Convert the list of SystemCveAllowlistItems to a list of strings
+	allowlistItems := make([]string, len(jsonData.Items))
+	for i, item := range jsonData.Items {
+		allowlistItems[i] = item.CveID
 	}
 
 	d.SetId(models.PathSystemCVEAllowList)
 	d.Set("update_time", jsonData.UpdateTime)
+	d.Set("expires_at", jsonData.ExpiresAt)
+	d.Set("cve_allowlist", allowlistItems)
 	d.Set("creation_time", jsonData.CreationTime)
 
 	return nil
@@ -95,8 +96,10 @@ func resourceConfigSecurityUpdate(d *schema.ResourceData, m interface{}) error {
 	return resourceConfigSecurityRead(d, m)
 }
 
-func resourceConfigSecurityDelete(d *schema.ResourceData, m interface{}) error { // Harbor doesn't really have aby way to delete this resource yet...
+func resourceConfigSecurityDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
+	d.Set("expires_at", nil)
+	d.Set("cve_allowlist", []string{})
 	body := client.SystemCVEAllowListBody(d)
 
 	_, _, _, err := apiClient.SendRequest("PUT", models.PathSystemCVEAllowList, body, 200)
