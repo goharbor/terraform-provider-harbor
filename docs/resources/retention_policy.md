@@ -9,7 +9,7 @@ resource "harbor_project" "main" {
 
 resource "harbor_retention_policy" "main" {
 	scope = harbor_project.main.id
-	schedule = "daily"
+	schedule = "Daily"
 	rule {
 		n_days_since_last_pull = 5
 		repo_matching = "**"
@@ -29,7 +29,7 @@ The following arguments are supported:
 
 * `scope` - (Required) The project id of which you would like to apply this policy.
 
-* `schedule` - (Optional) The schedule of when you would like the policy to run. This can be `hourly`, `daily`, `weekly` or can be a custom cron string.
+* `schedule` - (Optional) The schedule of when you would like the policy to run. This can be `Hourly`, `Daily`, `Weekly` or can be a custom cron string.
 
 * `rule` - (Required) Al collection of rule blocks as documented below.
 
