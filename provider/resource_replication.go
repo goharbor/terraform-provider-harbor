@@ -96,7 +96,7 @@ func resourceReplication() *schema.Resource {
 			"speed": {
 				Type:     schema.TypeInt,
 				Optional: true,
-				Default: -1,
+				Default:  -1,
 			},
 		},
 		Create: resourceReplicationCreate,
@@ -173,6 +173,8 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("name", jsonDataReplication.Name)
 	d.Set("deletion", jsonDataReplication.Deletion)
 	d.Set("override", jsonDataReplication.Override)
+	d.Set("dest_namespace", jsonDataReplication.DestNamespace)
+	d.Set("dest_namespace_replace", jsonDataReplication.DestNamespaceReplace)
 
 	return nil
 }
