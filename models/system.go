@@ -6,9 +6,12 @@ var PathVuln = "/system/scanAll/schedule"
 var PathScanners = "/scanners"
 
 var PathGC = "/system/gc/schedule"
+var PathPurgeAudit = "/system/purgeaudit/schedule"
 
 type JobParameters struct {
-	DeleteUntagged bool `json:"delete_untagged"`
+	DeleteUntagged     bool   `json:"delete_untagged,omitempty"`
+	AuditRetentionHour int    `json:"audit_retention_hour,omitempty"`
+	IncludeOperations  string `json:"include_operations,omitempty"`
 }
 
 type SystemBody struct {
@@ -25,10 +28,12 @@ type SystemBody struct {
 	CreationTime  time.Time `json:"creation_time,omitempty"`
 	UpdateTime    time.Time `json:"update_time,omitempty"`
 	Parameters    struct {
-		DeleteUntagged  bool `json:"delete_untagged,omitempty"`
-		AdditionalProp1 bool `json:"additionalProp1,omitempty"`
-		AdditionalProp2 bool `json:"additionalProp2,omitempty"`
-		AdditionalProp3 bool `json:"additionalProp3,omitempty"`
+		DeleteUntagged     bool   `json:"delete_untagged,omitempty"`
+		AuditRetentionHour int    `json:"audit_retention_hour,omitempty"`
+		IncludeOperations  string `json:"include_operations,omitempty"`
+		AdditionalProp1    bool   `json:"additionalProp1,omitempty"`
+		AdditionalProp2    bool   `json:"additionalProp2,omitempty"`
+		AdditionalProp3    bool   `json:"additionalProp3,omitempty"`
 	} `json:"parameters"`
 }
 
