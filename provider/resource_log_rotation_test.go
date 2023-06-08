@@ -24,7 +24,7 @@ func TestAccPurgeAuditUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourcePurgeAuditMain, "audit_retention_hour", "24"),
 					resource.TestCheckResourceAttr(
-						resourcePurgeAuditMain, "include_operations", "create, pull"),
+						resourcePurgeAuditMain, "include_operations", "create,pull"),
 				),
 			},
 		},
@@ -33,7 +33,7 @@ func TestAccPurgeAuditUpdate(t *testing.T) {
 
 func testAccCheckPurgeAuditBasic() string {
 	return fmt.Sprintf(`
-	resource "purge_audit" "main" {
+	resource "harbor_purge_audit_log" "main" {
 		schedule              = "Daily"
 		audit_retention_hour  = 24
 		include_operations    = "create,pull"
