@@ -23,7 +23,7 @@ resource "harbor_replication" "alpine" {
   name        = "alpine"
   action      = "pull"
   registry_id = harbor_registry.main.registry_id
-  schedule = "* 0/15 * * * *"
+  schedule = "0 0/15 * * * *"
   filters {
     name = "library/alpine"
   }
