@@ -19,6 +19,9 @@ func GetSchedule(schedule string) (typefmt string, cronfmt string) {
 	case "weekly", "0 0 0 * * 0":
 		TypeStr = "Weekly"
 		CronStr = "0 0 0 * * 0"
+	case "":
+		TypeStr = "None"
+		CronStr = ""
 	default:
 		TypeStr = "Custom"
 		CronStr = schedule

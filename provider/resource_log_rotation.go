@@ -52,6 +52,10 @@ func resourcePurgeAuditRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return fmt.Errorf("resource not found %s", d.Id())
 	}
+	if len(resp) == 0 {
+		d.SetId("")
+		return nil
+	}
 
 	var jsonData models.SystemBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
@@ -82,13 +86,8 @@ func resourcePurgeAuditUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourcePurgeAuditDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-
-	body := models.SystemBody{}
-	body.Schedule.Cron = ""
-	body.Schedule.Type = "None"
-	body.Parameters.AuditRetentionHour = 0
-
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathPurgeAudit, body, 200)
+	d.Set("schedule", "")
+	err := apiClient.SetSchedule(d, "purgeaudit")
 	if err != nil {
 		return err
 	}
