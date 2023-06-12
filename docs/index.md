@@ -6,6 +6,7 @@ The Harbor provider is used to configure an instance of Harbor. The provider nee
 * [Resource: harbor_config_system](resources/config_system.md)
 * [Resource: harbor_config_email](resources/config_email.md)
 * [Resource: harbor_garbage_collection](resources/garbage_collection.md)
+* [Resource: harbor_purge_audit_log](resources/purge-audit-log.md)
 * [Resource: harbor_immutable_tag_rule](resources/immutable_tag_rule.md)
 * [Resource: harbor_interrogation_services](resources/interrogation_services.md)
 * [Resource: harbor_label](resources/label.md)

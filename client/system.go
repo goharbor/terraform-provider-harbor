@@ -16,6 +16,8 @@ func GetSystemBoby(d *schema.ResourceData, scheduleType string) models.SystemBod
 		schedule = d.Get("schedule").(string)
 	} else if scheduleType == "vuln" {
 		schedule = d.Get("vulnerability_scan_policy").(string)
+	} else if scheduleType == "purgeaudit" {
+		schedule = d.Get("schedule").(string)
 	}
 
 	TypeStr, CronStr := GetSchedule(schedule)
@@ -25,6 +27,9 @@ func GetSystemBoby(d *schema.ResourceData, scheduleType string) models.SystemBod
 	body.Schedule.Cron = CronStr
 	if scheduleType == "gc" {
 		body.Parameters.DeleteUntagged = d.Get("delete_untagged").(bool)
+	} else if scheduleType == "purgeaudit" {
+		body.Parameters.AuditRetentionHour = d.Get("audit_retention_hour").(int)
+		body.Parameters.IncludeOperations = d.Get("include_operations").(string)
 	}
 
 	return body
@@ -38,6 +43,8 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 		path = models.PathGC
 	} else if scheduleType == "vuln" {
 		path = models.PathVuln
+	} else if scheduleType == "purgeaudit" {
+		path = models.PathPurgeAudit
 	}
 
 	body := GetSystemBoby(d, scheduleType)
