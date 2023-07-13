@@ -65,10 +65,10 @@ The following arguments are supported:
 * `oidc_admin_group` - (Optional) All members of this group get Harbor admin permissions.
 
 
-* `ldap_url` - (Optional) The ldap server. Required when auth_mode is set to ldap.
-* `ldap_base_dn` - (Optional) A user's DN who has the permission to search the LDAP/AD server.
-* `ldap_uid`- (Optional) The attribute used in a search to match a user. It could be uid, cn, email, sAMAccountName or other attributes depending on your LDAP/AD.
-* `ldap_verify_cert`- (Optional) Verify Cert from LDAP Server.
+* `ldap_url` - (Optional) The ldap server. Required when auth_mode is set to ldap. (Required - if auth_mode set to **ldap_auth**)
+* `ldap_base_dn` - (Optional) A user's DN who has the permission to search the LDAP/AD server. (Required - if auth_mode set to **ldap_auth**)
+* `ldap_uid`- (Optional) The attribute used in a search to match a user. It could be uid, cn, email, sAMAccountName or other attributes depending on your LDAP/AD. (Required - if auth_mode set to **ldap_auth**)
+* `ldap_verify_cert`- (Optional) Verify Cert from LDAP Server. (Required - if auth_mode set to **ldap_auth**)
 * `ldap_search_dn` - (Optional) The base DN from which to look up a user in LDAP/AD.
 * `ldap_search_password` - (Optional) The password for the user that will perform the LDAP search
 * `ldap_filter` - (Optional) ldap filters
