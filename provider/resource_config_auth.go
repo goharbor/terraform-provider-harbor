@@ -103,6 +103,7 @@ func resourceConfigAuth() *schema.Resource {
 			"ldap_verify_cert": {
 				Type:          schema.TypeBool,
 				Optional:      true,
+				Default:       false,
 				ConflictsWith: ldapConflictsWith(),
 				RequiredWith:  ldapRequiredWith(),
 			},
@@ -149,6 +150,7 @@ func resourceConfigAuth() *schema.Resource {
 			"ldap_group_membership": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "memberof",
 			},
 			"ldap_group_scope": {
 				Type:     schema.TypeString,

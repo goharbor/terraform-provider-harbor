@@ -37,7 +37,7 @@ type ConfigBodyAuthPost struct {
 	LdapScope                    int    `json:"ldap_scope,omitempty"`
 	TokenExpiration              int    `json:"token_expiration,omitempty"`
 	LdapGroupSearchScope         int    `json:"ldap_group_search_scope,omitempty"`
-	LdapVerifyCert               bool   `json:"ldap_verify_cert,omitempty"`
+	LdapVerifyCert               bool   `json:"ldap_verify_cert"`
 	LdapGroupGID                 string `json:"ldap_group_gid,omitempty"`
 	OidcAdminGroup               string `json:"oidc_admin_group,omitempty"`
 }
