@@ -34,7 +34,7 @@ The following arguments are supported:
 * `address` - (Required, string) The address of the webhook
 * `description` _ (Optional, string) A description of the webhook
 * `enabled` - (Optional, bool), To enable / disable the webhook. Default `true` 
-* `project_id` - (Required, string) The project id of the harbor that webhook related to.
+* `project_id` - (Required, string) The project id (**/projects/ID**) of the harbor that webhook related to.
 * `notify_type` - (Required, string) The notification type either `http` or `slack`
 * `events_types` - (Required, list(string)) The type events you want to subscript to can be `DELETE_ARTIFACT`, `PULL_ARTIFACT`, `PUSH_ARTIFACT`, `QUOTA_EXCEED`, `QUOTA_WARNING`, `REPLICATION`, `SCANNING_FAILED`, `SCANNING_COMPLETED`, `TAG_RETENTION`
 * `auth_header` - (Required, string) authentication header for you the webhook
