@@ -63,6 +63,7 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"harbor_project":  dataProject(),
+			"harbor_projects": dataProjects(),
 			"harbor_registry": dataRegistry(),
 		},
 
