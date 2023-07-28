@@ -14,13 +14,15 @@ output "project_id" {
 ## Argument Reference
 The following arguments are supported:
 
-* **name** - (Required) The name of the project that will be created in harbor.
+* **name** - (Required) The name of the project.
 
 ## Attributes Reference
 In addition to all argument, the following attributes are exported:
 
 * **project_id** - The id of the project within harbor.
 
-* **public** - If the project will be public accessibility.
+* **public** - If the project has public accessibility.
 
-* **vulnerability_scanning** - If the images will be scanned for vulnerabilities when push to harbor.
+* **vulnerability_scanning** - If the images is scanned for vulnerabilities when push to harbor.
+
+* **type** - The type of the project : Project or ProxyCache.

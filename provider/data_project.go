@@ -18,6 +18,10 @@ func dataProject() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"project_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
@@ -47,35 +51,39 @@ func dataProjectRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData []models.ProjectsBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Unable to find the project named: %s", name)
+		return fmt.Errorf("unable to find the project named: %s", name)
 	}
 
 	for _, v := range jsonData {
 
 		if v.Name == name {
 			id := models.PathProjects + "/" + strconv.Itoa(v.ProjectID)
-			public, err := strconv.ParseBool(v.Metadata.Public)
-			if err != nil {
-				return err
-			}
-
-			var autoScan bool
-			scan := v.Metadata.AutoScan
-			if scan == "" {
-				autoScan = false
-			} else {
-				autoScan, err = strconv.ParseBool(scan)
-				if err != nil {
-					return err
-				}
-			}
+			public := getboolfromstring(v.Metadata.Public)
+			autoScan := getboolfromstring(v.Metadata.AutoScan)
+			project_type := getProjectType(v)
 
 			d.SetId(id)
 			d.Set("project_id", v.ProjectID)
 			d.Set("name", v.Name)
 			d.Set("public", public)
 			d.Set("vulnerability_scanning", autoScan)
+			d.Set("type", project_type)
 		}
 	}
 	return nil
+}
+
+func getProjectType(project models.ProjectsBodyResponses) string {
+	if project.RegistryID != nil {
+		return "ProxyCache"
+	}
+	return "Project"
+}
+
+func getboolfromstring(stringbool string) bool {
+	boolbool, err := strconv.ParseBool(stringbool)
+	if err != nil {
+		return false
+	}
+	return boolbool
 }
