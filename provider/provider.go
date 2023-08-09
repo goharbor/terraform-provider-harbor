@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+	"os"
 	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -74,7 +76,15 @@ func Provider() *schema.Provider {
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	var apiPath string
 
-	url := d.Get("url").(string)
+	//url := d.Get("url").(string)
+	url := os.Getenv("HARBOR_URL")
+	if d.Get("url").(string) != "" {
+		url = d.Get("url").(string)
+	}
+	if url == "" {
+		return nil, fmt.Errorf("url is required and must be provided in the provider config or the HARBOR_URL environment variable")
+	}
+
 	username := d.Get("username").(string)
 	password := d.Get("password").(string)
 	insecure := d.Get("insecure").(bool)
