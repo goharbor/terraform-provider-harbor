@@ -106,9 +106,8 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.ProjectsBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		d.Set("name", jsonData.Name)
 	}
-
 	autoScan := jsonData.Metadata.AutoScan
 	var vuln bool
 	if autoScan == "" {
@@ -190,8 +189,8 @@ func resourceProjectDelete(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
-	if err != nil {
+	_, _, respCode, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	if respCode == 404 && err != nil { // We can't delete something that doesn't exist. Hence the 404-check
 		return err
 	}
 	return nil
