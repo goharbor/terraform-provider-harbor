@@ -107,12 +107,14 @@ func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
 	var jsonData models.ProjectMembersBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
+		d.Set("group_name", jsonData.EntityName)
 	}
-
-	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
-	d.Set("project_id", checkProjectid(strconv.Itoa(jsonData.ProjectID)))
-	d.Set("group_name", jsonData.EntityName)
+	if err == nil {
+		d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
+		d.Set("project_id", checkProjectid(strconv.Itoa(jsonData.ProjectID)))
+		d.Set("group_name", jsonData.EntityName)
+	}
 	return nil
 }
 
