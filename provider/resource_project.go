@@ -165,6 +165,13 @@ func resourceProjectDelete(d *schema.ResourceData, m interface{}) error {
 			return err
 		}
 	}
+	if !forceDestroy {
+		projectName := d.Get("name").(string)
+		repos, _ := apiClient.GetProjectRepositories(projectName)
+		if len(repos) != 0 {
+			return fmt.Errorf("Project %s is not empty, please set force_delete to TRUE to clean all repositories", projectName)
+		}
+	}
 
 	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if err != nil {
