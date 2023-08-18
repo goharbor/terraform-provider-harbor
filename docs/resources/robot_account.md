@@ -157,3 +157,11 @@ In addition to all argument, the following attributes are exported:
 
 
 * **full_name** - Full name of the robot account which harbor generates including the robot prefix. Eg. `robot$project+name` or `harbor@project+name` (depending on your robot prefix).
+
+## Import
+Harbor robot account can be imported using the `robot account id` eg,
+
+`
+terraform import harbor_robot_account.system /robots/123
+`
+
