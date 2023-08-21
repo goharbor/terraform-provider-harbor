@@ -42,6 +42,12 @@ func resourceConfigSystem() *schema.Resource {
 		Read:   resourceConfigSystemRead,
 		Update: resourceConfigSystemCreate,
 		Delete: resourceConfigSystemDelete,
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				resourceConfigSystemRead(d, m)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 	}
 }
 

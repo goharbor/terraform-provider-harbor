@@ -161,6 +161,12 @@ func resourceConfigAuth() *schema.Resource {
 		Read:   resourceConfigAuthRead,
 		Update: resourceConfigAuthCreate,
 		Delete: resourceConfigAuthDelete,
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				resourceConfigAuthRead(d, m)
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 	}
 }
 
