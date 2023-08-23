@@ -24,16 +24,14 @@ func GetRegistryBody(d *schema.ResourceData) models.RegistryBody {
 }
 
 func GetRegistryUpdateBody(d *schema.ResourceData) models.RegistryUpdateBody {
-	regType, _ := GetRegistryType(d.Get("provider_name").(string))
 
 	body := models.RegistryUpdateBody{
-		AccessKey:      d.Get("access_id").(string),
-		CredentialType: regType,
-		AccessSecret:   d.Get("access_secret").(string),
-		Description:    d.Get("description").(string),
-		Insecure:       d.Get("insecure").(bool),
-		Name:           d.Get("name").(string),
-		URL:            d.Get("endpoint_url").(string),
+		AccessKey:    d.Get("access_id").(string),
+		AccessSecret: d.Get("access_secret").(string),
+		Description:  d.Get("description").(string),
+		Insecure:     d.Get("insecure").(bool),
+		Name:         d.Get("name").(string),
+		URL:          d.Get("endpoint_url").(string),
 	}
 
 	return body
