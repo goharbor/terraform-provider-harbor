@@ -100,7 +100,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if respCode == 404 && err != nil {
 		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return nil
 	}
 
 	var jsonData models.ProjectsBodyResponses
