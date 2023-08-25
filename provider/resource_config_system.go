@@ -37,6 +37,11 @@ func resourceConfigSystem() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"storage_per_project": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  -1,
+			},
 		},
 		Create: resourceConfigSystemCreate,
 		Read:   resourceConfigSystemRead,
