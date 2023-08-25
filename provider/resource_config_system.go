@@ -83,12 +83,17 @@ func resourceConfigSystemRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Error getting system configuration %s", err)
 	}
+	storage := jsonData.StoragePerProject.Value
+	if storage > 0 {
+		storage /= 1073741824 // Byte to GB
+	}
 
 	d.Set("project_creation_restriction", jsonData.ProjectCreationRestriction.Value)
 	d.Set("read_only", jsonData.ReadOnly.Value)
 	d.Set("robot_token_expiration", jsonData.RobotTokenDuration.Value)
 	d.Set("robot_name_prefix", jsonData.RobotNamePrefix.Value)
 	d.Set("scanner_skip_update_pulltime", jsonData.ScannerSkipUpdatePulltime.Value)
+	d.Set("storage_per_project", storage)
 
 	d.SetId("configuration/system")
 	return nil

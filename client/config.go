@@ -12,7 +12,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 	var body models.ConfigBodySystemPost
 	storage := d.Get("storage_per_project").(int)
 	if storage > 0 {
-		storage *= 1073741824 // GB
+		storage *= 1073741824 // GB to Byte
 	}
 	body = models.ConfigBodySystemPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
