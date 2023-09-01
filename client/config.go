@@ -10,6 +10,10 @@ import (
 
 func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 	var body models.ConfigBodySystemPost
+	storage := d.Get("storage_per_project").(int)
+	if storage > 0 {
+		storage *= 1073741824 // GB to Byte
+	}
 	body = models.ConfigBodySystemPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(bool),
@@ -17,6 +21,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 		RobotTokenDuration:         d.Get("robot_token_expiration").(int),
 		QuotaPerProjectEnable:      true,
 		RobotNamePrefix:            d.Get("robot_name_prefix").(string),
+		StoragePerProject:          storage,
 	}
 	log.Printf("[DEBUG] %+v\n ", body)
 	return body

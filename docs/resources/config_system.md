@@ -7,6 +7,7 @@ resource "harbor_config_system" "main" {
   project_creation_restriction = "adminonly"
   robot_token_expiration       = 30
   robot_name_prefix            = "harbor@"
+  storage_per_project          = 100
 }
 ```
 
@@ -22,3 +23,5 @@ The following arguments are supported:
 
 * **scanner_skip_update_pulltime** - (Optional) Whether or not to skip update pull time for scanner.
 `NOTE: "scanner_skip_update_pulltime" can only be used with harbor version v2.8.0 and above`
+
+* **storage_per_project** - (Optional) Default quota space per project in GIB. Default is -1 (unlimited).
