@@ -215,10 +215,12 @@ func resolveScope(model models.Retention) interface{} {
 
 func resolveSchedule(model models.Retention) string {
 	fmt, _ := client.GetSchedule(model.Trigger.Settings.Cron)
-	if fmt == "Custom" {
+	switch fmt {
+	case "Custom", "None":
 		return model.Trigger.Settings.Cron
+	default:
+		return fmt
 	}
-	return fmt
 }
 
 func resolveRules(model models.Retention) []interface{} {

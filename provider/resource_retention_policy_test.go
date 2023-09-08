@@ -31,6 +31,22 @@ func TestAccRetentionUpdate(t *testing.T) {
 						resourceHarborRetentionMain, "rule.0.tag_matching", "latest"),
 				),
 			},
+			{
+				Config: testAccCheckRetentionScheduleNone(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceHarborRetentionMain),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "schedule", ""),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "rule.0.n_days_since_last_pull", "5"),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "rule.0.disabled", "false"),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "rule.0.repo_matching", "**"),
+					resource.TestCheckResourceAttr(
+						resourceHarborRetentionMain, "rule.0.tag_matching", "latest"),
+				),
+			},
 			// {
 			// 	Config: testAccCheckLabelUpdate(),
 			// 	Check: resource.ComposeTestCheckFunc(
@@ -70,7 +86,7 @@ func testAccCheckRetentionBasic() string {
 	resource "harbor_project" "main" {
 		name                = "acctest_retention_pol"
 	  }
-	  
+
 	  resource "harbor_retention_policy" "main" {
 		  scope = harbor_project.main.id
 		  schedule = "Daily"
@@ -84,7 +100,31 @@ func testAccCheckRetentionBasic() string {
 			  repo_matching = "**"
 			  tag_matching = "latest"
 		  }
-	  
+
+	  }
+	`)
+}
+
+func testAccCheckRetentionScheduleNone() string {
+	return fmt.Sprintf(`
+	resource "harbor_project" "main" {
+			name                = "acctest_retention_pol"
+	  }
+
+	  resource "harbor_retention_policy" "main" {
+		  scope = harbor_project.main.id
+		  schedule = ""
+		  rule {
+			  n_days_since_last_pull = 5
+			  repo_matching = "**"
+			  tag_matching = "latest"
+		  }
+		  rule {
+			  n_days_since_last_push = 10
+			  repo_matching = "**"
+			  tag_matching = "latest"
+		  }
+
 	  }
 	`)
 }
