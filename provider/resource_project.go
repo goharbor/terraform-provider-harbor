@@ -59,6 +59,11 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"enable_content_trust_cosign": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"force_destroy": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -126,12 +131,24 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	var trustCosign bool
+	trustContentCosign := jsonData.Metadata.EnableContentTrustCosign
+	if trustContentCosign == "" {
+		trustCosign = false
+	} else {
+		trustCosign, err = strconv.ParseBool(trustContentCosign)
+		if err != nil {
+			return err
+		}
+	}
+
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", jsonData.ProjectID)
 	d.Set("registry_id", jsonData.RegistryID)
 	d.Set("public", jsonData.Metadata.Public)
 	d.Set("vulnerability_scanning", vuln)
 	d.Set("enable_content_trust", trust)
+	d.Set("enable_content_trust_cosign", trustCosign)
 
 	return nil
 }

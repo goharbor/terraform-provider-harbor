@@ -3,10 +3,11 @@
 ## Example Usage
 ```hcl
 resource "harbor_project" "main" {
-    name                    = "main"
-    public                  = false               # (Optional) Default value is false
-    vulnerability_scanning  = true                # (Optional) Default vale is true. Automatically scan images on push
-    enable_content_trust    = true                # (Optional) Default vale is false. Deny unsigned images from being pulled
+    name                        = "main"
+    public                      = false               # (Optional) Default value is false
+    vulnerability_scanning      = true                # (Optional) Default value is true. Automatically scan images on push
+    enable_content_trust        = true                # (Optional) Default value is false. Deny unsigned images from being pulled (notary)
+    enable_content_trust_cosign = false               # (Optional) Default value is false. Deny unsigned images from being pulled (cosign)
 }
 ```
 
@@ -41,6 +42,8 @@ The following arguments are supported:
 * `storage_quota` - (Optional) The storage quota of the project in GB's
 
 * `enable_content_trust` - (Optional) Enables Content Trust for project. When enabled it queries the embedded docker notary server. Can be set to `"true"` or `"false"` (Default: false)
+
+* `enable_content_trust_cosign` - (Optional) Enables Content Trust Cosign for project. When enabled it queries Cosign. Can be set to `"true"` or `"false"` (Default: false)
 
 * `force_destroy` - (Optional, Default: `false`) A boolean that indicates all repositories should be deleted from the project so that the project can be destroyed without error. These repositories are *not* recoverable.
 
