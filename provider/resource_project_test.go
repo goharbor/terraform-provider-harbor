@@ -11,6 +11,7 @@ import (
 
 const resourceHarborProjectMain = "harbor_project.main"
 const enableContentTrust = "enable_content_trust"
+const enableContentTrustCosign = "enable_content_trust_cosign"
 
 func testAccCheckProjectDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)

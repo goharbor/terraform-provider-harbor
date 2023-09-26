@@ -17,12 +17,13 @@ type ProjectsBodyPost struct {
 	} `json:"cve_allowlist,omitempty"`
 	StorageLimit int `json:"storage_limit,omitempty"`
 	Metadata     struct {
-		EnableContentTrust   string `json:"enable_content_trust,omitempty"`
-		AutoScan             string `json:"auto_scan,omitempty"`
-		Severity             string `json:"severity,omitempty"`
-		ReuseSysCveAllowlist string `json:"reuse_sys_cve_allowlist,omitempty"`
-		Public               string `json:"public,omitempty"`
-		PreventVul           string `json:"prevent_vul,omitempty"`
+		EnableContentTrust       string `json:"enable_content_trust,omitempty"`
+		EnableContentTrustCosign string `json:"enable_content_trust_cosign,omitempty"`
+		AutoScan                 string `json:"auto_scan,omitempty"`
+		Severity                 string `json:"severity,omitempty"`
+		ReuseSysCveAllowlist     string `json:"reuse_sys_cve_allowlist,omitempty"`
+		Public                   string `json:"public,omitempty"`
+		PreventVul               string `json:"prevent_vul,omitempty"`
 	} `json:"metadata,omitempty"`
 }
 
@@ -49,13 +50,14 @@ type ProjectsBodyResponses struct {
 		ExpiresAt int `json:"expires_at"`
 	} `json:"cve_allowlist"`
 	Metadata struct {
-		EnableContentTrust   string `json:"enable_content_trust,omitempty"`
-		AutoScan             string `json:"auto_scan,omitempty"`
-		Severity             string `json:"severity"`
-		ReuseSysCveAllowlist string `json:"reuse_sys_cve_allowlist"`
-		Public               string `json:"public"`
-		PreventVul           string `json:"prevent_vul"`
-		RetentionId          string `json:"retention_id"`
+		EnableContentTrust       string `json:"enable_content_trust,omitempty"`
+		EnableContentTrustCosign string `json:"enable_content_trust_cosign,omitempty"`
+		AutoScan                 string `json:"auto_scan,omitempty"`
+		Severity                 string `json:"severity"`
+		ReuseSysCveAllowlist     string `json:"reuse_sys_cve_allowlist"`
+		Public                   string `json:"public"`
+		PreventVul               string `json:"prevent_vul"`
+		RetentionId              string `json:"retention_id"`
 	} `json:"metadata"`
 }
 
