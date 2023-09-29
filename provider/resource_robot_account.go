@@ -159,7 +159,29 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 
 	d.Set("robot_id", strconv.Itoa(robot.ID))
 	d.Set("full_name", robot.Name)
+	d.Set("description", robot.Description)
+	d.Set("level", robot.Level)
+	d.Set("duration", robot.Duration)
+	d.Set("disable", robot.Disable)
 
+	// Set the permissions of the robot account in the Terraform state
+	permissions := make([]map[string]interface{}, len(robot.Permissions))
+	for i, permission := range robot.Permissions {
+		permissionMap := make(map[string]interface{})
+		permissionMap["kind"] = permission.Kind
+		permissionMap["namespace"] = permission.Namespace
+		access := make([]map[string]interface{}, len(permission.Access))
+		for i, v := range permission.Access {
+			accessMap := make(map[string]interface{})
+			accessMap["action"] = v.Action
+			accessMap["resource"] = v.Resource
+			accessMap["effect"] = v.Effect
+			access[i] = accessMap
+		}
+		permissionMap["access"] = access
+		permissions[i] = permissionMap
+	}
+	d.Set("permissions", permissions)
 	return nil
 }
 
