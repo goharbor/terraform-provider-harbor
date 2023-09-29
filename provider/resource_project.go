@@ -89,7 +89,7 @@ func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	id, err := client.GetID(headers)
+	id, _ := client.GetID(headers)
 	d.SetId(id)
 	return resourceProjectRead(d, m)
 }
@@ -101,12 +101,14 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	if respCode == 404 && err != nil {
 		d.SetId("")
 		return nil
+	} else if err != nil {
+		return fmt.Errorf("resource not found %s", d.Id())
 	}
 
 	var jsonData models.ProjectsBodyResponses
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		d.Set("name", jsonData.Name)
+		return fmt.Errorf("resource not found %s", d.Id())
 	}
 	autoScan := jsonData.Metadata.AutoScan
 	var vuln bool
@@ -185,12 +187,12 @@ func resourceProjectDelete(d *schema.ResourceData, m interface{}) error {
 		projectName := d.Get("name").(string)
 		repos, _ := apiClient.GetProjectRepositories(projectName)
 		if len(repos) != 0 {
-			return fmt.Errorf("Project %s is not empty, please set force_delete to TRUE to clean all repositories", projectName)
+			return fmt.Errorf("project %s is not empty, please set force_delete to TRUE to clean all repositories", projectName)
 		}
 	}
 
 	_, _, respCode, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
-	if respCode == 404 && err != nil { // We can't delete something that doesn't exist. Hence the 404-check
+	if respCode != 404 && err != nil { // We can't delete something that doesn't exist. Hence the 404-check
 		return err
 	}
 	return nil
