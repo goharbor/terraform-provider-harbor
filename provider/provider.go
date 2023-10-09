@@ -28,6 +28,11 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("HARBOR_PASSWORD", ""),
 			},
+			"bearer_token": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("BEARER_TOKEN", ""),
+			},
 			"insecure": {
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -75,7 +80,6 @@ func Provider() *schema.Provider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	var apiPath string
-
 	//url := d.Get("url").(string)
 	url := os.Getenv("HARBOR_URL")
 	if d.Get("url").(string) != "" {
@@ -84,7 +88,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required and must be provided in the provider config or the HARBOR_URL environment variable")
 	}
-
+	bearerToken := d.Get("bearer_token").(string)
 	username := d.Get("username").(string)
 	password := d.Get("password").(string)
 	insecure := d.Get("insecure").(bool)
@@ -100,5 +104,5 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		apiPath = "/api/v2.0"
 	}
 
-	return client.NewClient(url+apiPath, username, password, insecure), nil
+	return client.NewClient(url+apiPath, username, password, bearerToken, insecure), nil
 }
