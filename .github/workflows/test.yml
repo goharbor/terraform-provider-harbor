@@ -24,7 +24,7 @@ jobs:
     steps:
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Go
       uses: actions/setup-go@v4
@@ -44,7 +44,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v4
         with:
           go-version-file: 'go.mod'
@@ -82,7 +82,7 @@ jobs:
     steps:
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Docker
       uses: docker-practice/actions-setup-docker@v1
