@@ -67,6 +67,7 @@ func Provider() *schema.Provider {
 			"harbor_project":  dataProject(),
 			"harbor_projects": dataProjects(),
 			"harbor_registry": dataRegistry(),
+			"harbor_groups":   dataGroups(),
 		},
 
 		ConfigureFunc: providerConfigure,
