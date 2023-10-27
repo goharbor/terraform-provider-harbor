@@ -29,7 +29,7 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 			},
 			"public": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  "false",
 			},
