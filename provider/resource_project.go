@@ -3,7 +3,6 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -31,7 +30,7 @@ func resourceProject() *schema.Resource {
 			"public": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  "false",
+				Default:  false,
 			},
 			"vulnerability_scanning": {
 				Type:     schema.TypeBool,
@@ -110,43 +109,31 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return fmt.Errorf("resource not found %s", d.Id())
 	}
-	autoScan := jsonData.Metadata.AutoScan
-	var vuln bool
-	if autoScan == "" {
-		vuln = false
-	} else {
-		vuln, err = strconv.ParseBool(autoScan)
-		if err != nil {
-			return err
-		}
+
+	vuln, err := client.ParseBoolOrDefault(jsonData.Metadata.AutoScan, false)
+	if err != nil {
+		return err
 	}
 
-	var trust bool
-	trustContent := jsonData.Metadata.EnableContentTrust
-	if trustContent == "" {
-		trust = false
-	} else {
-		trust, err = strconv.ParseBool(trustContent)
-		if err != nil {
-			return err
-		}
+	trust, err := client.ParseBoolOrDefault(jsonData.Metadata.EnableContentTrust, false)
+	if err != nil {
+		return err
 	}
 
-	var trustCosign bool
-	trustContentCosign := jsonData.Metadata.EnableContentTrustCosign
-	if trustContentCosign == "" {
-		trustCosign = false
-	} else {
-		trustCosign, err = strconv.ParseBool(trustContentCosign)
-		if err != nil {
-			return err
-		}
+	trustCosign, err := client.ParseBoolOrDefault(jsonData.Metadata.EnableContentTrustCosign, false)
+	if err != nil {
+		return err
+	}
+
+	public, err := client.ParseBoolOrDefault(jsonData.Metadata.Public, false)
+	if err != nil {
+		return err
 	}
 
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", jsonData.ProjectID)
 	d.Set("registry_id", jsonData.RegistryID)
-	d.Set("public", jsonData.Metadata.Public)
+	d.Set("public", public)
 	d.Set("vulnerability_scanning", vuln)
 	d.Set("enable_content_trust", trust)
 	d.Set("enable_content_trust_cosign", trustCosign)

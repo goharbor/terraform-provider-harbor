@@ -2,6 +2,7 @@ package client
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -31,3 +32,10 @@ func GetSchedule(schedule string) (typefmt string, cronfmt string) {
 }
 
 var regexCron = regexp.MustCompile(`(?m)((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})`)
+
+func ParseBoolOrDefault(value string, defaultValue bool) (bool, error) {
+	if value == "" {
+		return defaultValue, nil
+	}
+	return strconv.ParseBool(value)
+}
