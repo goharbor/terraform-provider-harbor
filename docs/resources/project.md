@@ -37,7 +37,7 @@ The following arguments are supported:
 
 * `deployment_security` - (Optional) Prevent deployment of images with vulnerability severity equal or higher than the specified value. Images must be scanned before this takes effect. Possible values: `critical`, `high`, `medium`, `low`, `none`. (Default: `""` - empty)
 
-* `registry_id` - (Optional) To enabled project as Proxy Cache
+* `registry_id` - (Optional) To enable project as Proxy Cache
 
 * `storage_quota` - (Optional) The storage quota of the project in GB's
 
