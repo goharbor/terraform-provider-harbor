@@ -35,7 +35,7 @@ func dataRegistry() *schema.Resource {
 				Computed: true,
 			},
 			"insecure": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Computed: true,
 			},
 			"status": {
