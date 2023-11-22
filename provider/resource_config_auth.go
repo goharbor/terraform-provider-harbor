@@ -131,6 +131,7 @@ func resourceConfigAuth() *schema.Resource {
 			"ldap_scope": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "subtree",
 			},
 			"ldap_group_base_dn": {
 				Type:     schema.TypeString,
@@ -155,6 +156,7 @@ func resourceConfigAuth() *schema.Resource {
 			"ldap_group_scope": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "subtree",
 			},
 		},
 		Create: resourceConfigAuthCreate,
