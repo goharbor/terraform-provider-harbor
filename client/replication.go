@@ -80,3 +80,13 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 	log.Println(body)
 	return body
 }
+
+func GetExecutionBody(d *schema.ResourceData) models.ExecutionBody {
+
+	body := models.ExecutionBody{
+		PolicyID: d.Get("policy_id").(int),
+	}
+
+	log.Println(body)
+	return body
+}
