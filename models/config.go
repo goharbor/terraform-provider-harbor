@@ -34,9 +34,9 @@ type ConfigBodyAuthPost struct {
 	OidcClientSecret             string `json:"oidc_client_secret,omitempty"`
 	OidcGroupFilter              string `json:"oidc_group_filter,omitempty"`
 	OidcGroupsClaim              string `json:"oidc_groups_claim,omitempty"`
-	LdapScope                    int    `json:"ldap_scope,omitempty"`
+	LdapScope                    int    `json:"ldap_scope"`
 	TokenExpiration              int    `json:"token_expiration,omitempty"`
-	LdapGroupSearchScope         int    `json:"ldap_group_search_scope,omitempty"`
+	LdapGroupSearchScope         int    `json:"ldap_group_search_scope"`
 	LdapVerifyCert               bool   `json:"ldap_verify_cert"`
 	LdapGroupGID                 string `json:"ldap_group_gid,omitempty"`
 	OidcAdminGroup               string `json:"oidc_admin_group,omitempty"`
