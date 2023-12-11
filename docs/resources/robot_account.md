@@ -101,7 +101,7 @@ The above example creates a project level robot account with permissions to
 ## Argument Reference
 The following arguments are supported:
 
-* **name** - (string, required) The of the project that will be created in harbor.
+* **name** - (string, required) The name of the project that will be created in harbor.
 
 * **level** - (string, required) Level of the robot account, currently either `system` or `project`.
 
