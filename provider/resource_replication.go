@@ -3,6 +3,9 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -98,6 +101,11 @@ func resourceReplication() *schema.Resource {
 				Optional: true,
 				Default:  -1,
 			},
+			"execute_on_changed": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 		},
 		Create: resourceReplicationCreate,
 		Read:   resourceReplicationRead,
@@ -119,12 +127,27 @@ func resourceReplicationCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	id, err := client.GetID(headers)
+	location, err := client.GetID(headers)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(id)
+	if d.Get("execute_on_changed").(bool) {
+
+		policyId, _ := strconv.Atoi(location[strings.LastIndex(location, "/")+1:])
+
+		body := models.ExecutionBody{
+			PolicyID: policyId,
+		}
+
+		_, _, _, err := apiClient.SendRequest("POST", models.PathExecution, body, 201)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	d.SetId(location)
 	return resourceReplicationRead(d, m)
 }
 
@@ -186,6 +209,21 @@ func resourceReplicationUpdate(d *schema.ResourceData, m interface{}) error {
 	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
+	}
+
+	if d.Get("execute_on_changed").(bool) {
+
+		policyId, _ := strconv.Atoi(filepath.Base(d.Id()))
+
+		body := models.ExecutionBody{
+			PolicyID: policyId,
+		}
+
+		_, _, _, err := apiClient.SendRequest("POST", models.PathExecution, body, 201)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	return resourceReplicationRead(d, m)

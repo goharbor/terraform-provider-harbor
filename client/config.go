@@ -65,18 +65,9 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
 			LdapGroupAdminDn:             d.Get("ldap_group_admin_dn").(string),
 			LdapGroupMembershipAttribute: d.Get("ldap_group_membership").(string),
 			LdapVerifyCert:               d.Get("ldap_verify_cert").(bool),
+			LdapScope:                    getLdapScope(d.Get("ldap_scope").(string)),
+			LdapGroupSearchScope:         getLdapScope(d.Get("ldap_group_scope").(string)),
 		}
-
-		ldapScope := d.Get("ldap_scope").(string)
-		if ldapScope != "" {
-			body.LdapScope = getLdapScope(ldapScope)
-		}
-
-		ldapGroupScope := d.Get("ldap_group_scope").(string)
-		if ldapGroupScope != "" {
-			body.LdapGroupSearchScope = getLdapScope(ldapGroupScope)
-		}
-
 	}
 	log.Printf("[DEBUG] %+v\n ", body)
 	return body
@@ -114,6 +105,19 @@ func getLdapScope(scopeName string) (scopeInt int) {
 	}
 	return scope
 }
+func getLdapScopeName(scopeInt int) (scopeName string) {
+	switch scopeInt {
+	case 0:
+		scopeName = "base"
+	case 1:
+		scopeName = "onelevel"
+	case 2:
+		scopeName = "subtree"
+	default:
+		scopeName = "subtree"
+	}
+	return scopeName
+}
 
 // SetAuthValues the values for Auth when performing a read on resource
 func SetAuthValues(d *schema.ResourceData, resp string) error {
@@ -144,13 +148,13 @@ func SetAuthValues(d *schema.ResourceData, resp string) error {
 		d.Set("ldap_uid", jsonData.LdapUID.Value)
 		d.Set("ldap_verify_cert", jsonData.LdapVerifyCert.Value)
 		d.Set("ldap_search_dn", jsonData.LdapSearchDn.Value)
-		d.Set("ldap_scope", jsonData.LdapScope.Value)
 		d.Set("ldap_group_base_dn", jsonData.LdapGroupBaseDn.Value)
 		d.Set("ldap_group_filter", jsonData.LdapGroupSearchFilter.Value)
 		d.Set("ldap_group_gid", jsonData.LdapGroupAttributeName.Value)
 		d.Set("ldap_group_admin_dn", jsonData.LdapGroupAdminDn.Value)
 		d.Set("ldap_group_membership", jsonData.LdapGroupMembershipAttribute.Value)
-		d.Set("ldap_group_scope", jsonData.LdapGroupSearchScope.Value)
+		d.Set("ldap_scope", getLdapScopeName(jsonData.LdapScope.Value))
+		d.Set("ldap_group_scope", getLdapScopeName(jsonData.LdapGroupSearchScope.Value))
 	}
 
 	return nil

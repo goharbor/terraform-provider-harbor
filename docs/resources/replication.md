@@ -73,6 +73,7 @@ The following arguments are supported:
 * **deletion** - (Optional) Specify whether to delete the remote resources when locally deleted. Can be set to `true` or `false` (Default: `false`)
 
 * **filters** - (Optional) A collection of `filters` block as documented below.
+* **execute_on_changed** - (Optional) Specify whether to execute the replication rule if new or modified. Can be set to `true` or `false` (Default: `false`)
 
 ---
 

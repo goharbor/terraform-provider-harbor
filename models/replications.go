@@ -1,6 +1,7 @@
 package models
 
 var PathReplication = "/replication/policies"
+var PathExecution = "/replication/executions"
 
 type ReplicationBody struct {
 	Name        string `json:"name,omitempty"`
@@ -31,4 +32,8 @@ type ReplicationFilters struct {
 	Type       string      `json:"type,omitempty"`
 	Value      interface{} `json:"value,omitempty"`
 	Decoration string      `json:"decoration,omitempty"`
+}
+
+type ExecutionBody struct {
+	PolicyID int `json:"policy_id"`
 }
