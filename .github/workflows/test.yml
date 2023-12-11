@@ -140,7 +140,7 @@ jobs:
             attempt_counter=$(($attempt_counter+1))
             sleep 5
         done
-        sleep 5
+        sleep 30
 
     - name: Set up Go
       uses: actions/setup-go@v4
