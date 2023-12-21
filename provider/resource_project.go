@@ -151,6 +151,12 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("enable_content_trust", trust)
 	d.Set("enable_content_trust_cosign", trustCosign)
 
+	cveAllowlist := make([]string, len(jsonData.CveAllowlist.Items))
+	for i, item := range jsonData.CveAllowlist.Items {
+		cveAllowlist[i] = item.CveID
+	}
+	d.Set("cve_allowlist", cveAllowlist)
+
 	return nil
 }
 
