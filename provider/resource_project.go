@@ -90,6 +90,16 @@ func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
 
 	id, _ := client.GetID(headers)
 	d.SetId(id)
+
+	// if there is cve allowlist, we need to do another request to add it
+	cveAllowlist := d.Get("cve_allowlist").([]interface{})
+	if len(cveAllowlist) > 0 {
+		_, _, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
+		if err != nil {
+			return err
+		}
+	}
+
 	return resourceProjectRead(d, m)
 }
 
@@ -137,6 +147,12 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("vulnerability_scanning", vuln)
 	d.Set("enable_content_trust", trust)
 	d.Set("enable_content_trust_cosign", trustCosign)
+
+	cveAllowlist := make([]string, len(jsonData.CveAllowlist.Items))
+	for i, item := range jsonData.CveAllowlist.Items {
+		cveAllowlist[i] = item.CveID
+	}
+	d.Set("cve_allowlist", cveAllowlist)
 
 	return nil
 }
