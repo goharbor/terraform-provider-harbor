@@ -35,14 +35,6 @@ resource "harbor_robot_account" "system" {
       action   = "push"
       resource = "repository"
     }
-    access {
-      action   = "read"
-      resource = "helm-chart"
-    }
-    access {
-      action   = "read"
-      resource = "helm-chart-version"
-    }
     kind      = "project"
     namespace = harbor_project.main.name
   }
@@ -61,7 +53,6 @@ The above example, creates a system level robot account with permissions to
 - permission to create labels on system level
 - pull repository across all projects
 - push repository to project "my-project-name"
-- read helm-chart and helm-chart-version in project "my-project-name"
 
 ### Project Level
 
@@ -147,7 +138,7 @@ The following arguments are supported:
 ### Access Arguments
 * **action** - (string, required) Eg. `push`, `pull`, `read`, etc. Check [available actions](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go).
 
-* **resource** - (string, required) Eg. `repository`, `helm-chart`, `labels`, etc. Check [available resources](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go).
+* **resource** - (string, required) Eg. `repository`, `labels`, etc. Check [available resources](https://github.com/goharbor/harbor/blob/-/src/common/rbac/const.go).
 
 * **effect** - (string, optional) Either `allow` or `deny`. Defaults to `allow`.
 
