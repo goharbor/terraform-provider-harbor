@@ -157,8 +157,11 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if respCode == 404 && err != nil {
 		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return nil
+	} else if err != nil {
+		return fmt.Errorf("resource not found %s", d.Id())
 	}
+
 	var jsonData models.RegistryBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
@@ -232,8 +235,8 @@ func resourceReplicationUpdate(d *schema.ResourceData, m interface{}) error {
 func resourceReplicationDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	_, _, _, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
-	if err != nil {
+	_, _, respCode, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
+	if respCode != 404 && err != nil { // We can't delete something that doesn't exist. Hence the 404-check
 		return err
 	}
 	return nil
