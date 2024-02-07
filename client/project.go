@@ -26,7 +26,7 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	}
 
 	body.Metadata.AutoScan = strconv.FormatBool(d.Get("vulnerability_scanning").(bool))
-	body.Metadata.Public = d.Get("public").(string)
+	body.Metadata.Public = strconv.FormatBool(d.Get("public").(bool))
 
 	security := d.Get("deployment_security").(string)
 	if security != "" {
