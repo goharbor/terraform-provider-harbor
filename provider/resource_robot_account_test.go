@@ -96,14 +96,6 @@ func testAccCheckRobotSystem(projectName string) string {
 		  action   = "push"
 		  resource = "repository"
 		}
-		access {
-		  action   = "read"
-		  resource = "helm-chart"
-		}
-		access {
-		  action   = "read"
-		  resource = "helm-chart-version"
-		}
 		kind      = "project"
 		namespace = harbor_project.main.name
 	  }
