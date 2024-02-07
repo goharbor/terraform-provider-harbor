@@ -86,7 +86,7 @@ func testAccCheckRobotSystem(projectName string) string {
 	  permissions {
 		access {
 		  action   = "create"
-		  resource = "labels"
+		  resource = "label"
 		}
 		kind      = "system"
 		namespace = "/"
@@ -95,14 +95,6 @@ func testAccCheckRobotSystem(projectName string) string {
 		access {
 		  action   = "push"
 		  resource = "repository"
-		}
-		access {
-		  action   = "read"
-		  resource = "helm-chart"
-		}
-		access {
-		  action   = "read"
-		  resource = "helm-chart-version"
 		}
 		kind      = "project"
 		namespace = harbor_project.main.name

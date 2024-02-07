@@ -26,6 +26,7 @@ provider "harbor" {
   url      = "https://harbor.aceme_corpartion.com"
   username = "insert_admin_username_here"
   password = "insert_password_here"
+  bearer_token = "insert_bearer_token_here"
 }
 ```
 
@@ -34,6 +35,7 @@ Alternatively, these environment variables can be used to set the provider confi
 HARBOR_URL
 HARBOR_USERNAME
 HARBOR_PASSWORD
+HARBOR_BEARER_TOKEN
 HARBOR_IGNORE_CERT
 ```
 
@@ -43,5 +45,6 @@ The following arguments are supported:
 * **url** - (Required) The url of harbor
 * **username** - (Required) The username to be used to access harbor
 * **password** - (Required) The password to be used to access harbor
+* **bearer_token** - (Optional) The bearer token to be used to access harbor. Will take precedence over username and password if set
 * **insecure** - (Optional) Choose to ignore certificate errors
 * **api_version** - (Optional) Choose which version of the api you would like to use 1 or 2. Default is `2`
