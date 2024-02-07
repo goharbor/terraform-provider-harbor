@@ -13,22 +13,24 @@ import (
 )
 
 type Client struct {
-	url        string
-	username   string
-	password   string
-	insecure   bool
-	httpClient *http.Client
+	url         string
+	username    string
+	password    string
+	bearerToken string
+	insecure    bool
+	httpClient  *http.Client
 }
 
 // NewClient creates common settings
-func NewClient(url string, username string, password string, insecure bool) *Client {
+func NewClient(url string, username string, password string, bearerToken string, insecure bool) *Client {
 
 	return &Client{
-		url:        url,
-		username:   username,
-		password:   password,
-		insecure:   insecure,
-		httpClient: &http.Client{},
+		url:         url,
+		username:    username,
+		password:    password,
+		bearerToken: bearerToken,
+		insecure:    insecure,
+		httpClient:  &http.Client{},
 	}
 }
 
@@ -56,7 +58,13 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 		return "", "", 0, err
 	}
 
-	req.SetBasicAuth(c.username, c.password)
+	// Use access token authentification if bearer Token is specified
+	if c.bearerToken != "" {
+		req.Header.Add("Authorization", "Bearer "+c.bearerToken)
+	} else {
+		req.SetBasicAuth(c.username, c.password)
+	}
+
 	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
