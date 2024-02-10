@@ -25,7 +25,7 @@ resource "harbor_config_system" "main" {
 
 ### Optional
 
-- `project_creation_restriction` (String) Who can create projects within Harbor. Can be **"adminonly"** or **"everyone"**
+- `project_creation_restriction` (String) Who can create projects within Harbor. Can be `"adminonly"` or `"everyone"`
 - `read_only` (Boolean) Whether or not the system is in read only mode.
 - `robot_name_prefix` (String) Robot account prefix.
 - `robot_token_expiration` (Number) The amount of time in days a robot account will expire.

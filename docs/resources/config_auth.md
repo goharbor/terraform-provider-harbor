@@ -8,7 +8,9 @@ description: |-
 
 # harbor_config_auth (Resource)
 
-## Example Usage - OIDC
+## Example Usage
+
+### OIDC
 
 ```terraform
 resource "harbor_config_auth" "oidc" {
@@ -26,7 +28,7 @@ resource "harbor_config_auth" "oidc" {
 }
 ```
 
-## Example Usage - LDAP
+### LDAP
 
 ```terraform
 resource "harbor_config_auth" "ldap" {
@@ -47,7 +49,7 @@ resource "harbor_config_auth" "ldap" {
 
 ### Required
 
-- `auth_mode` (String) Harbor authentication mode. Can be `"oidc_auth"`, `"db_auth"` or `"ldap_auth"`. (Default: **"db_auth"**)
+- `auth_mode` (String) Harbor authentication mode. Can be `"oidc_auth"`, `"db_auth"` or `"ldap_auth"`. (Default: `"db_auth"`)
 
 ### Required, OIDC
 
@@ -57,20 +59,20 @@ The following are required if `auth_mode` is `oidc_auth`
 - `oidc_client_secret` (String, Sensitive) The client secert for the oidc server.
 - `oidc_endpoint` (String) The URL of an OIDC-complaint server.
 - `oidc_name` (String) The name of the oidc provider name.
-- `oidc_scope` (String) The scope sent to OIDC server during authentication. It has to contain “openid”.
-- `oidc_verify_cert` (Boolean) Set to **"false"** if your OIDC server is using a self-signed certificate.
+- `oidc_scope` (String) The scope sent to OIDC server during authentication. It has to contain `“openid”`.
+- `oidc_verify_cert` (Boolean) Set to `false` if your OIDC server is using a self-signed certificate.
 
 ### Optional, OIDC
 
 - `oidc_admin_group` (String) All members of this group get Harbor admin permissions.
-- `oidc_auto_onboard` (Boolean) Default is **"false"**, set to **"true"** if you want to skip the user onboarding screen, so user cannot change its username
+- `oidc_auto_onboard` (Boolean) Default is `"false"`, set to `"true"` if you want to skip the user onboarding screen, so user cannot change its username
 - `oidc_group_filter` (String) The OIDC group filter to filter which groups could be onboarded to Harbor.
 - `oidc_groups_claim` (String) The name of the claim in the token whose values is the list of group names.
 - `oidc_user_claim` (String) Default is `name`
 
 ### Required, LDAP
 
-The following are required if `auth_mode` is `ldap_auth`
+The following are required if `auth_mode` is `"ldap_auth"`
 
 - `ldap_base_dn` (String) A user's DN who has the permission to search the LDAP/AD server.
 - `ldap_uid` (String) The attribute used in a search to match a user. It could be uid, cn, email, sAMAccountName or other attributes depending on your LDAP/AD.
@@ -94,7 +96,9 @@ The following are required if `auth_mode` is `ldap_auth`
 ### Optional
 
 - `primary_auth_mode` (Boolean) Default is `false`, set to `true` if you want to use the OIDC or LDAP mode as the primary auth mode.
-`NOTE: "primary_auth_mode" can only be used with Harbor version v2.8.0 and above`
+
+#### Notes
+`primary_auth_mode` can only be used with Harbor version v2.8.0 and above
 
 ### Read-Only
 
