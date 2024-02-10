@@ -40,7 +40,6 @@ resource "harbor_registry" "main" {
 - `github`
 - `google`
 - `harbor`
-- `helm`
 - `huawei`
 - `jfrog`
 - `quay`
