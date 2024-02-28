@@ -53,3 +53,10 @@ resource "harbor_label" "main" {
 
 - `id` (String) The ID of this resource.
 - `scope` (String)
+
+## Import
+Import is supported using the following syntax with the `label` `id`:
+
+```shell
+terraform import harbor_label.main /labels/1
+```

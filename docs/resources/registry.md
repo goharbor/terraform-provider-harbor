@@ -56,3 +56,10 @@ resource "harbor_registry" "main" {
 - `id` (String) The ID of this resource.
 - `registry_id` (Number)
 - `status` (String)
+
+## Import
+Import is supported using the following syntax with the `registry` `id`:
+
+```shell
+terraform import harbor_registry.main /registries/7
+```

@@ -38,3 +38,10 @@ resource "harbor_user" "main" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+
+## Import
+Import is supported using the following syntax with the `user` `id`:
+
+```shell
+terraform import harbor_user.main /users/19
+```

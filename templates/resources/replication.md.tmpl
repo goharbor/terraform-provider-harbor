@@ -55,3 +55,10 @@ Optional:
 - `name` (String) Filter on the name of the resource.
 - `resource` (String) Filter on the resource type. Can be one of the following types. `chart`, `artifact`
 - `tag` (String) Filter on the tag/version of the resource.
+
+## Import
+Import is supported using the following syntax with the `replication` `id`:
+
+```shell
+terraform import harbor_replication.main /replication/policies/1
+```

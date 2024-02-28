@@ -33,3 +33,12 @@ For example, the {{ .SchemaMarkdown }} template can be used to replace manual sc
 - `creation_time` (String) Time of creation of the list.
 - `id` (String) The ID of this resource.
 - `update_time` (String) Time of update of the list.
+
+## Import
+Import is supported using the following syntax with the `registry` `id`:
+
+```shell
+# import using the id of the repo
+terraform import harbor_config_security.main "7"
+```
+Note that at this point of time Harbor doesn't has any api endpoint for deleting this list. Only updating the records.

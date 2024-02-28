@@ -46,3 +46,10 @@ resource "harbor_project_member_group" "main" {
 
 - `id` (String) The ID of this resource.
 - `member_id` (Number)
+
+## Import
+Import is supported using the following syntax with the `project` and `member` `id`'s:
+
+```shell
+terraform import harbor_project_member_group.main /projects/10/members/200
+```

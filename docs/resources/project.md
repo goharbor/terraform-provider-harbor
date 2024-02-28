@@ -61,3 +61,10 @@ resource "harbor_registry" "docker" {
 
 - `id` (String) The ID of this resource.
 - `project_id` (Number) The project id of this resource.
+
+## Import
+Import is supported using the following syntax with the `project` `id`:
+
+```shell
+terraform import harbor_project.main /projects/1
+```

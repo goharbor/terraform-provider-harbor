@@ -43,3 +43,10 @@ resource "harbor_immutable_tag_rule" "main" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+
+## Import
+Import is supported using the following syntax with the `project` and `immutabletagrules` `id`'s:
+
+```shell
+terraform import harbor_immutable_tag_rule.main /projects/4/immutabletagrules/25
+```

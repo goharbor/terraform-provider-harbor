@@ -30,3 +30,10 @@ For example, the {{ .SchemaMarkdown }} template can be used to replace manual sc
 
 - `id` (String) The ID of this resource.
 - `member_id` (Number) The member id of the member.
+
+## Import
+Import is supported using the following syntax with the `project` and `member` `id`'s:
+
+```shell
+terraform import harbor_project_member_user.main /projects/10/members/200
+```

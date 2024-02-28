@@ -34,3 +34,10 @@ resource "harbor_group" "storage-group" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+
+## Import
+Import is supported using the following syntax with the `group` `id`:
+
+```shell
+terraform import harbor_group.storage-group /usergroups/19
+```
