@@ -92,7 +92,7 @@ jobs:
         docker_daemon_json: '{"insecure-registries":["0.0.0.0/0"]}'
     
     - name: Create kind cluster
-      uses: helm/kind-action@v1.8.0
+      uses: helm/kind-action@v1.9.0
       with:
         version: v0.20.0
         node_image: kindest/node:v1.28.0
@@ -104,7 +104,7 @@ jobs:
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/kind/deploy.yaml
         kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
 
-    - uses: azure/setup-helm@v3
+    - uses: azure/setup-helm@v4
       with:
         version: 'latest' # default is latest (stable)
         token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
