@@ -104,7 +104,7 @@ jobs:
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.3/deploy/static/provider/kind/deploy.yaml
         kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
 
-    - uses: azure/setup-helm@v3
+    - uses: azure/setup-helm@v4
       with:
         version: 'latest' # default is latest (stable)
         token: ${{ secrets.GITHUB_TOKEN }} # only needed if version is 'latest'
