@@ -76,6 +76,7 @@ func testAccCheckGCUpdate() string {
 	resource "harbor_garbage_collection" "main" {
 		schedule        = "Hourly"
 		delete_untagged = true
+		workers 			  = 2
 	}
 	`)
 }
