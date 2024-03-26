@@ -14,8 +14,9 @@ description: |-
 
 ```terraform
 resource "harbor_garbage_collection" "main" {
-  schedule         = "Daily"
-  delete_untagged  = true
+  schedule        = "Daily"
+  delete_untagged = true
+  workers         = 1
 }
 ```
 
@@ -28,6 +29,7 @@ resource "harbor_garbage_collection" "main" {
 ### Optional
 
 - `delete_untagged` (Boolean) Allow garbage collection on untagged artifacts.
+- `workers` (Number) Number of workers to run the garbage collection, value must be between 1 and 5.
 
 ### Read-Only
 
