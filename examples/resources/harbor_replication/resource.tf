@@ -32,7 +32,7 @@ resource "harbor_replication" "alpine" {
 
 resource "harbor_replication" "alpine" {
   name        = "alpine"
-  action      = "pull"
+  action      = "push"
   registry_id = harbor_registry.main.registry_id
   schedule = "event_based"
   filters {
