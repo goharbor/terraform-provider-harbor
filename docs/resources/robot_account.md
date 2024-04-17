@@ -35,7 +35,7 @@ resource "harbor_robot_account" "system" {
   permissions {
     access {
       action   = "create"
-      resource = "labels"
+      resource = "label"
     }
     kind      = "system"
     namespace = "/"
