@@ -30,7 +30,7 @@ resource "harbor_registry" "main" {
 
 ##### `provider_name` Options
 
-- ``alibaba`
+- `alibaba`
 - `artifact-hub`
 - `aws`
 - `azure`

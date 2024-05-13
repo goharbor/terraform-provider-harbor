@@ -11,6 +11,22 @@ Configure and manage Harbor with Terraform and [Pulumi](https://github.com/pulum
 ## Usage
 [See the docs for usage information](./docs).
 
+## Compatibility and Acceptance Tests
+
+Our acceptance tests are run against specific versions of Harbor and Terraform to ensure compatibility.
+For the latest version of the provider, we ran the tests against the following versions of Harbor and Terraform:
+### Harbor Versions
+- `2.8`
+- `2.9`
+- `2.10`
+
+### Terraform Versions
+- `1.6`
+- `1.7`
+- `1.8`
+
+Please note that while we strive to maintain compatibility with these versions, we recommend always using the latest versions of Harbor and Terraform for the best experience.
+
 ## Contributing
 Everyone is welcome to contribute to this repository. Feel free to raise [issues](https://github.com/goharbor/terraform-provider-harbor/issues) or to submit [Pull Requests.](https://github.com/goharbor/terraform-provider-harbor/pulls)
 
