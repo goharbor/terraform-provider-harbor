@@ -43,7 +43,7 @@ jobs:
       - run: |
           make tools
           make docs
-      - uses: actions-js/push@v1.4
+      - uses: actions-js/push@v1.5
         name: Github commit and push
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
