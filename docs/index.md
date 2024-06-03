@@ -20,6 +20,10 @@ description: |-
 
 ### Optional
 
-- `api_version` (Number) Choose which version of the api you would like to use 1 or 2. Default is `2`
+- `api_version` (Number) Choose which version of the api you would like to use 1 or 2 (default is 2)
 - `bearer_token` (String) The bearer token to be used to access harbor. Will take precedence over username and password if set
 - `insecure` (Boolean) Choose to ignore certificate errors
+
+### Environment variables
+
+The provider can also be configured via environment variables: `HARBOR_URL`, `HARBOR_USERNAME`, `HARBOR_PASSWORD`.
