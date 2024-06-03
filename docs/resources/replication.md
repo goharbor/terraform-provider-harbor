@@ -73,6 +73,7 @@ resource "harbor_replication" "alpine" {
 - `description` (String) Description of the replication policy.
 - `dest_namespace` (String) Specify the destination namespace. if empty, the resource will be put under the same namespace as the source.
 - `dest_namespace_replace` (Number) Specify the destination namespace flattening policy. Integers from `-1` to `3` are valid values in the harbor API. A value of `-1` will 'Flatten All Levels', `0` means 'No Flattening', `1` 'Flatten 1 Level', `2` 'Flatten 2 Levels', `3` 'Flatten 3 Levels' (Default: `-1`, see [Replication Rules](https://goharbor.io/docs/latest/administration/configuring-replication/create-replication-rules/) for more details)
+- `copy_by_chunk` (Boolean) Specify whether to enable the artifact blobs copied by chunks. (Default: `false`) 
 - `enabled` (Boolean) Specify whether the replication is enabled. (Default: `true`)
 - `execute_on_changed` (Boolean) Specify whether to execute the replication rule if new or modified. (Default: `false`)
 - `filters` (Block Set) (see [below for nested schema](#nestedblock--filters))

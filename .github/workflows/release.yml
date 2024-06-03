@@ -28,7 +28,7 @@ jobs:
         run: git fetch --prune --unshallow
       -
         name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v5.0.1
         with:
           go-version-file: 'go.mod'
           cache: true
@@ -41,7 +41,7 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
       -
         name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5.0.0
+        uses: goreleaser/goreleaser-action@v5.1.0
         with:
           version: latest
           args: release --rm-dist
