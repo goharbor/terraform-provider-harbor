@@ -21,11 +21,12 @@ type ReplicationBody struct {
 			Cron string `json:"cron,omitempty"`
 		} `json:"trigger_settings,omitempty"`
 	} `json:"trigger,omitempty"`
-	Enabled  bool                 `json:"enabled"`
-	Deletion bool                 `json:"deletion,omitempty"`
-	Override bool                 `json:"override,omitempty"`
-	Filters  []ReplicationFilters `json:"filters,omitempty"`
-	Speed    int                  `json:"speed,omitempty"`
+	Enabled     bool                 `json:"enabled"`
+	Deletion    bool                 `json:"deletion,omitempty"`
+	Override    bool                 `json:"override,omitempty"`
+	CopyByChunk bool                 `json:"copy_by_chunk,omitempty"`
+	Filters     []ReplicationFilters `json:"filters,omitempty"`
+	Speed       int                  `json:"speed,omitempty"`
 }
 
 type ReplicationFilters struct {
