@@ -65,6 +65,11 @@ func resourceReplication() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"copy_by_chunk": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"filters": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -201,6 +206,7 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("override", jsonDataReplication.Override)
 	d.Set("dest_namespace", jsonDataReplication.DestNamespace)
 	d.Set("dest_namespace_replace", jsonDataReplication.DestNamespaceReplace)
+	d.Set("copy_by_chunk", jsonDataReplication.CopyByChunk)
 
 	return nil
 }

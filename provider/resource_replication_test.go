@@ -187,3 +187,24 @@ func testReplicationPolicyDestinationNamespaceWithReplaceCount(scheduleType stri
 	  }
 	`, endpoint, scheduleType, destNamepace)
 }
+func testReplicationPolicyWithCopyByChunk(scheduleType string, destNamepace int) string {
+	// endpoint := os.Getenv("HARBOR_REPLICATION_ENDPOINT")
+	endpoint := "https://hub.docker.com"
+	return fmt.Sprintf(`
+	resource "harbor_registry" "main" {
+		provider_name = "docker-hub"
+		name = "docker-hub-test-rep-pol"
+		endpoint_url = "%s"
+	  }
+
+	  resource "harbor_replication" "pull" {
+		name  = "test_pull"
+		action = "pull"
+		registry_id = harbor_registry.main.registry_id
+		schedule = "%s"
+		dest_namespace = "nobody_cares"
+		dest_namespace_replace = "%d"
+		copy_by_chunk = "true"
+	  }
+	`, endpoint, scheduleType, destNamepace)
+}
