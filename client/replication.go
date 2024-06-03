@@ -22,6 +22,7 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 		Deletion:             d.Get("deletion").(bool),
 		DestNamespace:        d.Get("dest_namespace").(string),
 		DestNamespaceReplace: d.Get("dest_namespace_replace").(int),
+		CopyByChunk:          d.Get("copy_by_chunk").(bool),	
 		Speed:                d.Get("speed").(int),
 	}
 
