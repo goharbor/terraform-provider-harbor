@@ -80,25 +80,34 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 
 	lastSlashIndex := strings.LastIndex(d.Id(), "/")
 	projectImmutableTagRulePath := d.Id()[0:lastSlashIndex]
-	tagId, err := strconv.Atoi(d.Id()[lastSlashIndex+1:])
+	immutableTagRuleId, err := strconv.Atoi(d.Id()[lastSlashIndex+1:])
 	if err != nil {
 		return err
-	}
-	log.Printf("[DEBUG] Path to immutable tag rules: %+v\n", projectImmutableTagRulePath)
-
-	resp, _, _, err := apiClient.SendRequest("GET", projectImmutableTagRulePath, nil, 200)
-	if err != nil {
-		return fmt.Errorf("Resource not found %s", projectImmutableTagRulePath)
 	}
 
 	var immutableTagRuleModels []models.ImmutableTagRule
-	err = json.Unmarshal([]byte(resp), &immutableTagRuleModels)
-	if err != nil {
-		return err
+	page := 1
+	pageSize := 15
+	for {
+		resp, _, _, err := apiClient.SendRequest("GET", fmt.Sprintf("%s?page=%d&page_size=%d", projectImmutableTagRulePath, page, pageSize), nil, 200)
+		if err != nil {
+			return fmt.Errorf("Resource not found %s", projectImmutableTagRulePath)
+		}
+		var pageModels []models.ImmutableTagRule
+		err = json.Unmarshal([]byte(resp), &pageModels)
+		if err != nil {
+			return err
+		}
+		immutableTagRuleModels = append(immutableTagRuleModels, pageModels...)
+		if len(pageModels) < pageSize {
+			break
+		}
+		page++
 	}
+
 	for _, rule := range immutableTagRuleModels {
-		if rule.Id == tagId {
-			log.Printf("[DEBUG] found tag id %d", tagId)
+		if rule.Id == immutableTagRuleId {
+			log.Printf("[DEBUG] found tag id %d", immutableTagRuleId)
 			d.Set("disabled", rule.Disabled)
 			d.Set("project_id", strings.ReplaceAll(projectImmutableTagRulePath, models.PathImmutableTagRules, ""))
 
