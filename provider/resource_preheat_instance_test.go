@@ -19,7 +19,7 @@ func testAccCheckPreheatInstanceDestroy(s *terraform.State) error {
 			continue
 		}
 
-		resp, _, _, err := apiClient.SendRequest("GET", rs.Primary.ID, nil, 200)
+		resp, _, _, err := apiClient.SendRequest("GET", rs.Primary.ID, nil, 404)
 		if err != nil {
 			return fmt.Errorf("Resource was not deleted \n %s", resp)
 		}
