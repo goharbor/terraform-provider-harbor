@@ -157,6 +157,19 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
+	resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
+	if respCode == 404 && err != nil {
+		d.SetId("")
+		return fmt.Errorf("error getting system configuration %s", err)
+	}
+	var systemConfig models.ConfigBodyResponse
+	err = json.Unmarshal([]byte(resp), &systemConfig)
+	if err != nil {
+		return fmt.Errorf("error getting system configuration %s", err)
+	}
+	shortName := strings.TrimPrefix(robot.Name, systemConfig.RobotNamePrefix.Value)
+
+	d.Set("name", shortName)
 	d.Set("robot_id", strconv.Itoa(robot.ID))
 	d.Set("full_name", robot.Name)
 	d.Set("description", robot.Description)
