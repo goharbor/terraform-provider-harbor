@@ -167,7 +167,11 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return fmt.Errorf("error getting system configuration %s", err)
 	}
+
 	shortName := strings.TrimPrefix(robot.Name, systemConfig.RobotNamePrefix.Value)
+	if robot.Level == "project" {
+		shortName = strings.Split(shortName, "+")[1]
+	}
 
 	d.Set("name", shortName)
 	d.Set("robot_id", strconv.Itoa(robot.ID))
