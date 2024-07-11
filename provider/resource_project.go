@@ -65,6 +65,11 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"auto_sbom_generation": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"deployment_security": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -169,6 +174,11 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("deployment_security", deployment_security)
 	}
 
+	autoSbomGeneration, err := client.ParseBoolOrDefault(jsonData.Metadata.AutoSbomGeneration, false)
+	if err != nil {
+		return err
+	}
+
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", jsonData.ProjectID)
 	d.Set("registry_id", jsonData.RegistryID)
@@ -176,6 +186,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("vulnerability_scanning", vuln)
 	d.Set("enable_content_trust", trust)
 	d.Set("enable_content_trust_cosign", trustCosign)
+	d.Set("auto_sbom_generation", autoSbomGeneration)
 
 	cveAllowlist := make([]string, len(jsonData.CveAllowlist.Items))
 	for i, item := range jsonData.CveAllowlist.Items {
