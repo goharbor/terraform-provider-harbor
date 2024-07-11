@@ -3,6 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -42,10 +43,6 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  -1,
 			},
-			"deployment_security": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"cve_allowlist": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
@@ -68,7 +65,21 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
-		},
+			"deployment_security": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					v := val.(string)
+					allowedValues := []string{"none", "low", "medium", "high", "critical"}
+					for _, av := range allowedValues {
+						if v == av {
+							return
+						}
+					}
+					errs = append(errs, fmt.Errorf("%q must be one of [%s], got %s", key, strings.Join(allowedValues, ", "), v))
+					return
+				},
+			}},
 		Create: resourceProjectCreate,
 		Read:   resourceProjectRead,
 		Update: resourceProjectUpdate,
@@ -138,6 +149,24 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	public, err := client.ParseBoolOrDefault(jsonData.Metadata.Public, false)
 	if err != nil {
 		return err
+	}
+
+	preventVul, err := client.ParseBoolOrDefault(jsonData.Metadata.PreventVul, false)
+	if err != nil {
+		return err
+	}
+	deployment_security := jsonData.Metadata.Severity
+	preventVulUpdate := false
+	if deployment_security == "none" && preventVul {
+		preventVulUpdate = true
+	} else if deployment_security != "none" && !preventVul {
+		preventVulUpdate = true
+	}
+
+	if preventVulUpdate {
+		d.Set("deployment_security", "")
+	} else {
+		d.Set("deployment_security", deployment_security)
 	}
 
 	d.Set("name", jsonData.Name)
