@@ -60,7 +60,12 @@ func resourceVulnRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("Resource not found %s", d.Id())
 	}
 
-	d.Set("vulnerability_scan_policy", jsonData.Schedule.Type)
+	vulnerability_scan_policy := jsonData.Schedule.Type
+	if vulnerability_scan_policy == "Custom" {
+		vulnerability_scan_policy = jsonData.Schedule.Cron
+	}
+
+	d.Set("vulnerability_scan_policy", vulnerability_scan_policy)
 
 	return nil
 }
