@@ -28,6 +28,22 @@ For example, the {{ .SchemaMarkdown }} template can be used to replace manual sc
 - `robot_token_expiration` (Number) The amount of time in days a robot account will expire.
 - `scanner_skip_update_pulltime` (Boolean) Whether or not to skip update pull time for scanner.
 - `storage_per_project` (Number) Default quota space per project in GIB. Default is -1 (unlimited).
+- `audit_log_forward_endpoint` (String) The endpoint to forward audit logs to.
+- `skip_audit_log_database` (Boolean) Whether or not to skip audit log database.
+- `banner_message` (Block Set) (see [below for nested schema](#nestedblock--banner_message))
+
+<a id="nestedblock--banner_message"></a>
+
+### Nested Schema for `banner_message`
+
+### Required
+- `message` (String) The message to display in the banner.
+
+### Optional
+- `closable` (Boolean) Whether or not the banner message is closable.
+- `type` (String) The type of banner message. Can be `"info"`, `"warning"`, `"success"` or `"danger"`.
+- `from_date` (String) The date the banner message will start displaying. (Format: `MM/DD/YYYY`)
+- `to_date` (String) The date the banner message will stop displaying. (Format: `MM/DD/YYYY`)
 
 #### Notes
 `scanner_skip_update_pulltime` can only be used with harbor version v2.8.0 and above
