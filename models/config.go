@@ -50,6 +50,9 @@ type ConfigBodySystemPost struct {
 	RobotNamePrefix            string `json:"robot_name_prefix,omitempty"`
 	StoragePerProject          int    `json:"storage_per_project,omitempty"`
 	ScannerSkipUpdatePulltime  bool   `json:"scanner_skip_update_pulltime"`
+	AuditLogForwardEndpoint    string `json:"audit_log_forward_endpoint,omitempty"`
+	SkipAuditLogDatabase       bool   `json:"skip_audit_log_database"`
+	BannerMessage              string `json:"banner_message,omitempty"`
 }
 
 type ConfigBodyEmailPost struct {
@@ -246,4 +249,24 @@ type ConfigBodyResponse struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`
 	} `json:"scanner_skip_update_pulltime,omitempty"`
+	AuditLogForwardEndpoint struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"audit_log_forward_endpoint,omitempty"`
+	SkipAuditLogDatabase struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    bool `json:"value,omitempty"`
+	} `json:"skip_audit_log_database,omitempty"`
+	BannerMessage struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"banner_message,omitempty"`
+}
+
+type BannerMessage struct {
+	Closable bool   `json:"closable,omitempty"`
+	Message  string `json:"message,omitempty"`
+	Type     string `json:"type,omitempty"`
+	ToDate   string `json:"toDate,omitempty"`
+	FromDate string `json:"fromDate,omitempty"`
 }

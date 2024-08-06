@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/models"
@@ -14,6 +15,18 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 	if storage > 0 {
 		storage *= 1073741824 // GB to Byte
 	}
+
+	bannerMessage := ""
+	if v, ok := d.GetOk("banner_message"); ok {
+		bannerMessageList := v.([]interface{})
+		bannerMessageMap := bannerMessageList[0].(map[string]interface{})
+		closable := bannerMessageMap["closable"].(bool)
+		message := bannerMessageMap["message"].(string)
+		messageType := bannerMessageMap["type"].(string)
+		fromDate := bannerMessageMap["from_date"].(string)
+		toDate := bannerMessageMap["to_date"].(string)
+		bannerMessage = fmt.Sprintf("{\"closable\":%t,\"message\":\"%s\",\"type\":\"%s\",\"fromDate\":\"%s\",\"toDate\":\"%s\"}", closable, message, messageType, fromDate, toDate)
+	}
 	body = models.ConfigBodySystemPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
 		ReadOnly:                   d.Get("read_only").(bool),
@@ -22,6 +35,9 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 		QuotaPerProjectEnable:      true,
 		RobotNamePrefix:            d.Get("robot_name_prefix").(string),
 		StoragePerProject:          storage,
+		AuditLogForwardEndpoint:    d.Get("audit_log_forward_endpoint").(string),
+		SkipAuditLogDatabase:       d.Get("skip_audit_log_database").(bool),
+		BannerMessage:              bannerMessage,
 	}
 	log.Printf("[DEBUG] %+v\n ", body)
 	return body
