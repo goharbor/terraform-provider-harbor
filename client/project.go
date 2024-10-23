@@ -69,6 +69,9 @@ func expandCveAllowList(cveAllowlist []interface{}) models.CveAllowlistItems {
 
 func (client *Client) UpdateStorageQuota(d *schema.ResourceData) (err error) {
 	resp, _, _, err := client.SendRequest("GET", models.PathConfig, nil, 200)
+	if err != nil {
+		return err
+	}
 
 	var jsonData models.ConfigBodyResponse
 	err = json.Unmarshal([]byte(resp), &jsonData)
