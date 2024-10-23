@@ -40,9 +40,11 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 	client := &http.Client{}
 
 	b := new(bytes.Buffer)
-	err = json.NewEncoder(b).Encode(payload)
-	if err != nil {
-		return "", "", 0, err
+	if payload != nil {
+		err = json.NewEncoder(b).Encode(payload)
+		if err != nil {
+			return "", "", 0, err
+		}
 	}
 
 	if c.insecure == true {
