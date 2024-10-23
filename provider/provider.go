@@ -48,7 +48,6 @@ func Provider() *schema.Provider {
 
 		ResourcesMap: map[string]*schema.Resource{
 			"harbor_config_auth":            resourceConfigAuth(),
-			"harbor_config_email":           resourceConfigEmail(),
 			"harbor_config_system":          resourceConfigSystem(),
 			"harbor_config_security":        resourceConfigSecurity(),
 			"harbor_project":                resourceProject(),

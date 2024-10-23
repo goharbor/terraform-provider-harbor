@@ -89,21 +89,6 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
 	return body
 }
 
-func GetConfigEmail(d *schema.ResourceData) models.ConfigBodyEmailPost {
-	var body models.ConfigBodyEmailPost
-	body = models.ConfigBodyEmailPost{
-		EmailHost:     d.Get("email_host").(string),
-		EmailPort:     d.Get("email_port").(int),
-		EmailUsername: d.Get("email_username").(string),
-		EmailPassword: d.Get("email_password").(string),
-		EmailFrom:     d.Get("email_from").(string),
-		EmailSsl:      d.Get("email_ssl").(bool),
-		EmailInsecure: d.Get("email_insecure").(bool),
-	}
-	log.Printf("[DEBUG] %+v\n ", body)
-	return body
-}
-
 func days2mins(days int) int {
 	mins := days * 1440
 	return mins

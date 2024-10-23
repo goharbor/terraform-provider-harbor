@@ -55,17 +55,6 @@ type ConfigBodySystemPost struct {
 	BannerMessage              string `json:"banner_message,omitempty"`
 }
 
-type ConfigBodyEmailPost struct {
-	EmailHost     string `json:"email_host,omitempty"`
-	EmailPort     int    `json:"email_port,omitempty"`
-	EmailUsername string `json:"email_username,omitempty"`
-	EmailPassword string `json:"email_password,omitempty"`
-	EmailFrom     string `json:"email_from,omitempty"`
-	EmailSsl      bool   `json:"email_ssl"`
-	EmailInsecure bool   `json:"email_insecure"`
-	EmailIdentity string `json:"email_identity,omitempty"`
-}
-
 type ConfigBodyResponse struct {
 	OidcVerifyCert struct {
 		Editable bool `json:"editable,omitempty"`
@@ -87,10 +76,6 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"oidc_groups_claim,omitempty"`
-	EmailIdentity struct {
-		Editable bool   `json:"editable,omitempty"`
-		Value    string `json:"value,omitempty"`
-	} `json:"email_identity,omitempty"`
 	LdapGroupSearchFilter struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
@@ -177,10 +162,6 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"ldap_group_attribute_name,omitempty"`
-	EmailInsecure struct {
-		Editable bool `json:"editable,omitempty"`
-		Value    bool `json:"value,omitempty"`
-	} `json:"email_insecure,omitempty"`
 	LdapGroupAdminDn struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
@@ -189,10 +170,6 @@ type ConfigBodyResponse struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
 	} `json:"ldap_group_membership_attribute,omitempty"`
-	EmailUsername struct {
-		Editable bool   `json:"editable,omitempty"`
-		Value    string `json:"value,omitempty"`
-	} `json:"email_username,omitempty"`
 	OidcEndpoint struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
@@ -209,22 +186,6 @@ type ConfigBodyResponse struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    int  `json:"value,omitempty"`
 	} `json:"ldap_group_search_scope,omitempty"`
-	EmailSsl struct {
-		Editable bool `json:"editable,omitempty"`
-		Value    bool `json:"value,omitempty"`
-	} `json:"email_ssl,omitempty"`
-	EmailPort struct {
-		Editable bool `json:"editable,omitempty"`
-		Value    int  `json:"value,omitempty"`
-	} `json:"email_port,omitempty"`
-	EmailHost struct {
-		Editable bool   `json:"editable,omitempty"`
-		Value    string `json:"value,omitempty"`
-	} `json:"email_host,omitempty"`
-	EmailFrom struct {
-		Editable bool   `json:"editable,omitempty"`
-		Value    string `json:"value,omitempty"`
-	} `json:"email_from,omitempty"`
 	LdapGroupGID struct {
 		Editable bool   `json:"editable,omitempty"`
 		Value    string `json:"value,omitempty"`
