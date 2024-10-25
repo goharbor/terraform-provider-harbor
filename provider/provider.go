@@ -76,6 +76,7 @@ func Provider() *schema.Provider {
 			"harbor_robot_accounts":        dataRobotAccounts(),
 			"harbor_project_member_groups": dataProjectMemberGroups(),
 			"harbor_project_member_users":  dataProjectMemberUsers(),
+			"harbor_users":                 dataUsers(),
 		},
 
 		ConfigureFunc: providerConfigure,
