@@ -69,10 +69,13 @@ func Provider() *schema.Provider {
 			"harbor_immutable_tag_rule":     resourceImmutableTagRule(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"harbor_project":  dataProject(),
-			"harbor_projects": dataProjects(),
-			"harbor_registry": dataRegistry(),
-			"harbor_groups":   dataGroups(),
+			"harbor_project":               dataProject(),
+			"harbor_projects":              dataProjects(),
+			"harbor_registry":              dataRegistry(),
+			"harbor_groups":                dataGroups(),
+			"harbor_robot_accounts":        dataRobotAccounts(),
+			"harbor_project_member_groups": dataProjectMemberGroups(),
+			"harbor_project_member_users":  dataProjectMemberUsers(),
 		},
 
 		ConfigureFunc: providerConfigure,

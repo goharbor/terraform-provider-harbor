@@ -1,5 +1,7 @@
 package models
 
+var PathRobots = "/robots"
+
 type RobotBodyPermission struct {
 	Access    []RobotBodyAccess `json:"access,omitempty"`
 	Kind      string            `json:"kind,omitempty"`
