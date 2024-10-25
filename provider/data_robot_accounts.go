@@ -81,6 +81,9 @@ func dataRobotAccountsRead(d *schema.ResourceData, m interface{}) error {
 		robotsQueryPath = append(robotsQueryPath, "ProjectID="+strconv.Itoa(projectId))
 	}
 
+	robotNamePrefix := ""
+	robotNamePrefixFunc := getRobotNamePrefixFunc(apiClient, &robotNamePrefix)
+
 	robotAccountsData := make([]map[string]interface{}, 0)
 	for {
 		robotsPath := models.PathRobots + "?page=" + strconv.Itoa(page)
@@ -105,7 +108,7 @@ func dataRobotAccountsRead(d *schema.ResourceData, m interface{}) error {
 		}
 
 		for _, v := range jsonData {
-			if name == "" || v.Name == "robot$"+name {
+			if name == "" || name == getRobotShortName(v.Name, level, robotNamePrefixFunc) {
 				id := models.PathRobots + "/" + strconv.Itoa(v.ID)
 
 				robotAccountData := map[string]interface{}{
@@ -128,3 +131,41 @@ func dataRobotAccountsRead(d *schema.ResourceData, m interface{}) error {
 
 	return nil
 }
+
+func getRobotShortName(name string, level string, getPrefix stringGetterFunc) string {
+	if level == "project" {
+		return strings.Split(name, "+")[1]
+	}
+
+	prefix, err := getPrefix()
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+
+	return strings.TrimPrefix(name, prefix)
+}
+
+func getRobotNamePrefixFunc(apiClient *client.Client, robotNamePrefix *string) func() (string, error) {
+	return func() (prefix string, err error) {
+		if *robotNamePrefix != "" {
+			return *robotNamePrefix, nil
+		}
+
+		resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
+		if respCode == 404 && err != nil {
+			return "", err
+		}
+
+		var systemConfig models.ConfigBodyResponse
+		err = json.Unmarshal([]byte(resp), &systemConfig)
+		if err != nil {
+			return "", err
+		}
+
+		*robotNamePrefix = systemConfig.RobotNamePrefix.Value
+		return *robotNamePrefix, nil
+	}
+}
+
+type stringGetterFunc func() (string, error)
