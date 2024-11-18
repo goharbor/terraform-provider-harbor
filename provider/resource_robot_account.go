@@ -115,7 +115,7 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 
 	body := client.RobotBody(d)
 
-	resp, headers, _, err := apiClient.SendRequest("POST", "/robots", body, 201)
+	resp, headers, _, err := apiClient.SendRequest("POST", models.PathRobots, body, 201)
 	if err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 		secret := models.RobotSecret{
 			Secret: d.Get("secret").(string),
 		}
-		_, _, _, err := apiClient.SendRequest("PATCH", "/robots/"+robotID, secret, 200)
+		_, _, _, err := apiClient.SendRequest("PATCH", models.PathRobots+"/"+robotID, secret, 200)
 		if err != nil {
 			return err
 		}
