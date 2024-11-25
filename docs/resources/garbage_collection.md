@@ -24,7 +24,7 @@ resource "harbor_garbage_collection" "main" {
 
 ### Required
 
-- `schedule` (String) Sets the schedule how often the Garbage Collection will run.  Can be to `"hourly"`, `"daily"`, `"weekly"` or can be a custom cron string ie, `"5 4 * * *"` 
+- `schedule` (String) Sets the schedule how often the Garbage Collection will run.  Can be to `"hourly"`, `"daily"`, `"weekly"` or can be a custom cron string ie, `"0 5 4 * * *"` 
 
 ### Optional
 
