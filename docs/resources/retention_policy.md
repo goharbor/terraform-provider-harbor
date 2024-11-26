@@ -52,6 +52,8 @@ resource "harbor_retention_policy" "main" {
 
 ### Nested Schema for `rule`
 
+~> Multiple tags or repositories must be provided as a comma-separated list wrapped into curly brackets `{ }`. Otherwise, the value is interpreted as a single value.
+
 Optional:
 
 - `always_retain` (Boolean) retain always.
