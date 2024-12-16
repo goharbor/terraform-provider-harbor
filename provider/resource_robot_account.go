@@ -159,7 +159,7 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 
 	var shortName string
 	if robot.Level == "project" {
-		shortName = strings.Split(robot.Name, "+")[1]
+		shortName = strings.Split(robot.Name, robot.Permissions[0].Namespace+"+")[1]
 	} else {
 		resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
 		if respCode == 404 && err != nil {
