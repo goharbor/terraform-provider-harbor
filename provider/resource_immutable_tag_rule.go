@@ -70,7 +70,7 @@ func resourceImmutableTagRuleCreate(d *schema.ResourceData, m interface{}) error
 		return err
 	}
 
-	id, err = client.GetID(headers)
+	id, _ = client.GetID(headers)
 	d.SetId(id)
 	return resourceImmutableTagRuleRead(d, m)
 }
@@ -89,9 +89,12 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 	page := 1
 	pageSize := 15
 	for {
-		resp, _, _, err := apiClient.SendRequest("GET", fmt.Sprintf("%s?page=%d&page_size=%d", projectImmutableTagRulePath, page, pageSize), nil, 200)
-		if err != nil {
-			return fmt.Errorf("Resource not found %s", projectImmutableTagRulePath)
+		resp, _, respCode, err := apiClient.SendRequest("GET", fmt.Sprintf("%s?page=%d&page_size=%d", projectImmutableTagRulePath, page, pageSize), nil, 200)
+		if respCode == 404 && err != nil {
+			d.SetId("")
+			return nil
+		} else if err != nil {
+			return fmt.Errorf("resource not found %s / %s / %d", projectImmutableTagRulePath, err, respCode)
 		}
 		var pageModels []models.ImmutableTagRule
 		err = json.Unmarshal([]byte(resp), &pageModels)
@@ -129,7 +132,9 @@ func resourceImmutableTagRuleRead(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	return fmt.Errorf("Resource not found %s", d.Id())
+	log.Printf("[DEBUG] resource not found %s", d.Id())
+	d.SetId("")
+	return nil
 }
 
 func resourceImmutableTagRuleUpdate(d *schema.ResourceData, m interface{}) error {

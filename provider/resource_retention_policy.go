@@ -108,6 +108,9 @@ func resourceRetentionCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		project_id := strconv.Itoa(body.Scope.Ref)
 		resp, _, _, err := apiClient.SendRequest("GET", models.PathProjects+"/"+project_id, nil, 200)
+		if err != nil {
+			return err
+		}
 
 		var jsonData models.ProjectsBodyResponses
 		err = json.Unmarshal([]byte(resp), &jsonData)
@@ -115,13 +118,13 @@ func resourceRetentionCreate(d *schema.ResourceData, m interface{}) error {
 		if err != nil {
 			return err
 		}
-		_, headers, _, err = apiClient.SendRequest("PUT", models.PathRetentions+"/"+jsonData.Metadata.RetentionId, body, 200)
+		_, _, _, err = apiClient.SendRequest("PUT", models.PathRetentions+"/"+jsonData.Metadata.RetentionId, body, 200)
 		if err != nil {
 			return err
 		}
 		id = models.PathRetentions + "/" + jsonData.Metadata.RetentionId
 	} else {
-		id, err = client.GetID(headers)
+		id, _ = client.GetID(headers)
 	}
 
 	d.SetId(id)
@@ -132,8 +135,11 @@ func resourceRetentionRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	log.Printf("[DEBUG] Id: %+v\n", d.Id())
-	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if err != nil {
+	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	if respCode == 404 && err != nil {
+		d.SetId("")
+		return nil
+	} else if err != nil {
 		return err
 	}
 
@@ -181,10 +187,10 @@ func resourceRetentionDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	scope := d.Get("scope").(string)
-	project_id, err := strconv.Atoi(strings.ReplaceAll(scope, "/projects/", ""))
+	project_id, _ := strconv.Atoi(strings.ReplaceAll(scope, "/projects/", ""))
 
 	retention := d.Id()
-	retention_id, err := strconv.Atoi(strings.ReplaceAll(retention, "/retentions/", ""))
+	retention_id, _ := strconv.Atoi(strings.ReplaceAll(retention, "/retentions/", ""))
 
 	body := models.Retention{
 		Algorithm: "or",
@@ -202,7 +208,7 @@ func resourceRetentionDelete(d *schema.ResourceData, m interface{}) error {
 		Id:    retention_id,
 	}
 
-	_, _, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
