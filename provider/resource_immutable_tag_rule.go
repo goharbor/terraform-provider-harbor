@@ -65,13 +65,26 @@ func resourceImmutableTagRuleCreate(d *schema.ResourceData, m interface{}) error
 	body := client.GetImmutableTagRuleBody(d)
 	id := ""
 
-	_, headers, _, err := apiClient.SendRequest("POST", path, body, 201)
-	if err != nil {
+	_, headers, respCode, err := apiClient.SendRequest("POST", path, body, 201)
+	if respCode == 409 {
+		log.Printf("[DEBUG] resource already exists %s", path)
+		return err
+	} else if err != nil {
 		return err
 	}
 
 	id, err = client.GetID(headers)
 	d.SetId(id)
+
+	if d.Get("disabled").(bool) {
+		// if the rule is disabled, we need to do a second request to disable it as Harbor API doesn't allow to create a disabled rule
+		body := client.GetImmutableTagRuleBody(d)
+		_, _, _, err := apiClient.SendRequest("PUT", id, body, 200)
+		if err != nil {
+			return err
+		}
+	}
+
 	return resourceImmutableTagRuleRead(d, m)
 }
 
