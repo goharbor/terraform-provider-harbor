@@ -20,7 +20,7 @@ jobs:
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-      - uses: actions/setup-go@v5.2.0
+      - uses: actions/setup-go@v5.3.0
         with:
           go-version-file: tools/go.mod
       - name: GOCACHE
