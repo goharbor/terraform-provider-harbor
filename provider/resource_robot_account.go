@@ -72,7 +72,7 @@ func resourceRobotAccount() *schema.Resource {
 									"effect": {
 										Type:     schema.TypeString,
 										Optional: true,
-										Default:  "allow",
+										//Default:  "allow",
 									},
 								},
 							},
@@ -152,28 +152,33 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	robot, err := getRobot(d, apiClient)
+
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
 
 	var shortName string
-	if robot.Level == "project" {
-		shortName = strings.Split(robot.Name, robot.Permissions[0].Namespace+"+")[1]
+	if m.(*client.Client).GetRobotPrefix() != "" {
+		// if robot_prefix is set, we use it to get the short name
+		shortName = strings.TrimPrefix(robot.Name, m.(*client.Client).GetRobotPrefix())
 	} else {
-		resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
-		if respCode == 404 && err != nil {
-			d.SetId("")
-			return fmt.Errorf("error getting system configuration %s", err)
+		if robot.Level == "project" {
+			shortName = strings.Split(robot.Name, robot.Permissions[0].Namespace+"+")[1]
+		} else {
+			resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
+			if respCode == 404 && err != nil {
+				d.SetId("")
+				return fmt.Errorf("error getting system configuration (probably missing admin rights) %s, you can use robot_prefix to force the prefix", err)
+			}
+			var systemConfig models.ConfigBodyResponse
+			err = json.Unmarshal([]byte(resp), &systemConfig)
+			if err != nil {
+				return fmt.Errorf("error getting system configuration (probably missing admin rights) %s, you can use robot_prefix to force the prefix", err)
+			}
+			shortName = strings.TrimPrefix(robot.Name, systemConfig.RobotNamePrefix.Value)
 		}
-		var systemConfig models.ConfigBodyResponse
-		err = json.Unmarshal([]byte(resp), &systemConfig)
-		if err != nil {
-			return fmt.Errorf("error getting system configuration %s", err)
-		}
-		shortName = strings.TrimPrefix(robot.Name, systemConfig.RobotNamePrefix.Value)
 	}
-
 	d.Set("name", shortName)
 	d.Set("robot_id", strconv.Itoa(robot.ID))
 	d.Set("full_name", robot.Name)

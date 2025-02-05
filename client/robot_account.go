@@ -26,8 +26,11 @@ func RobotBody(d *schema.ResourceData) models.RobotBody {
 			access := models.RobotBodyAccess{
 				Action:   a.(map[string]interface{})["action"].(string),
 				Resource: a.(map[string]interface{})["resource"].(string),
-				Effect:   a.(map[string]interface{})["effect"].(string),
 			}
+			if a.(map[string]interface{})["effect"] != "" {
+				access.Effect = a.(map[string]interface{})["effect"].(string)
+			}
+
 			permission.Access = append(permission.Access, access)
 		}
 

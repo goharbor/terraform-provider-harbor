@@ -44,6 +44,10 @@ func Provider() *schema.Provider {
 				Optional: true,
 				Default:  2,
 			},
+			"robot_prefix": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -100,6 +104,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	bearerToken := d.Get("bearer_token").(string)
 	insecure := d.Get("insecure").(bool)
 	apiVersion := d.Get("api_version").(int)
+	robotPrefix := d.Get("robot_prefix").(string)
 
 	if strings.HasSuffix(url, "/") {
 		url = strings.Trim(url, "/")
@@ -111,5 +116,5 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		apiPath = "/api/v2.0"
 	}
 
-	return client.NewClient(url+apiPath, username, password, bearerToken, insecure), nil
+	return client.NewClient(url+apiPath, username, password, bearerToken, insecure, robotPrefix), nil
 }
