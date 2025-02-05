@@ -19,10 +19,11 @@ type Client struct {
 	bearerToken string
 	insecure    bool
 	httpClient  *http.Client
+	robotPrefix string
 }
 
 // NewClient creates common settings
-func NewClient(url string, username string, password string, bearerToken string, insecure bool) *Client {
+func NewClient(url string, username string, password string, bearerToken string, insecure bool, robotPrefix string) *Client {
 
 	return &Client{
 		url:         url,
@@ -31,6 +32,7 @@ func NewClient(url string, username string, password string, bearerToken string,
 		bearerToken: bearerToken,
 		insecure:    insecure,
 		httpClient:  &http.Client{},
+		robotPrefix: robotPrefix,
 	}
 }
 
@@ -114,4 +116,9 @@ func GetID(body string) (id string, err error) {
 	location = strings.Replace(location, "/v2.0", "", -1)
 
 	return location, nil
+}
+
+// get robotPrefix
+func (c *Client) GetRobotPrefix() string {
+	return c.robotPrefix
 }
