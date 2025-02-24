@@ -81,13 +81,13 @@ jobs:
       matrix:
         # list whatever Terraform versions here you would like to support
         terraform:
-          - '1.7.*'
           - '1.8.*'
           - '1.9.*'
+          - '1.10.*'
         harbor:
+          - '1.16.*' # harbor 2.12
           - '1.15.*' # harbor 2.11
           - '1.14.*' # harbor 2.10
-          - '1.13.*' # harbor 2.9
     steps:
 
     - name: Check out code into the Go module directory
