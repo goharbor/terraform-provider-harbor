@@ -188,20 +188,43 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("disable", robot.Disable)
 
 	// Set the permissions of the robot account in the Terraform state
+	tfPermissions := d.Get("permissions").(*schema.Set).List()
 	permissions := make([]map[string]interface{}, len(robot.Permissions))
 	for i, permission := range robot.Permissions {
 		permissionMap := make(map[string]interface{})
 		permissionMap["kind"] = permission.Kind
 		permissionMap["namespace"] = permission.Namespace
-		access := make([]map[string]interface{}, len(permission.Access))
-		for i, v := range permission.Access {
+
+		// Find matching tfvars permission by kind and namespace.
+		tfPerm, found := findTfPermission(tfPermissions, permission.Kind, permission.Namespace)
+		var tfAccessSet []interface{}
+		if found {
+			tfAccessSet = tfPerm["access"].(*schema.Set).List()
+		} else {
+			tfAccessSet = []interface{}{}
+		}
+
+		accessList := make([]map[string]interface{}, len(permission.Access))
+		for j, v := range permission.Access {
 			accessMap := make(map[string]interface{})
 			accessMap["action"] = v.Action
 			accessMap["resource"] = v.Resource
-			accessMap["effect"] = v.Effect
-			access[i] = accessMap
+
+			// Search for a matching access block in tfAccessSet.
+			if tfAccess, ok := findTfAccess(tfAccessSet, v.Action, v.Resource); ok {
+				// If explicitly set to "allow" in tfvars, enforce that.
+				if eff, exists := tfAccess["effect"]; exists && eff != "" {
+					accessMap["effect"] = eff
+				}
+			} else {
+				// If no matching tfvars block is found or API default is not "allow", use the API value if non-empty.
+				if v.Effect != "" && v.Effect != "allow" {
+					accessMap["effect"] = v.Effect
+				}
+			}
+			accessList[j] = accessMap
 		}
-		permissionMap["access"] = access
+		permissionMap["access"] = accessList
 		permissions[i] = permissionMap
 	}
 	d.Set("permissions", permissions)
@@ -261,4 +284,24 @@ func getRobot(d *schema.ResourceData, apiClient *client.Client) (models.RobotBod
 		return models.RobotBody{}, fmt.Errorf("resource not found %s", d.Id())
 	}
 	return jsonData, nil
+}
+
+func findTfPermission(tfPermissions []interface{}, kind, namespace string) (map[string]interface{}, bool) {
+	for _, item := range tfPermissions {
+		tfPerm := item.(map[string]interface{})
+		if tfPerm["kind"] == kind && tfPerm["namespace"] == namespace {
+			return tfPerm, true
+		}
+	}
+	return nil, false
+}
+
+func findTfAccess(tfAccesses []interface{}, action, resource string) (map[string]interface{}, bool) {
+	for _, item := range tfAccesses {
+		access := item.(map[string]interface{})
+		if access["action"] == action && access["resource"] == resource {
+			return access, true
+		}
+	}
+	return nil, false
 }
