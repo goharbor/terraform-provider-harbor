@@ -7,7 +7,6 @@
 
 Configure and manage Harbor with Terraform and [Pulumi](https://github.com/pulumiverse/pulumi-harbor).
 
-
 ## Usage
 [See the docs for usage information](./docs).
 
