@@ -26,8 +26,8 @@ func resourceGC() *schema.Resource {
 				Default:  1,
 				ValidateFunc: func(i interface{}, k string) (ws []string, errors []error) {
 					value := i.(int)
-					if value < 1 || value > 5 {
-						errors = append(errors, fmt.Errorf("GC workers must be between 1 and 5"))
+					if value < 1 || value > 10 {
+						errors = append(errors, fmt.Errorf("GC workers must be between 1 and 10"))
 					}
 					return
 				},
