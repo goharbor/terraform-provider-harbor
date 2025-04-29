@@ -159,13 +159,18 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	var shortName string
-	if m.(*client.Client).GetRobotPrefix() != "" {
-		// if robot_prefix is set, we use it to get the short name
-		shortName = strings.TrimPrefix(robot.Name, m.(*client.Client).GetRobotPrefix())
+
+	if robot.Level == "project" {
+		// if it's a project level robot account, we just need to split on the "+" char as it's not an allowed char in the project name and always the separator for robot project name
+		// eg : robot name = "robot$project123+robot123"
+		shortName = strings.Split(robot.Name, robot.Permissions[0].Namespace+"+")[1]
 	} else {
-		if robot.Level == "project" {
-			shortName = strings.Split(robot.Name, robot.Permissions[0].Namespace+"+")[1]
+		// if it's a system level robot account, we check if the robot_prefix is set
+		if m.(*client.Client).GetRobotPrefix() != "" {
+			// if robot_prefix is set, we use it to get the short name
+			shortName = strings.TrimPrefix(robot.Name, m.(*client.Client).GetRobotPrefix())
 		} else {
+			// if robot_prefix is not set, we need to get the system configuration to get the prefix
 			resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
 			if respCode == 404 && err != nil {
 				d.SetId("")
