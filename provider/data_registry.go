@@ -3,6 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strconv"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -49,7 +50,7 @@ func dataRegistry() *schema.Resource {
 func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	registryPath := models.PathRegistries + "?name=" + name
+	registryPath := models.PathRegistries + "?name=" + url.QueryEscape(name)
 	resp, _, _, err := apiClient.SendRequest("GET", registryPath, nil, 200)
 	if err != nil {
 		return err

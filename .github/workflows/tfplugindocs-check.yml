@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: actions/setup-go@v5.3.0
+      - uses: actions/setup-go@v5.4.0
         with:
           go-version-file: tools/go.mod
       - name: GOCACHE
         run: |
           echo "GOCACHE=$(go env GOCACHE)" >> $GITHUB_ENV
-      - uses: actions/cache@v4.2.2
+      - uses: actions/cache@v4.2.3
         continue-on-error: true
         timeout-minutes: 2
         with:
@@ -28,7 +28,7 @@ jobs:
           # https://github.com/actions/setup-go/issues/54
           path: ${{ env.GOCACHE }}
           key: ${{ runner.os }}-GOCACHE-${{ hashFiles('go.sum') }}-${{ hashFiles('internal/**') }}
-      - uses: actions/cache@v4.2.2
+      - uses: actions/cache@v4.2.3
         continue-on-error: true
         timeout-minutes: 2
         with:
