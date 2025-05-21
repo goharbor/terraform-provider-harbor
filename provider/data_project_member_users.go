@@ -49,7 +49,7 @@ func dataProjectMemberUsers() *schema.Resource {
 func dataProjectMemberUsersRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	projectId := checkProjectid(d.Get("project_id").(string))
+	projectId := client.CheckProjectid(d.Get("project_id").(string))
 	path := projectId + "/members"
 
 	page := 1
@@ -76,7 +76,7 @@ func dataProjectMemberUsersRead(d *schema.ResourceData, m interface{}) error {
 
 				projectMemberUserData := map[string]interface{}{
 					"id":         path + "/" + strconv.Itoa(v.ID),
-					"project_id": checkProjectid(strconv.Itoa(v.ProjectID)),
+					"project_id": client.CheckProjectid(strconv.Itoa(v.ProjectID)),
 					"user_name":  v.EntityName,
 					"role":       client.RoleTypeNumber(v.RoleID),
 				}
