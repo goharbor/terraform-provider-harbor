@@ -44,3 +44,4 @@ This Harbor Terrafrom provider was initially developed by BESTSELLER.
 ## License
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgoharbor%2Fterraform-provider-harbor.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgoharbor%2Fterraform-provider-harbor?ref=badge_large)
+
