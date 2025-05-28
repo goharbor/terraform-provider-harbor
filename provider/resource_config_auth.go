@@ -211,18 +211,14 @@ func oidcConflictsWith() []string {
 	return []string{"ldap_url",
 		"ldap_base_dn",
 		"ldap_uid",
-		"ldap_verify_cert",
 		"ldap_search_dn",
 		"ldap_search_password",
 		"ldap_filter",
 		"ldap_group_uid",
-		"ldap_scope",
 		"ldap_group_base_dn",
 		"ldap_group_filter",
 		"ldap_group_gid",
-		"ldap_group_admin_dn",
-		"ldap_group_membership",
-		"ldap_group_scope"}
+		"ldap_group_admin_dn"}
 }
 
 func oidcRequiredWith() []string {
