@@ -1,6 +1,8 @@
 package client
 
 import (
+	"strings"
+
 	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -72,4 +74,12 @@ func RoleType(role string) (x int) {
 		x = 5
 	}
 	return x
+}
+
+func CheckProjectid(id string) (projecid string) {
+	path := "/projects/"
+	if !strings.Contains(id, path) {
+		id = path + id
+	}
+	return id
 }

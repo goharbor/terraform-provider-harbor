@@ -59,7 +59,7 @@ func resourceImmutableTagRule() *schema.Resource {
 func resourceImmutableTagRuleCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	projectid := checkProjectid(d.Get("project_id").(string))
+	projectid := client.CheckProjectid(d.Get("project_id").(string))
 	path := projectid + models.PathImmutableTagRules
 
 	body := client.GetImmutableTagRuleBody(d)
