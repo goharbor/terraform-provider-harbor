@@ -29,7 +29,7 @@ resource "harbor_garbage_collection" "main" {
 ### Optional
 
 - `delete_untagged` (Boolean) Allow garbage collection on untagged artifacts.
-- `workers` (Number) Number of workers to run the garbage collection, value must be between 1 and 5.
+- `workers` (Number) Number of workers to run the garbage collection, value must be greater than or equal to one. Harbor limits the number of concurrent workers internally, setting this value higher than what Harbor supports will result in an error.
 
 ### Read-Only
 
