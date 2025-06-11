@@ -76,7 +76,7 @@ func resourceMembersGroup() *schema.Resource {
 
 func resourceMembersGroupCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := checkProjectid(d.Get("project_id").(string))
+	projectid := client.CheckProjectid(d.Get("project_id").(string))
 	path := projectid + "/members"
 
 	body := client.ProjectMembersGroupBody(d)
@@ -112,7 +112,7 @@ func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("resource not found %s", d.Id())
 	}
 	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
-	d.Set("project_id", checkProjectid(strconv.Itoa(jsonData.ProjectID)))
+	d.Set("project_id", strconv.Itoa(jsonData.ProjectID))
 	d.Set("group_name", jsonData.EntityName)
 	return nil
 }
