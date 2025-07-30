@@ -52,7 +52,7 @@ type ConfigBodySystemPost struct {
 	ScannerSkipUpdatePulltime  bool   `json:"scanner_skip_update_pulltime"`
 	AuditLogForwardEndpoint    string `json:"audit_log_forward_endpoint,omitempty"`
 	SkipAuditLogDatabase       bool   `json:"skip_audit_log_database"`
-	BannerMessage              string `json:"banner_message,omitempty"`
+	BannerMessage              string `json:"banner_message"`
 }
 
 type ConfigBodyResponse struct {
