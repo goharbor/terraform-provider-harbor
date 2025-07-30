@@ -101,15 +101,6 @@ func resourceRobotAccount() *schema.Resource {
 	}
 }
 
-func checkProjectid(id string) (projecid string) {
-	path := "/projects/"
-	if !strings.Contains(id, path) {
-		id = path + id
-	}
-	return id
-
-}
-
 func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 

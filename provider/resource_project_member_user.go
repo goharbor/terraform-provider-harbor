@@ -55,7 +55,7 @@ func resourceMembersUser() *schema.Resource {
 
 func resourceMembersUserCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	projectid := checkProjectid(d.Get("project_id").(string))
+	projectid := client.CheckProjectid(d.Get("project_id").(string))
 	path := projectid + "/members"
 
 	body := client.ProjectMembersUserBody(d)
@@ -91,7 +91,7 @@ func resourceMembersUserRead(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("resource not found %s", d.Id())
 	}
 	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
-	d.Set("project_id", checkProjectid(strconv.Itoa(jsonData.ProjectID)))
+	d.Set("project_id", client.CheckProjectid(strconv.Itoa(jsonData.ProjectID)))
 	d.Set("user_name", jsonData.EntityName)
 
 	return nil
