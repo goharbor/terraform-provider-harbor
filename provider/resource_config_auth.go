@@ -81,6 +81,12 @@ func resourceConfigAuth() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: oidcConflictsWith(),
 			},
+			"oidc_logout": {
+				Type:          schema.TypeBool,
+				Optional:      true,
+				Default:       false,
+				ConflictsWith: oidcConflictsWith(),
+			},
 			"ldap_url": {
 				Type:          schema.TypeString,
 				Optional:      true,

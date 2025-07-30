@@ -69,6 +69,7 @@ The following are required if `auth_mode` is `oidc_auth`
 - `oidc_group_filter` (String) The OIDC group filter to filter which groups could be onboarded to Harbor.
 - `oidc_groups_claim` (String) The name of the claim in the token whose values is the list of group names.
 - `oidc_user_claim` (String) Default is `name`
+- `oidc_logout` (Boolean) Set to `true` if you want to enable OIDC Session Logout (Default: `false`) can only be used with Harbor version v2.13 and above
 
 ### Required, LDAP
 

@@ -62,6 +62,7 @@ func GetConfigAuth(d *schema.ResourceData) models.ConfigBodyAuthPost {
 			OidcScope:        d.Get("oidc_scope").(string),
 			OidcVerifyCert:   d.Get("oidc_verify_cert").(bool),
 			OidcAutoOnboard:  d.Get("oidc_auto_onboard").(bool),
+			OidcLogout:       d.Get("oidc_logout").(bool),
 			OidcUserClaim:    d.Get("oidc_user_claim").(string),
 			OidcAdminGroup:   d.Get("oidc_admin_group").(string),
 		}
@@ -141,6 +142,7 @@ func SetAuthValues(d *schema.ResourceData, resp string) error {
 		d.Set("oidc_scope", jsonData.OidcScope.Value)
 		d.Set("oidc_verify_cert", jsonData.OidcVerifyCert.Value)
 		d.Set("oidc_auto_onboard", jsonData.OidcAutoOnboard.Value)
+		d.Set("oidc_logout", jsonData.OidcLogout.Value)
 		d.Set("oidc_user_claim", jsonData.OidcUserClaim.Value)
 		d.Set("oidc_admin_group", jsonData.OidcAdminGroup.Value)
 	case "ldap_auth", "ldap":
