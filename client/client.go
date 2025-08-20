@@ -103,18 +103,21 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 	}
 
 	if resp.StatusCode == http.StatusForbidden {
-		csrfheaders, err := extractCsrfHeaders(resp.Header)
-		if err != nil {
-			return "", "", resp.StatusCode, err
-		}
-		resp, err = c.sendRequestWithHeaders(method, path, payload, csrfheaders)
-		if err != nil {
-			if resp != nil {
+		if c.sessionId != "" {
+			csrfheaders, err := extractCsrfHeaders(resp.Header)
+			if err != nil {
 				return "", "", resp.StatusCode, err
-			} else {
-				return "", "", http.StatusBadGateway, err
+			}
+			resp, err = c.sendRequestWithHeaders(method, path, payload, csrfheaders)
+			if err != nil {
+				if resp != nil {
+					return "", "", resp.StatusCode, err
+				} else {
+					return "", "", http.StatusBadGateway, err
+				}
 			}
 		}
+		return "", "", resp.StatusCode, fmt.Errorf("[ERROR] forbidden: status=%s, code=%d \nIf you are using a robot account, this is likely due to RBAC limitations. See: https://github.com/goharbor/community/blob/main/proposals/new/Robot-Account-Expand.md", resp.Status, resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)

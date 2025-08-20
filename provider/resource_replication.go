@@ -229,7 +229,6 @@ func resourceReplicationUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		_, _, _, err := apiClient.SendRequest("POST", models.PathExecution, body, 201)
-
 		if err != nil {
 			return err
 		}
@@ -243,6 +242,8 @@ func resourceReplicationDelete(d *schema.ResourceData, m interface{}) error {
 
 	_, _, respCode, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if respCode != 404 && err != nil { // We can't delete something that doesn't exist. Hence the 404-check
+		return err
+	} else if err != nil {
 		return err
 	}
 	return nil

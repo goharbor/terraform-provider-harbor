@@ -103,7 +103,7 @@ func resourceMembersGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	} else if err != nil {
-		return fmt.Errorf("resource not found %s", d.Id())
+		return err
 	}
 
 	var jsonData models.ProjectMembersBodyResponses

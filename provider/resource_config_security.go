@@ -61,6 +61,8 @@ func resourceConfigSecurityRead(d *schema.ResourceData, m interface{}) error {
 	if respCode == 404 && err != nil {
 		d.SetId("")
 		return fmt.Errorf("resource not found %s", models.PathSystemCVEAllowList)
+	} else if err != nil {
+		return err
 	}
 
 	var jsonData models.SystemCveAllowListBodyPost
