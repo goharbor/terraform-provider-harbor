@@ -197,7 +197,9 @@ func resourceConfigAuthRead(d *schema.ResourceData, m interface{}) error {
 	resp, _, respCode, err := apiClient.SendRequest("GET", models.PathConfig, nil, 200)
 	if respCode == 404 && err != nil {
 		d.SetId("")
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return fmt.Errorf("resource not found %s", d.Id())
+	} else if err != nil {
+		return err
 	}
 
 	err = client.SetAuthValues(d, resp)

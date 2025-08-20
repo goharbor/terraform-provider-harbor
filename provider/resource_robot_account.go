@@ -175,7 +175,10 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 			if respCode == 404 && err != nil {
 				d.SetId("")
 				return fmt.Errorf("error getting system configuration (probably missing admin rights) %s, you can use robot_prefix to force the prefix", err)
+			} else if err != nil {
+				return err
 			}
+
 			var systemConfig models.ConfigBodyResponse
 			err = json.Unmarshal([]byte(resp), &systemConfig)
 			if err != nil {

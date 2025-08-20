@@ -102,8 +102,10 @@ func resourceTasksUpdate(d *schema.ResourceData, m interface{}) error {
 		},
 	}
 
-	apiClient.SendRequest("PUT", pathVuln, body, 0)
-
+	_, _, _, err := apiClient.SendRequest("PUT", pathVuln, body, 0)
+	if err != nil {
+		return err
+	}
 	return resourceTasksRead(d, m)
 }
 
@@ -114,7 +116,10 @@ func resourceTasksDelete(d *schema.ResourceData, m interface{}) error {
 		Schedule: cron{Cron: ""},
 	}
 
-	apiClient.SendRequest("PUT", pathVuln, body, 0)
+	_, _, _, err := apiClient.SendRequest("PUT", pathVuln, body, 0)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

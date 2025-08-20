@@ -92,7 +92,7 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	} else if err != nil {
-		return fmt.Errorf("resource not found %s", d.Id())
+		return err
 	}
 
 	var jsonData models.RegistryBody
@@ -133,6 +133,8 @@ func resourceRegistryDelete(d *schema.ResourceData, m interface{}) error {
 
 	_, _, respCode, err := apiClient.SendRequest("DELETE", d.Id(), nil, 200)
 	if respCode != 404 && err != nil { // We can't delete something that doesn't exist. Hence the 404-check
+		return err
+	} else if err != nil {
 		return err
 	}
 	return nil

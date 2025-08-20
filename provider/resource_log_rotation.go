@@ -65,7 +65,10 @@ func resourcePurgeAuditRead(d *schema.ResourceData, m interface{}) error {
 	if respCode == 404 && err != nil {
 		d.SetId("")
 		return fmt.Errorf("resource not found %s", d.Id())
+	} else if err != nil {
+		return err
 	}
+
 	if len(resp) == 0 {
 		d.SetId("")
 		return nil
@@ -122,7 +125,7 @@ func validateIncludeOperations(v interface{}, k string) (warns []string, errs []
 	for _, op := range ops {
 		op = strings.TrimSpace(op)
 		if !containsString(validValues, op) {
-			errs = append(errs, fmt.Errorf("Invalid value %q in %q. Valid values are: create, pull, delete", op, k))
+			errs = append(errs, fmt.Errorf("invalid value %q in %q. Valid values are: create, pull, delete", op, k))
 		}
 	}
 
