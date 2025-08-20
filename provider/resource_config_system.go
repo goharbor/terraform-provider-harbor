@@ -131,6 +131,8 @@ func resourceConfigSystemRead(d *schema.ResourceData, m interface{}) error {
 	if respCode == 404 && err != nil {
 		d.SetId("")
 		return fmt.Errorf("error getting system configuration %s", err)
+	} else if err != nil {
+		return err
 	}
 
 	var jsonData models.ConfigBodyResponse

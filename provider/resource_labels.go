@@ -53,7 +53,7 @@ func resourceLabelCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	id, err := client.GetID(headers)
+	id, _ := client.GetID(headers)
 	d.SetId(id)
 	return resourceLabelRead(d, m)
 }
@@ -66,13 +66,13 @@ func resourceLabelRead(d *schema.ResourceData, m interface{}) error {
 		d.SetId("")
 		return nil
 	} else if err != nil {
-		return fmt.Errorf("resource not found %s", d.Id())
+		return err
 	}
 
 	var jsonData models.Labels
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return fmt.Errorf("Resource not found %s", d.Id())
+		return fmt.Errorf("resource not found %s", d.Id())
 	}
 
 	d.Set("name", jsonData.Name)
