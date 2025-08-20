@@ -12,6 +12,7 @@ type JobParameters struct {
 	DeleteUntagged     bool   `json:"delete_untagged,omitempty"`
 	AuditRetentionHour int    `json:"audit_retention_hour,omitempty"`
 	IncludeOperations  string `json:"include_operations,omitempty"`
+	IncludeEventTypes  string `json:"include_event_types,omitempty"`
 	Workers            int    `json:"workers,omitempty"`
 }
 
@@ -32,6 +33,7 @@ type SystemBody struct {
 		DeleteUntagged     bool   `json:"delete_untagged,omitempty"`
 		AuditRetentionHour int    `json:"audit_retention_hour,omitempty"`
 		IncludeOperations  string `json:"include_operations,omitempty"`
+		IncludeEventTypes  string `json:"include_event_types,omitempty"`
 		Workers            int    `json:"workers,omitempty"`
 		AdditionalProp1    bool   `json:"additionalProp1,omitempty"`
 		AdditionalProp2    bool   `json:"additionalProp2,omitempty"`

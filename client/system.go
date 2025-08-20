@@ -31,6 +31,7 @@ func GetSystemBoby(d *schema.ResourceData, scheduleType string) models.SystemBod
 	} else if scheduleType == "purgeaudit" {
 		body.Parameters.AuditRetentionHour = d.Get("audit_retention_hour").(int)
 		body.Parameters.IncludeOperations = d.Get("include_operations").(string)
+		body.Parameters.IncludeEventTypes = d.Get("include_event_types").(string)
 	}
 
 	return body

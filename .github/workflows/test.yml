@@ -81,13 +81,13 @@ jobs:
       matrix:
         # list whatever Terraform versions here you would like to support
         terraform:
-          - '1.8.*'
-          - '1.9.*'
+          - '1.12.*'
+          - '1.11.*'
           - '1.10.*'
         harbor:
+          - '1.17.*' # harbor 2.13
           - '1.16.*' # harbor 2.12
           - '1.15.*' # harbor 2.11
-          - '1.14.*' # harbor 2.10
     steps:
 
     - name: Check out code into the Go module directory
@@ -120,6 +120,11 @@ jobs:
           --set expose.ingress.hosts.core="harbor.local" \
           --set expose.ingress.hosts.notary="harbor.local" \
           harbor/harbor --version ${{ matrix.harbor }}
+
+        # get harbor app version
+        helm pull harbor/harbor --version ${{ matrix.harbor }} --untar --untardir helm
+        HARBOR_APP_VERSION=$(cat helm/harbor/Chart.yaml | grep appVersion: | awk '{print $2}')
+        echo "HARBOR_APP_VERSION=${HARBOR_APP_VERSION}" >> $GITHUB_ENV
 
     - name: Set /etc/hosts
       run: |
@@ -162,4 +167,7 @@ jobs:
     - name: TF acceptance tests
       timeout-minutes: 10
       run: |
-       go test -v -cover -timeout 30m ./provider/
+        export HARBOR_VERSION=${{ matrix.harbor }}
+        export TERRAFORM_VERSION=${{ matrix.terraform }}
+        export HARBOR_APP_VERSION=${{ env.HARBOR_APP_VERSION }}
+        go test -v -cover -timeout 30m ./provider/

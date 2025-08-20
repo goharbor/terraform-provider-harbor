@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -23,7 +24,12 @@ func resourcePurgeAudit() *schema.Resource {
 			},
 			"include_operations": {
 				Type:         schema.TypeString,
-				Required:     true,
+				Optional:     true,
+				ValidateFunc: validateIncludeOperations,
+			},
+			"include_event_types": {
+				Type:         schema.TypeString,
+				Optional:     true,
 				ValidateFunc: validateIncludeOperations,
 			},
 		},
@@ -31,6 +37,14 @@ func resourcePurgeAudit() *schema.Resource {
 		Read:   resourcePurgeAuditRead,
 		Update: resourcePurgeAuditUpdate,
 		Delete: resourcePurgeAuditDelete,
+		CustomizeDiff: func(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+			ops := d.Get("include_operations")
+			events := d.Get("include_event_types")
+			if ops == "" && events == "" {
+				return fmt.Errorf("at least one of 'include_operations' (harbor < 2.13) or 'include_event_types' (harbor >= 2.13) must be set")
+			}
+			return nil
+		},
 	}
 }
 
@@ -79,7 +93,12 @@ func resourcePurgeAuditRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("schedule", jsonData.Schedule.Type)
 	}
 	d.Set("audit_retention_hour", jsonJobParameters.AuditRetentionHour)
-	d.Set("include_operations", jsonJobParameters.IncludeOperations)
+	if jsonJobParameters.IncludeOperations != "" {
+		d.Set("include_operations", jsonJobParameters.IncludeOperations)
+	}
+	if jsonJobParameters.IncludeEventTypes != "" {
+		d.Set("include_event_types", jsonJobParameters.IncludeEventTypes)
+	}
 	return nil
 }
 
