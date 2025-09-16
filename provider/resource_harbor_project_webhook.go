@@ -56,6 +56,11 @@ func resourceProjectWebhook() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"payload_format": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "Default",
+			},
 		},
 		Create: resourceProjectWebhookCreate,
 		Read:   resourceProjectWebhookRead,
@@ -106,6 +111,7 @@ func resourceProjectWebhookRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("address", jsonData.Targets[0].Address)
 	d.Set("auth_header", jsonData.Targets[0].AuthHeader)
 	d.Set("skip_cert_verify", jsonData.Targets[0].SkipCertVerify)
+	d.Set("payload_format", jsonData.Targets[0].PayloadFormat)
 
 	return nil
 }
