@@ -19,6 +19,7 @@ func ProjectWebhookBody(d *schema.ResourceData) models.ProjectWebhook {
 		AuthHeader:     d.Get("auth_header").(string),
 		SkipCertVerify: d.Get("skip_cert_verify").(bool),
 		Address:        d.Get("address").(string),
+		PayloadFormat:  d.Get("payload_format").(string),
 	}
 
 	body.Targets = append(body.Targets, targets)
