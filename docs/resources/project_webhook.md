@@ -66,7 +66,7 @@ resource "harbor_project_webhook" "main" {
 - `description` (String) A description of the webhook.
 - `enabled` (Boolean) To enable / disable the webhook. Default `true`.
 - `skip_cert_verify` (Boolean) checks the for validate SSL certificate.
-- `payload_format` (String) Payload format sent by the webhook. Values are `Default` or `CloudEvents`. Default to `Default`.
+- `payload_format` (String) Payload format sent by the webhook. Values are `Default` or `CloudEvents`.
 
 ### Read-Only
 
