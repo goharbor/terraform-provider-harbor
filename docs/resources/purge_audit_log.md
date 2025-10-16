@@ -25,8 +25,8 @@ resource "harbor_purge_audit_log" "main" {
 ### Required
 
 - `audit_retention_hour` (Number) To configure how long audit logs should be kept. For example, if you set this to 24 Harbor will only purge audit logs that are 24 or more hours old.
-- `include_operations` (String) Valid values are `create` `delete` `pull`, thoses values can be comma separated. When Create, Delete, or Pull is set, Harbor will include audit logs for those operations in the purge. (starting with Harbor 2.13 this parameter has been replaced by include_event_types)
-- `include_event_types` (String) Valid values are `push`, `pull`, `delete`, those values can be comma separated. When Push, Pull, or Delete is set, Harbor will include audit logs for those events in the purge (minimal version Harbor 2.13).
+- `include_operations` (String) Valid values are `create`, `delete`, `pull`, those values can be comma separated. When Create, Delete, or Pull is set, Harbor will include audit logs for those operations in the purge. (Harbor < 2.13, deprecated in favor of `include_event_types`)
+- `include_event_types` (String) Valid values are `create`, `push`, `pull`, `delete`, `create_artifact`, `delete_artifact`, `pull_artifact`, `other`, those values can be comma separated. Harbor will include audit logs for those events in the purge (minimal version Harbor 2.13).
 - `schedule` (String) Sets the schedule how often the Garbage Collection will run.  Can be to `"Hourly"`, `"Daily"`, `"Weekly"` or can be a custom cron string ie, `"5 4 * * *"` 
 
 ### Read-Only

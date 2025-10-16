@@ -31,7 +31,7 @@ func TestAccPurgeAuditUpdate(t *testing.T) {
 			testAccCheckResourceExists(resourcePurgeAuditMain),
 			resource.TestCheckResourceAttr(resourcePurgeAuditMain, "schedule", "Daily"),
 			resource.TestCheckResourceAttr(resourcePurgeAuditMain, "audit_retention_hour", "24"),
-			resource.TestCheckResourceAttr(resourcePurgeAuditMain, "include_event_types", "create,pull"),
+			resource.TestCheckResourceAttr(resourcePurgeAuditMain, "include_event_types", "push,pull"),
 		)
 	}
 
@@ -82,7 +82,7 @@ func testAccCheckPurgeAuditEventTypes() string {
     resource "harbor_purge_audit_log" "main" {
         schedule              = "Daily"
         audit_retention_hour  = 24
-        include_event_types   = "create,pull"
+        include_event_types   = "push,pull"
     }
     `
 }

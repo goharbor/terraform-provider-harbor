@@ -30,7 +30,7 @@ func resourcePurgeAudit() *schema.Resource {
 			"include_event_types": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validateIncludeOperations,
+				ValidateFunc: validateIncludeEventTypes,
 			},
 		},
 		Create: resourcePurgeAuditCreate,
@@ -139,4 +139,19 @@ func containsString(arr []string, value string) bool {
 		}
 	}
 	return false
+}
+
+func validateIncludeEventTypes(v interface{}, k string) (warns []string, errs []error) {
+	includeEventTypes := v.(string)
+	validValues := []string{"create", "push", "pull", "delete", "create_artifact", "delete_artifact", "pull_artifact", "other"}
+
+	ops := strings.Split(includeEventTypes, ",")
+	for _, op := range ops {
+		op = strings.TrimSpace(op)
+		if !containsString(validValues, op) {
+			errs = append(errs, fmt.Errorf("invalid value %q in %q. Valid values are: create, push, pull, delete, create_artifact, delete_artifact, pull_artifact, other", op, k))
+		}
+	}
+
+	return warns, errs
 }
