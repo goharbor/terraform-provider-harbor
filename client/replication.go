@@ -15,15 +15,16 @@ func GetReplicationBody(d *schema.ResourceData) models.ReplicationBody {
 	schedule := d.Get("schedule").(string)
 
 	body := models.ReplicationBody{
-		Name:                 d.Get("name").(string),
-		Description:          d.Get("description").(string),
-		Override:             d.Get("override").(bool),
-		Enabled:              d.Get("enabled").(bool),
-		Deletion:             d.Get("deletion").(bool),
-		DestNamespace:        d.Get("dest_namespace").(string),
-		DestNamespaceReplace: d.Get("dest_namespace_replace").(int),
-		CopyByChunk:          d.Get("copy_by_chunk").(bool),	
-		Speed:                d.Get("speed").(int),
+		Name:                    d.Get("name").(string),
+		Description:             d.Get("description").(string),
+		Override:                d.Get("override").(bool),
+		Enabled:                 d.Get("enabled").(bool),
+		Deletion:                d.Get("deletion").(bool),
+		DestNamespace:           d.Get("dest_namespace").(string),
+		DestNamespaceReplace:    d.Get("dest_namespace_replace").(int),
+		CopyByChunk:             d.Get("copy_by_chunk").(bool),
+		SingleActiveReplication: d.Get("single_active_replication").(bool),
+		Speed:                   d.Get("speed").(int),
 	}
 
 	if action == "push" {
