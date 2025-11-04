@@ -25,6 +25,7 @@ type ProjectsBodyPost struct {
 		Public                   string `json:"public,omitempty"`
 		PreventVul               string `json:"prevent_vul,omitempty"`
 		AutoSbomGeneration       string `json:"auto_sbom_generation,omitempty"`
+		ProxySpeedKb             string `json:"proxy_speed_kb,omitempty"`
 	} `json:"metadata,omitempty"`
 }
 
@@ -60,6 +61,7 @@ type ProjectsBodyResponses struct {
 		PreventVul               string `json:"prevent_vul"`
 		RetentionId              string `json:"retention_id"`
 		AutoSbomGeneration       string `json:"auto_sbom_generation,omitempty"`
+		ProxySpeedKb             string `json:"proxy_speed_kb,omitempty"`
 	} `json:"metadata"`
 }
 

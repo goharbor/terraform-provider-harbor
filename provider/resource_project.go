@@ -3,6 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
@@ -84,7 +85,13 @@ func resourceProject() *schema.Resource {
 					errs = append(errs, fmt.Errorf("%q must be one of [%s], got %s", key, strings.Join(allowedValues, ", "), v))
 					return
 				},
-			}},
+			},
+			"proxy_speed_kb": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  -1,
+			},
+		},
 		Create: resourceProjectCreate,
 		Read:   resourceProjectRead,
 		Update: resourceProjectUpdate,
@@ -95,9 +102,22 @@ func resourceProject() *schema.Resource {
 	}
 }
 
+func validateProjectProxy(d *schema.ResourceData) error {
+	speed := d.Get("proxy_speed_kb").(int)
+	registryID := d.Get("registry_id").(int)
+	if speed != -1 && registryID == 0 {
+		return fmt.Errorf("'proxy_speed_kb' can only be used when 'registry_id' is set (proxy project)")
+	}
+	return nil
+}
+
 func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.ProjectBody(d)
+
+	if err := validateProjectProxy(d); err != nil {
+		return err
+	}
 
 	_, headers, _, err := apiClient.SendRequest("POST", models.PathProjects, body, 201)
 	if err != nil {
@@ -179,6 +199,14 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	proxySpeedKb := -1
+	if jsonData.Metadata.ProxySpeedKb != "" {
+		proxySpeedKb, err = strconv.Atoi(jsonData.Metadata.ProxySpeedKb)
+		if err != nil {
+			return err
+		}
+	}
+
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", jsonData.ProjectID)
 	d.Set("registry_id", jsonData.RegistryID)
@@ -187,6 +215,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("enable_content_trust", trust)
 	d.Set("enable_content_trust_cosign", trustCosign)
 	d.Set("auto_sbom_generation", autoSbomGeneration)
+	d.Set("proxy_speed_kb", proxySpeedKb)
 
 	cveAllowlist := make([]string, len(jsonData.CveAllowlist.Items))
 	for i, item := range jsonData.CveAllowlist.Items {
@@ -200,6 +229,10 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	body := client.ProjectBody(d)
+
+	if err := validateProjectProxy(d); err != nil {
+		return err
+	}
 
 	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
