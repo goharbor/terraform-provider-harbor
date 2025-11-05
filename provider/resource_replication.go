@@ -70,6 +70,11 @@ func resourceReplication() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"single_active_replication": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"filters": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -207,6 +212,7 @@ func resourceReplicationRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("dest_namespace", jsonDataReplication.DestNamespace)
 	d.Set("dest_namespace_replace", jsonDataReplication.DestNamespaceReplace)
 	d.Set("copy_by_chunk", jsonDataReplication.CopyByChunk)
+	d.Set("single_active_replication", jsonDataReplication.SingleActiveReplication)
 
 	return nil
 }
