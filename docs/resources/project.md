@@ -54,10 +54,13 @@ resource "harbor_registry" "docker" {
 - `enable_content_trust_cosign` (Boolean) Enables Content Trust Cosign for project. When enabled it queries Cosign. (Default: `false`)
 - `force_destroy` (Boolean) A boolean that indicates all repositories should be deleted from the project so that the project can be destroyed without error. These repositories are *not* recoverable.
 - `public` (Boolean) The project will be public accessibility.(Default: `false`)
-- `registry_id` (Number) To enable project as Proxy Cache.
 - `storage_quota` (Number) The storage quota of the project in GB's.
 - `vulnerability_scanning` (Boolean) Images will be scanned for vulnerabilities when push to harbor. (Default: `true`)
 - `auto_sbom_generation` (Boolean) Automatically generate SBOM for images pushed to this project. (Default: `false`) can only be used with Harbor version v2.11.0 and above
+
+### Specific for Proxy Project
+- `registry_id` (Number) To enable project as Proxy Cache.
+- `proxy_speed_kb` (Number) Proxy max speed KB (Default: `-1`)
 
 ### Read-Only
 
