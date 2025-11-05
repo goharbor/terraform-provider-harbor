@@ -16,14 +16,14 @@ Configure and manage Harbor with Terraform and [Pulumi](https://github.com/pulum
 Our acceptance tests are run against specific versions of Harbor and Terraform to ensure compatibility.
 For the latest version of the provider, we ran the tests against the following versions of Harbor and Terraform:
 ### Harbor Versions
-- `2.11`
 - `2.12`
 - `2.13`
+- `2.14`
 
 ### Terraform Versions
-- `1.10`
 - `1.11`
 - `1.12`
+- `1.13`
 
 Please note that while we strive to maintain compatibility with these versions, we recommend always using the latest versions of Harbor and Terraform for the best experience.
 
