@@ -117,6 +117,9 @@ func (c *Client) SendRequest(method string, path string, payload interface{}, st
 				}
 			}
 		}
+	}
+
+	if resp.StatusCode == http.StatusForbidden {
 		return "", "", resp.StatusCode, fmt.Errorf("[ERROR] forbidden: status=%s, code=%d \nIf you are using a robot account, this is likely due to RBAC limitations. See: https://github.com/goharbor/community/blob/main/proposals/new/Robot-Account-Expand.md", resp.Status, resp.StatusCode)
 	}
 
