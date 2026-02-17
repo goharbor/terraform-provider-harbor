@@ -131,16 +131,7 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if d.Get("secret").(string) != "" {
-		robotID := strconv.Itoa(jsonData.ID)
-		secret := models.RobotSecret{
-			Secret: d.Get("secret").(string),
-		}
-		_, _, _, err := apiClient.SendRequest("PATCH", models.PathRobots+"/"+robotID, secret, 200)
-		if err != nil {
-			return err
-		}
-	} else {
+	if d.Get("secret").(string) == "" {
 		d.Set("secret", jsonData.Secret)
 	}
 
@@ -257,16 +248,6 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
-	}
-
-	if d.HasChange("secret") {
-		secret := models.RobotSecret{
-			Secret: d.Get("secret").(string),
-		}
-		_, _, _, err := apiClient.SendRequest("PATCH", d.Id(), secret, 200)
-		if err != nil {
-			return err
-		}
 	}
 
 	return resourceRobotAccountRead(d, m)
