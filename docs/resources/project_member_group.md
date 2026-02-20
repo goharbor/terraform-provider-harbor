@@ -38,7 +38,10 @@ resource "harbor_project_member_group" "main" {
 
 ### Optional
 
-- `group_id` (Number) 3. Note: group type 3 is OIDC group.
+- `group_id` (Number) The numeric identifier of the group type. Valid values are `1`, `2`, or `3` :
+  - `1` = `ldap`
+  - `2` = `internal`
+  - `3` = `oidc`
 - `group_name` (String) The name of the group member entity.
 - `ldap_group_dn` (String) The distinguished name of the group within AD/LDAP.
 
