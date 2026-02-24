@@ -14,6 +14,10 @@ func RobotBody(d *schema.ResourceData) models.RobotBody {
 		Level:       d.Get("level").(string),
 	}
 
+	if d.Get("secret").(string) != "" {
+		body.Secret = d.Get("secret").(string)
+	}
+
 	permissions := d.Get("permissions").(*schema.Set).List()
 	for _, p := range permissions {
 
