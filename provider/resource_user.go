@@ -6,11 +6,16 @@ import (
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceUser() *schema.Resource {
 	return &schema.Resource{
+		ValidateRawResourceConfigFuncs: []schema.ValidateRawResourceConfigFunc{
+			validation.PreferWriteOnlyAttribute(cty.GetAttrPath("password"), cty.GetAttrPath("password_wo")),
+		},
 		Schema: map[string]*schema.Schema{
 			"username": {
 				Type:     schema.TypeString,
@@ -19,8 +24,37 @@ func resourceUser() *schema.Resource {
 			},
 			"password": {
 				Type:      schema.TypeString,
-				Required:  true,
+				Optional:  true,
 				Sensitive: true,
+				ExactlyOneOf: []string{
+					"password",
+					"password_wo",
+				},
+				ConflictsWith: []string{
+					"password_wo_version",
+				},
+			},
+			"password_wo": {
+				Type:      schema.TypeString,
+				Optional:  true,
+				WriteOnly: true,
+				ExactlyOneOf: []string{
+					"password",
+					"password_wo",
+				},
+				RequiredWith: []string{
+					"password_wo_version",
+				},
+			},
+			"password_wo_version": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				RequiredWith: []string{
+					"password_wo",
+				},
+				ConflictsWith: []string{
+					"password",
+				},
 			},
 			"full_name": {
 				Type:     schema.TypeString,
@@ -54,6 +88,18 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	body := client.UserBody(d)
+	passwordWriteOnly, err := getWriteOnlyString(d, "password_wo")
+	if err != nil {
+		return err
+	}
+	if passwordWriteOnly != "" {
+		body.Password = passwordWriteOnly
+		body.Newpassword = passwordWriteOnly
+	}
+
+	if body.Password == "" {
+		return fmt.Errorf("one of password or password_wo must be configured")
+	}
 
 	_, header, _, err := apiClient.SendRequest("POST", models.PathUsers, &body, 201)
 	if err != nil {
@@ -92,9 +138,20 @@ func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceUserUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
+	oldPassword, _ := d.GetChange("password")
+	oldPasswordWOVersion, _ := d.GetChange("password_wo_version")
 
 	body := client.UserBody(d)
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	passwordWriteOnly, err := getWriteOnlyString(d, "password_wo")
+	if err != nil {
+		return err
+	}
+	if passwordWriteOnly != "" {
+		body.Password = passwordWriteOnly
+		body.Newpassword = passwordWriteOnly
+	}
+
+	_, _, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
@@ -104,9 +161,19 @@ func resourceUserUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if d.HasChange("password") == true {
+	if d.HasChange("password") || d.HasChange("password_wo_version") {
+		if d.HasChange("password_wo_version") && passwordWriteOnly == "" && !d.HasChange("password") {
+			_ = d.Set("password_wo_version", oldPasswordWOVersion)
+			return fmt.Errorf("password_wo must be configured when password_wo_version changes")
+		}
 		_, _, _, err = apiClient.SendRequest("PUT", d.Id()+"/password", body, 200)
 		if err != nil {
+			if d.HasChange("password") {
+				_ = d.Set("password", oldPassword)
+			}
+			if d.HasChange("password_wo_version") {
+				_ = d.Set("password_wo_version", oldPasswordWOVersion)
+			}
 			return err
 		}
 	}
