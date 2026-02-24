@@ -14,10 +14,40 @@ description: |-
 
 ```terraform
 resource "harbor_user" "main" {
-  username = "john"
-  password = "Password12345!"
+  username  = "john"
+  password  = "Password12345!"
   full_name = "John Smith"
-  email = "john@smith.com"
+  email     = "john@smith.com"
+}
+```
+
+### Write-only Password
+
+```terraform
+resource "harbor_user" "main" {
+  username            = "john"
+  password_wo         = "Password12345!"
+  password_wo_version = 1
+  full_name           = "John Smith"
+  email               = "john@smith.com"
+}
+```
+
+### Write-only Password from Ephemeral Random Secret
+
+```terraform
+ephemeral "random_password" "user_password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+resource "harbor_user" "main" {
+  username            = "john"
+  password_wo         = tostring(ephemeral.random_password.user_password.result)
+  password_wo_version = 1
+  full_name           = "John Smith"
+  email               = "john@smith.com"
 }
 ```
 
@@ -27,13 +57,15 @@ resource "harbor_user" "main" {
 
 - `email` (String) The email address of the internal user.
 - `full_name` (String) The Full Name of the internal user.
-- `password` (String, Sensitive) The password for the internal user.
 - `username` (String) The username of the internal user.
 
 ### Optional
 
 - `admin` (Boolean) If the user will have admin rights within Harbor (Default: `false`)
 - `comment` (String) Any comments for that are need for the internal user.
+- `password` (String, Sensitive) The password for the internal user. Conflicts with `password_wo_version`.
+- `password_wo` (String, Write-only) Write-only alternative for `password`. Must be used together with `password_wo_version`.
+- `password_wo_version` (Number) Rotation trigger for write-only password updates. Must be used together with `password_wo`.
 
 ### Read-Only
 
