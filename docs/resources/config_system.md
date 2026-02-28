@@ -18,6 +18,7 @@ resource "harbor_config_system" "main" {
   robot_token_expiration       = 30
   robot_name_prefix            = "harbor@"
   storage_per_project          = 100
+  notification_enable          = true
 }
 ```
 
@@ -33,6 +34,7 @@ resource "harbor_config_system" "main" {
 - `storage_per_project` (Number) Default quota space per project in GIB. Default is -1 (unlimited).
 - `audit_log_forward_endpoint` (String) The endpoint to forward audit logs to.
 - `skip_audit_log_database` (Boolean) Whether or not to skip audit log database.
+- `notification_enable` (Boolean) Whether or not webhook/notification functionality is enabled globally. When `false`, all project-level webhook policies are silently ignored. Defaults to `true`.
 - `banner_message` (Block Set) (see [below for nested schema](#nestedblock--banner_message))
 
 <a id="nestedblock--banner_message"></a>

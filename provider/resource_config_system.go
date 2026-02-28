@@ -97,6 +97,11 @@ func resourceConfigSystem() *schema.Resource {
 					},
 				},
 			},
+			"notification_enable": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
 		},
 		Create: resourceConfigSystemCreate,
 		Read:   resourceConfigSystemRead,
@@ -173,6 +178,7 @@ func resourceConfigSystemRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("storage_per_project", storage)
 	d.Set("audit_log_forward_endpoint", jsonData.AuditLogForwardEndpoint.Value)
 	d.Set("skip_audit_log_database", jsonData.SkipAuditLogDatabase.Value)
+	d.Set("notification_enable", jsonData.NotificationEnable.Value)
 
 	d.SetId("configuration/system")
 	return nil
