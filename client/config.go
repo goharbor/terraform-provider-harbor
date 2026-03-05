@@ -38,6 +38,7 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 		AuditLogForwardEndpoint:    d.Get("audit_log_forward_endpoint").(string),
 		SkipAuditLogDatabase:       d.Get("skip_audit_log_database").(bool),
 		BannerMessage:              bannerMessage,
+		NotificationEnable:         d.Get("notification_enable").(bool),
 	}
 	log.Printf("[DEBUG] %+v\n ", body)
 	return body
