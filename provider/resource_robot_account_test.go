@@ -56,6 +56,28 @@ func TestAccRobotProject(t *testing.T) {
 	})
 }
 
+func TestAccRobotProjectWriteOnlySecret(t *testing.T) {
+	randStr := randomString(4)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckRobotDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckRobotProjectWriteOnlySecret("acctest_robot_" + strings.ToLower(randStr)),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists("harbor_project.main"),
+
+					testAccCheckResourceExists(harborRobotAccount),
+					resource.TestCheckResourceAttr(
+						harborRobotAccount, "name", "test_robot_project_wo"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckRobotDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
 
@@ -121,6 +143,34 @@ func testAccCheckRobotProject(projectName string) string {
 	  name        = "test_robot_project"
 	  description = "project level robot account"
 	  level       = "project"
+	  permissions {
+		access {
+		  action   = "pull"
+		  resource = "repository"
+		}
+		access {
+		  action   = "push"
+		  resource = "repository"
+		}
+		kind      = "project"
+		namespace = harbor_project.main.name
+	  }
+	}
+
+	resource "harbor_project" "main" {
+	  name = "%v"
+	}
+	`, projectName)
+}
+
+func testAccCheckRobotProjectWriteOnlySecret(projectName string) string {
+	return fmt.Sprintf(`
+	resource "harbor_robot_account" "main" {
+	  name              = "test_robot_project_wo"
+	  description       = "project level robot account with write-only secret"
+	  level             = "project"
+	  secret_wo         = "robotSecret12345"
+	  secret_wo_version = 1
 	  permissions {
 		access {
 		  action   = "pull"

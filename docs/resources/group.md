@@ -25,7 +25,10 @@ resource "harbor_group" "storage-group" {
 ### Required
 
 - `group_name` (String) The name of the group.
-- `group_type` (Number) 3. Note: group type 3 is OIDC group.
+- `group_type` (Number) The numeric identifier of the group type. Valid values are `1`, `2`, or `3` :
+  - `1` = `ldap`
+  - `2` = `internal`
+  - `3` = `oidc`
 
 ### Optional
 

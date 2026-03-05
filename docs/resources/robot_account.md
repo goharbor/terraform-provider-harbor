@@ -93,6 +93,68 @@ resource "harbor_robot_account" "project" {
 }
 ```
 
+### Project with Write-only Secret
+
+```terraform
+resource "harbor_project" "main" {
+    name = "main"
+}
+
+resource "harbor_robot_account" "project" {
+  name              = "example-project"
+  description       = "project level robot account"
+  level             = "project"
+  secret_wo         = "StrongSecret123!"
+  secret_wo_version = 1
+  permissions {
+    access {
+      action   = "pull"
+      resource = "repository"
+    }
+    access {
+      action   = "push"
+      resource = "repository"
+    }
+    kind      = "project"
+    namespace = harbor_project.main.name
+  }
+}
+```
+
+### Project with Write-only Secret from Ephemeral Random Secret
+
+```terraform
+ephemeral "random_password" "robot_secret" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+resource "harbor_project" "main" {
+    name = "main"
+}
+
+resource "harbor_robot_account" "project" {
+  name              = "example-project"
+  description       = "project level robot account"
+  level             = "project"
+  secret_wo         = tostring(ephemeral.random_password.robot_secret.result)
+  secret_wo_version = 1
+  permissions {
+    access {
+      action   = "pull"
+      resource = "repository"
+    }
+    access {
+      action   = "push"
+      resource = "repository"
+    }
+    kind      = "project"
+    namespace = harbor_project.main.name
+  }
+}
+```
+
 The above example creates a project level robot account with permissions to
 - pull repository on project "main"
 - push repository on project "main"
@@ -111,6 +173,8 @@ The above example creates a project level robot account with permissions to
 - `disable` (Boolean) Disables the robot account when set to `true`.
 - `duration` (Number) By default, the robot account will not expire. Set it to the amount of days until the account should expire.
 - `secret` (String, Sensitive) The secret of the robot account used for authentication. Defaults to random generated string from Harbor.
+- `secret_wo` (String, Write-only) Write-only alternative for `secret`. Must be used together with `secret_wo_version`.
+- `secret_wo_version` (Number) Rotation trigger for write-only secret updates. Must be used together with `secret_wo`.
 
 ### Read-Only
 

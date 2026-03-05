@@ -8,11 +8,16 @@ import (
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceRobotAccount() *schema.Resource {
 	return &schema.Resource{
+		ValidateRawResourceConfigFuncs: []schema.ValidateRawResourceConfigFunc{
+			validation.PreferWriteOnlyAttribute(cty.GetAttrPath("secret"), cty.GetAttrPath("secret_wo")),
+		},
 		Schema: map[string]*schema.Schema{
 			"robot_id": {
 				Type:     schema.TypeString,
@@ -52,6 +57,31 @@ func resourceRobotAccount() *schema.Resource {
 				Optional:  true,
 				Computed:  true,
 				Sensitive: true,
+				ConflictsWith: []string{
+					"secret_wo",
+					"secret_wo_version",
+				},
+			},
+			"secret_wo": {
+				Type:      schema.TypeString,
+				Optional:  true,
+				WriteOnly: true,
+				RequiredWith: []string{
+					"secret_wo_version",
+				},
+				ConflictsWith: []string{
+					"secret",
+				},
+			},
+			"secret_wo_version": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				RequiredWith: []string{
+					"secret_wo",
+				},
+				ConflictsWith: []string{
+					"secret",
+				},
 			},
 			"permissions": {
 				Type: schema.TypeSet,
@@ -114,6 +144,10 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
 	body := client.RobotBody(d)
+	secretWriteOnly, err := getWriteOnlyString(d, "secret_wo")
+	if err != nil {
+		return err
+	}
 
 	resp, headers, _, err := apiClient.SendRequest("POST", models.PathRobots, body, 201)
 	if err != nil {
@@ -131,10 +165,15 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if d.Get("secret").(string) != "" {
+	secret := d.Get("secret").(string)
+	if secretWriteOnly != "" {
+		secret = secretWriteOnly
+	}
+
+	if secret != "" {
 		robotID := strconv.Itoa(jsonData.ID)
 		secret := models.RobotSecret{
-			Secret: d.Get("secret").(string),
+			Secret: secret,
 		}
 		_, _, _, err := apiClient.SendRequest("PATCH", models.PathRobots+"/"+robotID, secret, 200)
 		if err != nil {
@@ -241,6 +280,12 @@ func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
+	oldSecret, _ := d.GetChange("secret")
+	oldSecretWOVersion, _ := d.GetChange("secret_wo_version")
+	secretWriteOnly, err := getWriteOnlyString(d, "secret_wo")
+	if err != nil {
+		return err
+	}
 
 	body := client.RobotBody(d)
 
@@ -254,17 +299,34 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 		body.Name = robot.Name
 	}
 
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	_, _, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
 		return err
 	}
 
-	if d.HasChange("secret") {
+	if d.HasChange("secret") || d.HasChange("secret_wo_version") {
+		secretValue := d.Get("secret").(string)
+		if d.HasChange("secret_wo_version") {
+			if secretWriteOnly == "" && !d.HasChange("secret") {
+				_ = d.Set("secret_wo_version", oldSecretWOVersion)
+				return fmt.Errorf("secret_wo must be configured when secret_wo_version changes")
+			}
+			if secretWriteOnly != "" {
+				secretValue = secretWriteOnly
+			}
+		}
+
 		secret := models.RobotSecret{
-			Secret: d.Get("secret").(string),
+			Secret: secretValue,
 		}
 		_, _, _, err := apiClient.SendRequest("PATCH", d.Id(), secret, 200)
 		if err != nil {
+			if d.HasChange("secret") {
+				_ = d.Set("secret", oldSecret)
+			}
+			if d.HasChange("secret_wo_version") {
+				_ = d.Set("secret_wo_version", oldSecretWOVersion)
+			}
 			return err
 		}
 	}

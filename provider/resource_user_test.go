@@ -88,6 +88,28 @@ func TestAccUserUpdate(t *testing.T) {
 	})
 }
 
+func TestAccUserWriteOnlyPassword(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckUserDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckUserWriteOnly(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceHarborUserMain),
+					resource.TestCheckResourceAttr(
+						resourceHarborUserMain, "username", "john_wo"),
+					resource.TestCheckResourceAttr(
+						resourceHarborUserMain, "full_name", "John WriteOnly"),
+					resource.TestCheckResourceAttr(
+						resourceHarborUserMain, "email", "john.writeonly@contoso.com"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckUserBasic() string {
 	return fmt.Sprintf(`
 	resource "harbor_user" "main" {
@@ -106,6 +128,18 @@ func testAccCheckUserUpdate() string {
 		password  = "Password12345!"
 		full_name = "John"
 		email     = "john@contoso.com"
+	  }
+	`)
+}
+
+func testAccCheckUserWriteOnly() string {
+	return fmt.Sprintf(`
+	resource "harbor_user" "main" {
+		username            = "john_wo"
+		password_wo         = "Password12345"
+		password_wo_version = 1
+		full_name           = "John WriteOnly"
+		email               = "john.writeonly@contoso.com"
 	  }
 	`)
 }
