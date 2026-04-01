@@ -1,12 +1,10 @@
 module github.com/goharbor/terraform-provider-harbor
 
-go 1.24.0
-
-toolchain go1.24.2
+go 1.25.0
 
 require (
 	github.com/hashicorp/go-cty v1.5.0
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.39.0
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.0
 )
 
 require (
@@ -31,7 +29,7 @@ require (
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform-exec v0.25.0 // indirect
 	github.com/hashicorp/terraform-json v0.27.2 // indirect
-	github.com/hashicorp/terraform-plugin-go v0.30.0 // indirect
+	github.com/hashicorp/terraform-plugin-go v0.31.0 // indirect
 	github.com/hashicorp/terraform-plugin-log v0.10.0 // indirect
 	github.com/hashicorp/terraform-registry-address v0.4.0 // indirect
 	github.com/hashicorp/terraform-svchost v0.1.1 // indirect
