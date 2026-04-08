@@ -8,11 +8,12 @@ type ProjectMembersBodyPost struct {
 }
 
 type ProjectMembersBodyResponses struct {
-	ID          int                     `json:"id,omitempty"`
-	RoleID      int                     `json:"role_id,omitempty"`
-	ProjectID   int                     `json:"project_id,omitempty"`
-	EntityType  string                  `json:"entity_type,omitempty"`
-	EntityName  string                  `json:"entity_name,omitempty"`
+	ID         int    `json:"id,omitempty"`
+	RoleID     int    `json:"role_id,omitempty"`
+	ProjectID  int    `json:"project_id,omitempty"`
+	EntityID   int    `json:"entity_id,omitempty"`
+	EntityType string `json:"entity_type,omitempty"`
+	EntityName string `json:"entity_name,omitempty"`
 }
 
 type ProjectMembersBodyGroup struct {
@@ -25,5 +26,3 @@ type ProjectMembersBodyGroup struct {
 type ProjectMemberUsersGroup struct {
 	UserName string `json:"username,omitempty"`
 }
-
-
