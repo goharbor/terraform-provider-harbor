@@ -34,6 +34,10 @@ func dataProject() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
+			"vulnerability_scanner": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -68,6 +72,12 @@ func dataProjectRead(d *schema.ResourceData, m interface{}) error {
 			d.Set("public", public)
 			d.Set("vulnerability_scanning", autoScan)
 			d.Set("type", project_type)
+
+			scannerName, err := apiClient.GetProjectScanner(id)
+			if err != nil {
+				return err
+			}
+			d.Set("vulnerability_scanner", scannerName)
 		}
 	}
 	return nil

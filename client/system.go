@@ -1,9 +1,7 @@
 package client
 
 import (
-	"encoding/json"
 	"log"
-	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -77,27 +75,15 @@ func (client *Client) SetSchedule(d *schema.ResourceData, scheduleType string) (
 
 // SetDefaultScanner set the default scanner within harbor
 func (client *Client) SetDefaultScanner(scanner string) (err error) {
-	resp, _, _, err := client.SendRequest("GET", models.PathScanners, nil, 0)
+	scannerData, err := client.GetScannerByName(scanner)
+	if err != nil {
+		return err
+	}
 
 	body := models.ScannerBody{
 		IsDefault: true,
 	}
 
-	var jsonData []models.ScannerBody
-	err = json.Unmarshal([]byte(resp), &jsonData)
-	if err != nil {
-		return err
-	}
-
-	for _, v := range jsonData {
-
-		if v.Name == strings.Title(scanner) {
-			_, _, _, err = client.SendRequest("PATCH", models.PathScanners+"/"+v.UUID, body, 0)
-		}
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	_, _, _, err = client.SendRequest("PATCH", models.PathScanners+"/"+scannerData.UUID, body, 0)
+	return err
 }
