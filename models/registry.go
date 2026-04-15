@@ -28,5 +28,5 @@ type RegistryUpdateBody struct {
 	URL            string `json:"url,omitempty"`
 	Insecure       bool   `json:"insecure"`
 	Description    string `json:"description"`
-	CACertificate  string `json:"ca_certificate,omitempty"`
+	CACertificate  string `json:"ca_certificate"`
 }
