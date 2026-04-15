@@ -43,6 +43,10 @@ func dataRegistry() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"ca_certificate": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -74,6 +78,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 			d.Set("url", v.URL)
 			d.Set("insecure", v.Insecure)
 			d.Set("status", v.Status)
+			d.Set("ca_certificate", v.CACertificate)
 		}
 	}
 

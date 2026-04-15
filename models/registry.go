@@ -9,14 +9,15 @@ type RegistryBody struct {
 		AccessSecret string `json:"access_secret,omitempty"`
 		Type         string `json:"type,omitempty"`
 	} `json:"credential,omitempty"`
-	UpdateTime   string `json:"update_time,omitempty"`
-	Name         string `json:"name,omitempty"`
-	URL          string `json:"url,omitempty"`
-	Insecure     bool   `json:"insecure,omitempty"`
-	CreationTime string `json:"creation_time,omitempty"`
-	Type         string `json:"type,omitempty"`
-	ID           int    `json:"id,omitempty"`
-	Description  string `json:"description,omitempty"`
+	UpdateTime    string `json:"update_time,omitempty"`
+	Name          string `json:"name,omitempty"`
+	URL           string `json:"url,omitempty"`
+	Insecure      bool   `json:"insecure,omitempty"`
+	CreationTime  string `json:"creation_time,omitempty"`
+	Type          string `json:"type,omitempty"`
+	ID            int    `json:"id,omitempty"`
+	Description   string `json:"description,omitempty"`
+	CACertificate string `json:"ca_certificate,omitempty"`
 }
 
 type RegistryUpdateBody struct {
@@ -27,4 +28,5 @@ type RegistryUpdateBody struct {
 	URL            string `json:"url,omitempty"`
 	Insecure       bool   `json:"insecure"`
 	Description    string `json:"description"`
+	CACertificate  string `json:"ca_certificate,omitempty"`
 }
