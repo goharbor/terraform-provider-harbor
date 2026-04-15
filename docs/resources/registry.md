@@ -51,6 +51,7 @@ resource "harbor_registry" "main" {
 - `description` (String) The description of the external container register.
 - `insecure` (Boolean) Verifies the certificate of the external container register. (Default: `false`)
 - `ca_certificate` (String) PEM-encoded CA certificate trusting the registry custom-signed certificate.
+(ignored in <2.15.0)
 
 ### Read-Only
 
