@@ -19,6 +19,7 @@ resource "harbor_project" "main" {
   name                        = "main"
   public                      = false               # (Optional) Default value is false
   vulnerability_scanning      = true                # (Optional) Default value is true. Automatically scan images on push
+  vulnerability_scanner       = "Trivy"             # (Optional) Override the global default scanner for this project
   enable_content_trust        = true                # (Optional) Default value is false. Deny unsigned images from being pulled (notary)
   enable_content_trust_cosign = false               # (Optional) Default value is false. Deny unsigned images from being pulled (cosign)
   auto_sbom_generation        = true                # (Optional) Default value is false. Automatically generate SBOMs for images
@@ -56,6 +57,7 @@ resource "harbor_registry" "docker" {
 - `public` (Boolean) The project will be public accessibility.(Default: `false`)
 - `storage_quota` (Number) The storage quota of the project in GB's.
 - `vulnerability_scanning` (Boolean) Images will be scanned for vulnerabilities when push to harbor. (Default: `true`)
+- `vulnerability_scanner` (String) The name of the vulnerability scanner to use for this project, overriding the global default scanner. If not set, the project uses the global default scanner configured via `harbor_interrogation_services`.
 - `auto_sbom_generation` (Boolean) Automatically generate SBOM for images pushed to this project. (Default: `false`) can only be used with Harbor version v2.11.0 and above
 
 ### Specific for Proxy Project

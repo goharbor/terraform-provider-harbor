@@ -35,3 +35,4 @@ output "project_id" {
 - `public` (Boolean) If the project has public accessibility.
 - `type` (String) The type of the project : Project or ProxyCache.
 - `vulnerability_scanning` (Boolean) If the images is scanned for vulnerabilities when push to harbor.
+- `vulnerability_scanner` (String) The name of the vulnerability scanner assigned to the project.
