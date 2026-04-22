@@ -55,6 +55,67 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	return body
 }
 
+// GetScannerByName lists all scanners and returns the one matching the given name.
+func (client *Client) GetScannerByName(scanner string) (models.ScannerBody, error) {
+	resp, _, _, err := client.SendRequest("GET", models.PathScanners, nil, 0)
+	if err != nil {
+		return models.ScannerBody{}, err
+	}
+
+	var scanners []models.ScannerBody
+	err = json.Unmarshal([]byte(resp), &scanners)
+	if err != nil {
+		return models.ScannerBody{}, err
+	}
+
+	for _, v := range scanners {
+		if strings.EqualFold(v.Name, scanner) {
+			return v, nil
+		}
+	}
+
+	return models.ScannerBody{}, fmt.Errorf("scanner %q not found", scanner)
+}
+
+// SetProjectScanner sets the vulnerability scanner for a specific project.
+func (client *Client) SetProjectScanner(d *schema.ResourceData) error {
+	scanner := d.Get("vulnerability_scanner").(string)
+	if scanner == "" {
+		return nil
+	}
+
+	scannerData, err := client.GetScannerByName(scanner)
+	if err != nil {
+		return err
+	}
+
+	body := models.ProjectScannerBody{
+		UUID: scannerData.UUID,
+	}
+
+	_, _, _, err = client.SendRequest("PUT", d.Id()+"/scanner", body, 200)
+	return err
+}
+
+// GetProjectScanner returns the name of the scanner assigned to a project.
+func (client *Client) GetProjectScanner(projectPath string) (string, error) {
+	resp, _, respCode, err := client.SendRequest("GET", projectPath+"/scanner", nil, 200)
+	if err != nil {
+		if respCode == 404 {
+			return "", nil
+		}
+		return "", err
+	}
+
+	var scannerData models.ScannerBody
+	err = json.Unmarshal([]byte(resp), &scannerData)
+	if err != nil {
+		return "", err
+	}
+
+	return scannerData.Name, nil
+}
+
 func expandCveAllowList(cveAllowlist []interface{}) models.CveAllowlistItems {
 	allowlist := models.CveAllowlistItems{}
 

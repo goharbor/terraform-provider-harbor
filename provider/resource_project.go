@@ -39,6 +39,10 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"vulnerability_scanner": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"storage_quota": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -136,6 +140,11 @@ func resourceProjectCreate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	err = apiClient.SetProjectScanner(d)
+	if err != nil {
+		return err
+	}
+
 	return resourceProjectRead(d, m)
 }
 
@@ -223,6 +232,14 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Set("cve_allowlist", cveAllowlist)
 
+	if d.Get("vulnerability_scanner").(string) != "" {
+		scannerName, err := apiClient.GetProjectScanner(d.Id())
+		if err != nil {
+			return err
+		}
+		d.Set("vulnerability_scanner", scannerName)
+	}
+
 	return nil
 }
 
@@ -240,6 +257,13 @@ func resourceProjectUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	apiClient.UpdateStorageQuota(d)
+
+	if d.HasChange("vulnerability_scanner") {
+		err = apiClient.SetProjectScanner(d)
+		if err != nil {
+			return err
+		}
+	}
 
 	return resourceProjectRead(d, m)
 }
