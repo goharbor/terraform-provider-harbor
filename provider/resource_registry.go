@@ -46,6 +46,11 @@ func resourceRegistry() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"ca_certificate": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "",
+			},
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -109,6 +114,7 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("endpoint_url", jsonData.URL)
 	d.Set("access_id", jsonData.Credential.AccessKey)
 	d.Set("insecure", jsonData.Insecure)
+	d.Set("ca_certificate", jsonData.CACertificate)
 	d.Set("status", jsonData.Status)
 	d.Set("registry_id", jsonData.ID)
 	d.Set("provider_name", registryName)

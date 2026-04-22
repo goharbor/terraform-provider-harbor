@@ -33,7 +33,8 @@ output "harbor_registry_id" {
 - `description` (String) The description of the external container register.
 - `id` (String) The ID of this resource.
 - `insecure` (Boolean) If the certificate of the external container register can be verified.
-- `registry_id` (Number) The id of the register within harbor.
+- `registry_id` (Number) The ID of the register within harbor.
 - `status` (String) The health status of the external container register
 - `type` (String) The type of the provider type.
-- `url` (String) The url endpoint for the external container register
+- `url` (String) The URL endpoint for the external container register
+- `ca_certificate` (String) The PEM-encoded CA certificate trusting the registry

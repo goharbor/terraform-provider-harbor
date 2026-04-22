@@ -65,6 +65,10 @@ type ProjectsBodyResponses struct {
 	} `json:"metadata"`
 }
 
+type ProjectScannerBody struct {
+	UUID string `json:"uuid"`
+}
+
 type CveAllowlistItems []struct {
 	CveID string `json:"cve_id,omitempty"`
 }

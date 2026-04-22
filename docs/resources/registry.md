@@ -14,9 +14,9 @@ description: |-
 
 ```terraform
 resource "harbor_registry" "main" {
-  provider_name = "docker-hub"
-  name          = "test_docker_harbor"
-  endpoint_url  = "https://hub.docker.com"
+  provider_name  = "docker-hub"
+  name           = "test_docker_harbor"
+  endpoint_url   = "https://hub.docker.com"
 }
 ```
 
@@ -24,7 +24,7 @@ resource "harbor_registry" "main" {
 
 ### Required
 
-- `endpoint_url` (String) The url endpoint for the external container register ie `"https://hub.docker.com"`
+- `endpoint_url` (String) The URL endpoint for the external container register i.e. `"https://hub.docker.com"`
 - `name` (String) The name of the register.
 - `provider_name` (String) The name of the provider.
 
@@ -46,10 +46,12 @@ resource "harbor_registry" "main" {
 
 ### Optional
 
-- `access_id` (String) The username / access id for the external container register.
-- `access_secret` (String, Sensitive) The password / access keys / token for the external container register.
+- `access_id` (String) The username / access ID for the external container register.
+- `access_secret` (String, Sensitive) The password / access key / token for the external container register.
 - `description` (String) The description of the external container register.
 - `insecure` (Boolean) Verifies the certificate of the external container register. (Default: `false`)
+- `ca_certificate` (String) PEM-encoded CA certificate trusting the registry custom-signed certificate.
+(ignored in <2.15.0)
 
 ### Read-Only
 
@@ -58,6 +60,7 @@ resource "harbor_registry" "main" {
 - `status` (String)
 
 ## Import
+
 Import is supported using the following syntax with the `registry` `id`:
 
 ```shell
