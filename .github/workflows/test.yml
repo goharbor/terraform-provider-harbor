@@ -96,9 +96,9 @@ jobs:
     - name: Create kind cluster
       uses: helm/kind-action@v1.14.0
       with:
-        version: v0.21.0
-        node_image: kindest/node:v1.29.0
-        cluster_name: kind-cluster-v1.29.0
+        version: v0.27.0
+        node_image: kindest/node:v1.32.2
+        cluster_name: kind-cluster-v1.32.2
         config: kind-cluster.yaml
     
     - name: Install Nginx ingress controller
@@ -106,11 +106,25 @@ jobs:
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/kind/deploy.yaml
         kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
 
+    - name: Install OpenLDAP test container
+      run: |
+        docker run -d --name openldap -p 389:389 -p 636:636 ghcr.io/abcdesktopio/docker-test-openldap:4.3
+        while [[ "$(docker ps --filter name=openldap --format '{{.Status}}')" != "Up"* ]]; do
+          sleep 1
+        done
+        # Connect OpenLDAP to the kind network so Harbor pods can reach it
+        docker network connect kind openldap
+        # Get the OpenLDAP IP on the kind network
+        OPENLDAP_IP=$(docker inspect -f '{{.NetworkSettings.Networks.kind.IPAddress}}' openldap)
+        echo "OPENLDAP_IP=${OPENLDAP_IP}" >> $GITHUB_ENV
+        echo "HARBOR_LDAP_URL=ldap://${OPENLDAP_IP}:389" >> $GITHUB_ENV
+        echo "OpenLDAP IP on kind network: ${OPENLDAP_IP}"
+  
     - uses: azure/setup-helm@v5
       with:
         version: 'latest' # default is latest (stable)
       id: install
-    
+
     - name: Install Harbor Helm chart
       run: |
         helm repo add harbor https://helm.goharbor.io
