@@ -1,4 +1,5 @@
 # Terraform Harbor Provider
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/980f88dcc2164de2b066c5f45816dd65)](https://app.codacy.com/gh/goharbor/terraform-provider-harbor?utm_source=github.com&utm_medium=referral&utm_content=goharbor/terraform-provider-harbor&utm_campaign=Badge_Grade)
 [![GitHub release](https://img.shields.io/github/release/goharbor/terraform-provider-harbor.svg)](https://github.com/goharbor/terraform-provider-harbor/releases/)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgoharbor%2Fterraform-provider-harbor.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgoharbor%2Fterraform-provider-harbor?ref=badge_shield)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=terraform-provider-harbor&metric=alert_status)](https://sonarcloud.io/dashboard?id=terraform-provider-harbor)
