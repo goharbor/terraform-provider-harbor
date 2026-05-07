@@ -63,6 +63,7 @@ resource "harbor_registry" "docker" {
 ### Specific for Proxy Project
 - `registry_id` (Number) To enable project as Proxy Cache.
 - `proxy_speed_kb` (Number) Proxy max speed KB (Default: `-1`)
+- `proxy_cache_local_on_not_found` (Boolean) When enabled, serve images from the local cache when they have been removed from the upstream registry. (Default: `false`) Requires Harbor `v2.15.1` or above.
 
 ### Read-Only
 
