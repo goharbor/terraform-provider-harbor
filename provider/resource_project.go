@@ -95,6 +95,11 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  -1,
 			},
+			"proxy_cache_local_on_not_found": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 		},
 		Create: resourceProjectCreate,
 		Read:   resourceProjectRead,
@@ -108,9 +113,13 @@ func resourceProject() *schema.Resource {
 
 func validateProjectProxy(d *schema.ResourceData) error {
 	speed := d.Get("proxy_speed_kb").(int)
+	localOnNotFound := d.Get("proxy_cache_local_on_not_found").(bool)
 	registryID := d.Get("registry_id").(int)
 	if speed != -1 && registryID == 0 {
 		return fmt.Errorf("'proxy_speed_kb' can only be used when 'registry_id' is set (proxy project)")
+	}
+	if localOnNotFound && registryID == 0 {
+		return fmt.Errorf("'proxy_cache_local_on_not_found' can only be used when 'registry_id' is set (proxy project)")
 	}
 	return nil
 }
@@ -216,6 +225,11 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
+	proxyCacheLocalOnNotFound, err := client.ParseBoolOrDefault(jsonData.Metadata.ProxyCacheLocalOnNotFound, false)
+	if err != nil {
+		return err
+	}
+
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", jsonData.ProjectID)
 	d.Set("registry_id", jsonData.RegistryID)
@@ -225,6 +239,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("enable_content_trust_cosign", trustCosign)
 	d.Set("auto_sbom_generation", autoSbomGeneration)
 	d.Set("proxy_speed_kb", proxySpeedKb)
+	d.Set("proxy_cache_local_on_not_found", proxyCacheLocalOnNotFound)
 
 	cveAllowlist := make([]string, len(jsonData.CveAllowlist.Items))
 	for i, item := range jsonData.CveAllowlist.Items {
