@@ -8,6 +8,7 @@ import (
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
@@ -22,6 +23,74 @@ func getLdapURL() string {
 }
 
 const resourceConfigAuthMain = "harbor_config_auth.main"
+
+func TestGetConfigAuthBodyOIDCClientSecret(t *testing.T) {
+	d := testConfigAuthResourceData(t, map[string]interface{}{
+		"auth_mode":          "oidc_auth",
+		"oidc_name":          "azure",
+		"oidc_endpoint":      "https://login.microsoftonline.com/example/v2.0",
+		"oidc_client_id":     "harbor",
+		"oidc_client_secret": "legacy-secret",
+		"oidc_scope":         "openid,email",
+	})
+
+	body, err := getConfigAuthBodyWithWriteOnly(d, testEmptyWriteOnlyString)
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	if body.OidcClientSecret != "legacy-secret" {
+		t.Fatalf("unexpected oidc client secret: got %q", body.OidcClientSecret)
+	}
+}
+
+func TestGetConfigAuthBodyOIDCClientSecretWriteOnly(t *testing.T) {
+	d := testConfigAuthResourceData(t, map[string]interface{}{
+		"auth_mode":                     "oidc_auth",
+		"oidc_name":                     "azure",
+		"oidc_endpoint":                 "https://login.microsoftonline.com/example/v2.0",
+		"oidc_client_id":                "harbor",
+		"oidc_client_secret_wo":         "write-only-secret",
+		"oidc_client_secret_wo_version": 1,
+		"oidc_scope":                    "openid,email",
+	})
+
+	body, err := getConfigAuthBodyWithWriteOnly(d, func(d *schema.ResourceData, key string) (string, error) {
+		return "write-only-secret", nil
+	})
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	if body.OidcClientSecret != "write-only-secret" {
+		t.Fatalf("unexpected oidc client secret: got %q", body.OidcClientSecret)
+	}
+}
+
+func TestGetConfigAuthBodyRequiresOIDCClientSecret(t *testing.T) {
+	d := testConfigAuthResourceData(t, map[string]interface{}{
+		"auth_mode":      "oidc_auth",
+		"oidc_name":      "azure",
+		"oidc_endpoint":  "https://login.microsoftonline.com/example/v2.0",
+		"oidc_client_id": "harbor",
+		"oidc_scope":     "openid,email",
+	})
+
+	_, err := getConfigAuthBodyWithWriteOnly(d, testEmptyWriteOnlyString)
+	if err == nil {
+		t.Fatal("expected error but got nil")
+	}
+}
+
+func testConfigAuthResourceData(t *testing.T, raw map[string]interface{}) *schema.ResourceData {
+	t.Helper()
+
+	return schema.TestResourceDataRaw(t, resourceConfigAuth().Schema, raw)
+}
+
+func testEmptyWriteOnlyString(d *schema.ResourceData, key string) (string, error) {
+	return "", nil
+}
 
 func testAccCheckConfigAuthDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
@@ -120,6 +189,48 @@ func TestAccConfigAuthLdap(t *testing.T) {
 	})
 }
 
+func TestAccConfigAuthOIDCWriteOnlyClientSecret(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckConfigAuthDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckConfigAuthOIDCWriteOnlyClientSecret(1, "write-only-secret"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceConfigAuthMain),
+					resource.TestCheckResourceAttr(
+						resourceConfigAuthMain, "auth_mode", "oidc_auth"),
+					resource.TestCheckResourceAttr(
+						resourceConfigAuthMain, "oidc_client_secret_wo_version", "1"),
+					resource.TestCheckNoResourceAttr(
+						resourceConfigAuthMain, "oidc_client_secret_wo"),
+				),
+			},
+			{
+				Config: testAccCheckConfigAuthOIDCWriteOnlyClientSecret(2, "write-only-secret-rotated"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceConfigAuthMain),
+					resource.TestCheckResourceAttr(
+						resourceConfigAuthMain, "auth_mode", "oidc_auth"),
+					resource.TestCheckResourceAttr(
+						resourceConfigAuthMain, "oidc_client_secret_wo_version", "2"),
+					resource.TestCheckNoResourceAttr(
+						resourceConfigAuthMain, "oidc_client_secret_wo"),
+				),
+			},
+			{
+				Config: testAccCheckConfigAuthLdapMain(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceConfigAuthMain),
+					resource.TestCheckResourceAttr(
+						resourceConfigAuthMain, "auth_mode", "ldap_auth"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckConfigAuthLdap() string {
 	ldapURL := getLdapURL()
 	return fmt.Sprintf(`
@@ -140,6 +251,45 @@ func testAccCheckConfigAuthLdap() string {
 		ldap_group_scope      = "subtree"
 	}
 	`, ldapURL)
+}
+
+func testAccCheckConfigAuthOIDCWriteOnlyClientSecret(version int, secret string) string {
+	return fmt.Sprintf(`
+		resource "harbor_config_auth" "main" {
+			auth_mode                     = "oidc_auth"
+			oidc_name                     = "codex-oidc"
+			oidc_endpoint                 = "https://oidc.example.com"
+			oidc_client_id                = "harbor"
+			oidc_client_secret_wo         = "%s"
+			oidc_client_secret_wo_version = %d
+			oidc_scope                    = "openid,email"
+			oidc_verify_cert              = false
+			oidc_auto_onboard             = true
+			oidc_user_claim               = "name"
+		}
+		`, secret, version)
+}
+
+func testAccCheckConfigAuthLdapMain() string {
+	ldapURL := getLdapURL()
+	return fmt.Sprintf(`
+		resource "harbor_config_auth" "main" {
+			auth_mode            = "ldap_auth"
+			ldap_url             = "%s"
+			ldap_base_dn         = "ou=people,dc=planetexpress,dc=com"
+			ldap_uid             = "uid"
+			ldap_verify_cert     = false
+			ldap_search_dn       = "cn=admin,dc=planetexpress,dc=com"
+			ldap_search_password = "GoodNewsEveryone"
+			ldap_scope           = "onelevel"
+			ldap_group_base_dn   = "ou=people,dc=planetexpress,dc=com"
+			ldap_group_filter    = "(objectClass=posixGroup)"
+			ldap_group_gid       = "cn"
+			ldap_group_admin_dn  = "cn=admin_staff,ou=people,dc=planetexpress,dc=com"
+			ldap_group_membership = "memberof"
+			ldap_group_scope     = "subtree"
+		}
+		`, ldapURL)
 }
 
 // ─── harbor_group LDAP tests ───────────────────────────────────────────────
