@@ -28,6 +28,25 @@ resource "harbor_config_auth" "oidc" {
 }
 ```
 
+### OIDC with Write-only Client Secret
+
+```terraform
+resource "harbor_config_auth" "oidc" {
+  auth_mode                     = "oidc_auth"
+  primary_auth_mode             = true
+  oidc_name                     = "azure"
+  oidc_endpoint                 = "https://login.microsoftonline.com/{GUID goes here}/v2.0"
+  oidc_client_id                = "OIDC Client ID goes here"
+  oidc_client_secret_wo         = "OIDC Client Secret goes here"
+  oidc_client_secret_wo_version = 1
+  oidc_scope                    = "openid,email"
+  oidc_verify_cert              = true
+  oidc_auto_onboard             = true
+  oidc_user_claim               = "name"
+  oidc_admin_group              = "administrators"
+}
+```
+
 ### LDAP
 
 ```terraform
@@ -53,10 +72,10 @@ resource "harbor_config_auth" "ldap" {
 
 ### Required, OIDC
 
-The following are required if `auth_mode` is `oidc_auth`
+The following are required if `auth_mode` is `oidc_auth`. Configure either `oidc_client_secret` or `oidc_client_secret_wo` together with `oidc_client_secret_wo_version`.
 
 - `oidc_client_id` (String) The client id for the oidc server.
-- `oidc_client_secret` (String, Sensitive) The client secert for the oidc server.
+- `oidc_client_secret` (String, Sensitive) The client secret for the oidc server.
 - `oidc_endpoint` (String) The URL of an OIDC-complaint server.
 - `oidc_name` (String) The name of the oidc provider name.
 - `oidc_scope` (String) The scope sent to OIDC server during authentication. It has to contain `“openid”`.
@@ -70,6 +89,8 @@ The following are required if `auth_mode` is `oidc_auth`
 - `oidc_groups_claim` (String) The name of the claim in the token whose values is the list of group names.
 - `oidc_user_claim` (String) Default is `name`
 - `oidc_logout` (Boolean) Set to `true` if you want to enable OIDC Session Logout (Default: `false`) can only be used with Harbor version v2.13 and above
+- `oidc_client_secret_wo` (String, Write-only) Write-only alternative for `oidc_client_secret`. Must be used together with `oidc_client_secret_wo_version`.
+- `oidc_client_secret_wo_version` (Number) Rotation trigger for write-only OIDC client secret updates. Must be used together with `oidc_client_secret_wo`.
 
 ### Required, LDAP
 
