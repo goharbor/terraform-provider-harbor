@@ -41,6 +41,7 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	body.Metadata.EnableContentTrustCosign = strconv.FormatBool(d.Get("enable_content_trust_cosign").(bool))
 	body.Metadata.AutoSbomGeneration = strconv.FormatBool(d.Get("auto_sbom_generation").(bool))
 	body.Metadata.ProxySpeedKb = strconv.Itoa(d.Get("proxy_speed_kb").(int))
+	body.Metadata.ProxyCacheLocalOnNotFound = strconv.FormatBool(d.Get("proxy_cache_local_on_not_found").(bool))
 
 	cveAllowList := d.Get("cve_allowlist").([]interface{})
 	log.Printf("[DEBUG] %v ", cveAllowList)
