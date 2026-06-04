@@ -5,11 +5,16 @@ import (
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceConfigAuth() *schema.Resource {
 	return &schema.Resource{
+		ValidateRawResourceConfigFuncs: []schema.ValidateRawResourceConfigFunc{
+			validation.PreferWriteOnlyAttribute(cty.GetAttrPath("oidc_client_secret"), cty.GetAttrPath("oidc_client_secret_wo")),
+		},
 		Schema: map[string]*schema.Schema{
 			"auth_mode": {
 				Type:     schema.TypeString,
@@ -43,7 +48,28 @@ func resourceConfigAuth() *schema.Resource {
 				Optional:      true,
 				Sensitive:     true,
 				RequiredWith:  oidcRequiredWith(),
-				ConflictsWith: oidcConflictsWith(),
+				ConflictsWith: append(oidcConflictsWith(), "oidc_client_secret_wo", "oidc_client_secret_wo_version"),
+			},
+			"oidc_client_secret_wo": {
+				Type:      schema.TypeString,
+				Optional:  true,
+				WriteOnly: true,
+				RequiredWith: append(oidcRequiredWith(),
+					"oidc_client_secret_wo_version",
+				),
+				ConflictsWith: append(oidcConflictsWith(),
+					"oidc_client_secret",
+				),
+			},
+			"oidc_client_secret_wo_version": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				RequiredWith: []string{
+					"oidc_client_secret_wo",
+				},
+				ConflictsWith: []string{
+					"oidc_client_secret",
+				},
 			},
 			"oidc_group_filter": {
 				Type:          schema.TypeString,
@@ -181,14 +207,42 @@ func resourceConfigAuth() *schema.Resource {
 func resourceConfigAuthCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	body := client.GetConfigAuth(d)
+	body, err := getConfigAuthBody(d)
+	if err != nil {
+		return err
+	}
 
-	_, _, _, err := apiClient.SendRequest("PUT", models.PathConfig, body, 200)
+	_, _, _, err = apiClient.SendRequest("PUT", models.PathConfig, body, 200)
 	if err != nil {
 		return err
 	}
 
 	return resourceConfigAuthRead(d, m)
+}
+
+func getConfigAuthBody(d *schema.ResourceData) (models.ConfigBodyAuthPost, error) {
+	return getConfigAuthBodyWithWriteOnly(d, getWriteOnlyString)
+}
+
+func getConfigAuthBodyWithWriteOnly(d *schema.ResourceData, getWriteOnly func(*schema.ResourceData, string) (string, error)) (models.ConfigBodyAuthPost, error) {
+	body := client.GetConfigAuth(d)
+	if body.AuthMode != "oidc_auth" {
+		return body, nil
+	}
+
+	oidcClientSecretWriteOnly, err := getWriteOnly(d, "oidc_client_secret_wo")
+	if err != nil {
+		return body, err
+	}
+	if oidcClientSecretWriteOnly != "" {
+		body.OidcClientSecret = oidcClientSecretWriteOnly
+	}
+
+	if body.OidcClientSecret == "" {
+		return body, fmt.Errorf("one of oidc_client_secret or oidc_client_secret_wo must be configured")
+	}
+
+	return body, nil
 }
 
 func resourceConfigAuthRead(d *schema.ResourceData, m interface{}) error {
@@ -230,11 +284,11 @@ func oidcConflictsWith() []string {
 }
 
 func oidcRequiredWith() []string {
-	return []string{"oidc_name", "oidc_endpoint", "oidc_client_id", "oidc_client_secret", "oidc_scope"}
+	return []string{"oidc_name", "oidc_endpoint", "oidc_client_id", "oidc_scope"}
 }
 
 func ldapConflictsWith() []string {
-	return []string{"oidc_name", "oidc_endpoint", "oidc_client_id", "oidc_client_secret", "oidc_groups_claim", "oidc_scope", "oidc_verify_cert", "oidc_auto_onboard", "oidc_user_claim"}
+	return []string{"oidc_name", "oidc_endpoint", "oidc_client_id", "oidc_client_secret", "oidc_client_secret_wo", "oidc_client_secret_wo_version", "oidc_groups_claim", "oidc_scope", "oidc_verify_cert", "oidc_auto_onboard", "oidc_user_claim"}
 }
 
 func ldapRequiredWith() []string {
