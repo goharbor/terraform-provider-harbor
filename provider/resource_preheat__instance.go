@@ -131,9 +131,6 @@ func resourcePreheatInstanceRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("enabled", jsonData.Enabled)
 	d.Set("default", jsonData.Default)
 	d.Set("insecure", jsonData.Insecure)
-	d.Set("username", jsonData.AuthInfo.Username)
-	d.Set("password", jsonData.AuthInfo.Password)
-	d.Set("token", jsonData.AuthInfo.Token)
 
 	return nil
 }
