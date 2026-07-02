@@ -22,6 +22,7 @@ description: |-
 
 - `api_version` (Number) Choose which version of the API you would like to use 1 or 2 (default is 2)
 - `bearer_token` (String) The bearer token to be used to access harbor. Will take precedence over username and password if set
+- `headers` (Map of String, Sensitive) A map of custom HTTP headers to append to every API request. Useful for passing traffic through a WAF or proxy. A `Host` entry sets the request Host.
 - `session_id` (String) The session ID cookie (`sid`) when using OAuth/OIDC. Can be provided via `HARBOR_SESSION_ID`. Will take precedence over `bearer_token` if set. Note that OAuth/OIDC support is experimental and will be deprecated and removed if harbor provides a better way to authenticate with its API
 - `insecure` (Boolean) Ignore certificate errors, switching it to `false` is recommended (default: true)
 - `robot_prefix` (String) Without this option, the provider will try to automatically determine the robot prefix with a call to the admin API. If you don't have admin access and want to create system robot account, you'll have to set this value.
