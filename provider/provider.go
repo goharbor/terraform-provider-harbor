@@ -58,7 +58,7 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				Sensitive:   true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: "A map of custom HTTP headers to append to every API request. Useful for passing traffic through a WAF or proxy. A `Host` entry sets the request Host.",
+				Description: "A map of custom HTTP headers to set on every API request. Each header overwrites any existing header of the same name. Useful for passing traffic through a WAF or proxy. A `Host` entry sets the request Host.",
 			},
 		},
 
