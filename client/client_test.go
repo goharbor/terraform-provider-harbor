@@ -3,8 +3,37 @@ package client
 import (
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
+
+func TestSendRequestCustomHeaders(t *testing.T) {
+	var gotHeader string
+	var gotHost string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotHeader = r.Header.Get("X-Custom-Header")
+		gotHost = r.Host
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	c := NewClient(server.URL, "user", "pass", "", "", false, "", map[string]string{
+		"X-Custom-Header": "custom-value",
+		"Host":            "waf.example.com",
+	})
+
+	_, _, _, err := c.SendRequest("GET", "", nil, http.StatusOK)
+	if err != nil {
+		t.Fatalf("got unexpected error: %v", err)
+	}
+
+	if gotHeader != "custom-value" {
+		t.Fatalf("X-Custom-Header was %q; want %q", gotHeader, "custom-value")
+	}
+	if gotHost != "waf.example.com" {
+		t.Fatalf("Host was %q; want %q", gotHost, "waf.example.com")
+	}
+}
 
 func TestExtractCsrfHeaders(t *testing.T) {
 	var testCases = []struct {

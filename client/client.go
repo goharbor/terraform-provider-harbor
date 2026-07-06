@@ -21,10 +21,11 @@ type Client struct {
 	insecure    bool
 	httpClient  *http.Client
 	robotPrefix string
+	headers     map[string]string
 }
 
 // NewClient creates common settings
-func NewClient(url string, username string, password string, sessionId string, bearerToken string, insecure bool, robotPrefix string) *Client {
+func NewClient(url string, username string, password string, sessionId string, bearerToken string, insecure bool, robotPrefix string, headers map[string]string) *Client {
 	return &Client{
 		url:         url,
 		username:    username,
@@ -34,6 +35,7 @@ func NewClient(url string, username string, password string, sessionId string, b
 		insecure:    insecure,
 		httpClient:  &http.Client{},
 		robotPrefix: robotPrefix,
+		headers:     headers,
 	}
 }
 
@@ -73,6 +75,18 @@ func (c *Client) sendRequestWithHeaders(method string, path string, payload inte
 	}
 
 	req.Header.Add("Content-Type", "application/json")
+
+	// Apply custom headers configured on the provider to every request. A
+	// "Host" header must be set on req.Host, as Go ignores a Host entry placed
+	// in req.Header.
+	for header, value := range c.headers {
+		if strings.EqualFold(header, "host") {
+			req.Host = value
+		} else {
+			req.Header.Set(header, value)
+		}
+	}
+
 	for header, values := range extraHeaders {
 		for _, value := range values {
 			req.Header.Add(header, value)

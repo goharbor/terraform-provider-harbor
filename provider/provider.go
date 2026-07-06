@@ -53,6 +53,13 @@ func Provider() *schema.Provider {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"headers": {
+				Type:        schema.TypeMap,
+				Optional:    true,
+				Sensitive:   true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: "A map of custom HTTP headers to set on every API request. Each header overwrites any existing header of the same name. Useful for passing traffic through a WAF or proxy. A `Host` entry sets the request Host.",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -112,6 +119,11 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	apiVersion := d.Get("api_version").(int)
 	robotPrefix := d.Get("robot_prefix").(string)
 
+	headers := make(map[string]string)
+	for k, v := range d.Get("headers").(map[string]interface{}) {
+		headers[k] = v.(string)
+	}
+
 	if strings.HasSuffix(url, "/") {
 		url = strings.Trim(url, "/")
 	}
@@ -122,5 +134,5 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		apiPath = "/api/v2.0"
 	}
 
-	return client.NewClient(url+apiPath, username, password, sessionId, bearerToken, insecure, robotPrefix), nil
+	return client.NewClient(url+apiPath, username, password, sessionId, bearerToken, insecure, robotPrefix, headers), nil
 }
