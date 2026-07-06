@@ -190,11 +190,14 @@ func resourceRobotAccountCreate(d *schema.ResourceData, m interface{}) error {
 func resourceRobotAccountRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 
-	robot, err := getRobot(d, apiClient)
+	robot, respCode, err := getRobot(d, apiClient)
 
 	if err != nil {
-		d.SetId("")
-		return nil
+		if respCode == 404 {
+			d.SetId("")
+			return nil
+		}
+		return fmt.Errorf("error reading robot account %s: %w", d.Id(), err)
 	}
 
 	var shortName string
@@ -292,7 +295,7 @@ func resourceRobotAccountUpdate(d *schema.ResourceData, m interface{}) error {
 	// if name not changed, use robot account name from api, otherwise it would always trigger a recreation,
 	// since harbor does internally attach the robot account prefix to it´s names
 	if !d.HasChange("name") {
-		robot, err := getRobot(d, apiClient)
+		robot, _, err := getRobot(d, apiClient)
 		if err != nil {
 			return err
 		}
@@ -343,17 +346,17 @@ func resourceRobotAccountDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func getRobot(d *schema.ResourceData, apiClient *client.Client) (models.RobotBody, error) {
-	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+func getRobot(d *schema.ResourceData, apiClient *client.Client) (models.RobotBody, int, error) {
+	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
 	if err != nil {
-		return models.RobotBody{}, err
+		return models.RobotBody{}, respCode, err
 	}
 	var jsonData models.RobotBody
 	err = json.Unmarshal([]byte(resp), &jsonData)
 	if err != nil {
-		return models.RobotBody{}, fmt.Errorf("resource not found %s", d.Id())
+		return models.RobotBody{}, respCode, fmt.Errorf("resource not found %s", d.Id())
 	}
-	return jsonData, nil
+	return jsonData, respCode, nil
 }
 
 func findTfPermission(tfPermissions []interface{}, kind, namespace string) (map[string]interface{}, bool) {
