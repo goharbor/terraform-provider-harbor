@@ -15,9 +15,11 @@ on:
     tags:
       - 'v*'
 permissions:
-  contents: write
+  contents: read
 jobs:
   goreleaser:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       -

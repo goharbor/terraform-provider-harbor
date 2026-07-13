@@ -24,6 +24,8 @@ on:
   # change.
   # schedule:
   #   - cron: '0 13 * * *'
+permissions:
+  contents: read
 jobs:
   # ensure the code builds...
   build:
