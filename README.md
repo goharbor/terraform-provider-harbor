@@ -2,6 +2,9 @@
 [![GitHub release](https://img.shields.io/github/release/goharbor/terraform-provider-harbor.svg)](https://github.com/goharbor/terraform-provider-harbor/releases/)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/980f88dcc2164de2b066c5f45816dd65)](https://app.codacy.com/gh/goharbor/terraform-provider-harbor?utm_source=github.com&utm_medium=referral&utm_content=goharbor/terraform-provider-harbor&utm_campaign=Badge_Grade)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgoharbor%2Fterraform-provider-harbor.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgoharbor%2Fterraform-provider-harbor?ref=badge_shield)
+[![CodeQL](https://github.com/goharbor/terraform-provider-harbor/actions/workflows/codeql.yml/badge.svg)](https://github.com/goharbor/terraform-provider-harbor/actions/workflows/codeql.yml)
+[![openssf scorecard](https://api.scorecard.dev/projects/github.com/goharbor/terraform-provider-harbor/badge)](https://scorecard.dev/viewer/?uri=github.com/goharbor/terraform-provider-harbor)
+
 ![GitHub All Releases](https://img.shields.io/github/downloads/goharbor/terraform-provider-harbor/total)
 ![GitHub Releases](https://img.shields.io/github/downloads/goharbor/terraform-provider-harbor/latest/total)
 
