@@ -14,11 +14,12 @@ description: |-
 
 ```terraform
 resource "harbor_config_system" "main" {
-  project_creation_restriction = "adminonly"
-  robot_token_expiration       = 30
-  robot_name_prefix            = "harbor@"
-  storage_per_project          = 100
-  notification_enable          = true
+  project_creation_restriction     = "adminonly"
+  robot_token_expiration           = 30
+  robot_name_prefix                = "harbor@"
+  storage_per_project              = 100
+  notification_enable              = true
+  disabled_audit_log_event_types   = "create_artifact,delete_artifact"
 }
 ```
 
@@ -35,6 +36,7 @@ resource "harbor_config_system" "main" {
 - `audit_log_forward_endpoint` (String) The endpoint to forward audit logs to.
 - `skip_audit_log_database` (Boolean) Whether or not to skip audit log database.
 - `notification_enable` (Boolean) Whether or not webhook/notification functionality is enabled globally. When `false`, all project-level webhook policies are silently ignored. Defaults to `true`.
+- `disabled_audit_log_event_types` (String) Comma-separated list of audit event types to disable. When set, these events will not be logged. Example: `"create_artifact,delete_artifact,pull_artifact"`
 - `banner_message` (Block Set) (see [below for nested schema](#nestedblock--banner_message))
 
 <a id="nestedblock--banner_message"></a>

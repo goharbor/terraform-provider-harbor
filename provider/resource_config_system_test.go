@@ -49,6 +49,8 @@ func TestAccConfigSystem(t *testing.T) {
 						resourceConfigSystemMain, "robot_name_prefix", "robot$"),
 					resource.TestCheckResourceAttr(
 						resourceConfigSystemMain, "scanner_skip_update_pulltime", "false"),
+					resource.TestCheckResourceAttr(
+						resourceConfigSystemMain, "disabled_audit_log_event_types", "create_artifact,delete_artifact"),
 				),
 			},
 		},
@@ -58,11 +60,12 @@ func TestAccConfigSystem(t *testing.T) {
 func testAccCheckConfigSystem() string {
 	return fmt.Sprintf(`
 	resource "harbor_config_system" "main" {
-		project_creation_restriction  = "adminonly"
-		read_only                     = false
-		robot_token_expiration        = 30
-		robot_name_prefix             = "robot$"
-		scanner_skip_update_pulltime  = false
+		project_creation_restriction     = "adminonly"
+		read_only                        = false
+		robot_token_expiration           = 30
+		robot_name_prefix                = "robot$"
+		scanner_skip_update_pulltime     = false
+		disabled_audit_log_event_types   = "create_artifact,delete_artifact"
 	}
 	`)
 }

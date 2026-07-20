@@ -102,6 +102,10 @@ func resourceConfigSystem() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"disabled_audit_log_event_types": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 		Create: resourceConfigSystemCreate,
 		Read:   resourceConfigSystemRead,
@@ -179,6 +183,7 @@ func resourceConfigSystemRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("audit_log_forward_endpoint", jsonData.AuditLogForwardEndpoint.Value)
 	d.Set("skip_audit_log_database", jsonData.SkipAuditLogDatabase.Value)
 	d.Set("notification_enable", jsonData.NotificationEnable.Value)
+	d.Set("disabled_audit_log_event_types", jsonData.DisabledAuditLogEventTypes.Value)
 
 	d.SetId("configuration/system")
 	return nil
