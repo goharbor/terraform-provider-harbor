@@ -55,6 +55,7 @@ type ConfigBodySystemPost struct {
 	SkipAuditLogDatabase       bool   `json:"skip_audit_log_database"`
 	BannerMessage              string `json:"banner_message"`
 	NotificationEnable         bool   `json:"notification_enable"`
+	DisabledAuditLogEventTypes string `json:"disabled_audit_log_event_types,omitempty"`
 }
 
 type ConfigBodyResponse struct {
@@ -232,6 +233,10 @@ type ConfigBodyResponse struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`
 	} `json:"notification_enable,omitempty"`
+	DisabledAuditLogEventTypes struct {
+		Editable bool   `json:"editable,omitempty"`
+		Value    string `json:"value,omitempty"`
+	} `json:"disabled_audit_log_event_types,omitempty"`
 }
 
 type BannerMessage struct {
