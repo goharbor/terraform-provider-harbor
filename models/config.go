@@ -47,6 +47,7 @@ type ConfigBodySystemPost struct {
 	ProjectCreationRestriction string `json:"project_creation_restriction,omitempty"`
 	ReadOnly                   bool   `json:"read_only"`
 	RobotTokenDuration         int    `json:"robot_token_duration,omitempty"`
+	SessionTimeout             int    `json:"session_timeout,omitempty"`
 	QuotaPerProjectEnable      bool   `json:"quota_per_project_enable"`
 	RobotNamePrefix            string `json:"robot_name_prefix,omitempty"`
 	StoragePerProject          int    `json:"storage_per_project,omitempty"`
@@ -209,6 +210,10 @@ type ConfigBodyResponse struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    int  `json:"value,omitempty"`
 	} `json:"robot_token_duration,omitempty"`
+	SessionTimeout struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    int  `json:"value,omitempty"`
+	} `json:"session_timeout,omitempty"`
 	LdapVerifyCert struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`

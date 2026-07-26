@@ -46,6 +46,8 @@ func TestAccConfigSystem(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						resourceConfigSystemMain, "robot_token_expiration", "30"),
 					resource.TestCheckResourceAttr(
+						resourceConfigSystemMain, "session_timeout", "60"),
+					resource.TestCheckResourceAttr(
 						resourceConfigSystemMain, "robot_name_prefix", "robot$"),
 					resource.TestCheckResourceAttr(
 						resourceConfigSystemMain, "scanner_skip_update_pulltime", "false"),
@@ -63,6 +65,7 @@ func testAccCheckConfigSystem() string {
 		project_creation_restriction     = "adminonly"
 		read_only                        = false
 		robot_token_expiration           = 30
+		session_timeout                  = 60
 		robot_name_prefix                = "robot$"
 		scanner_skip_update_pulltime     = false
 		disabled_audit_log_event_types   = "create_artifact,delete_artifact"
