@@ -28,6 +28,11 @@ func resourceConfigSystem() *schema.Resource {
 				Optional: true,
 				Default:  30,
 			},
+			"token_expiration": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  30,
+			},
 			"session_timeout": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -182,6 +187,7 @@ func resourceConfigSystemRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("project_creation_restriction", jsonData.ProjectCreationRestriction.Value)
 	d.Set("read_only", jsonData.ReadOnly.Value)
 	d.Set("robot_token_expiration", jsonData.RobotTokenDuration.Value)
+	d.Set("token_expiration", jsonData.TokenExpiration.Value)
 	d.Set("session_timeout", jsonData.SessionTimeout.Value)
 	d.Set("robot_name_prefix", jsonData.RobotNamePrefix.Value)
 	d.Set("scanner_skip_update_pulltime", jsonData.ScannerSkipUpdatePulltime.Value)
