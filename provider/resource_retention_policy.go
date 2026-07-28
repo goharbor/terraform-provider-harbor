@@ -1,13 +1,16 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -36,50 +39,44 @@ func resourceRetention() *schema.Resource {
 							Optional: true,
 							Default:  false,
 						},
-						"n_days_since_last_pull": {
-							Type:     schema.TypeInt,
-							Optional: true,
-							Default:  nil,
-							// ConflictsWith: []string{"n_days_since_last_push"},
-						},
-						"n_days_since_last_push": {
-							Type:     schema.TypeInt,
-							Optional: true,
-							Default:  nil,
-							// ConflictsWith: []string{"n_days_since_last_pull"},
-						},
-						"most_recently_pulled": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"most_recently_pushed": {
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"always_retain": {
-							Type:     schema.TypeBool,
-							Optional: true,
-						},
-						"repo_matching": {
-							Type:     schema.TypeString,
-							Optional: true,
-							// ConflictsWith: []string{".repo_excluding"},
-						},
-						"repo_excluding": {
-							Type:     schema.TypeString,
-							Optional: true,
-							// ConflictsWith: []string{".repo_matching"},
-						},
-						"tag_matching": {
-							Type:     schema.TypeString,
-							Optional: true,
-							// ConflictsWith: []string{".tag_excluding"},
-						},
-						"tag_excluding": {
-							Type:     schema.TypeString,
-							Optional: true,
-							// ConflictsWith: []string{".tag_matching"},
-						},
+					"n_days_since_last_pull": {
+						Type:     schema.TypeInt,
+						Optional: true,
+						Default:  nil,
+					},
+					"n_days_since_last_push": {
+						Type:     schema.TypeInt,
+						Optional: true,
+						Default:  nil,
+					},
+					"most_recently_pulled": {
+						Type:     schema.TypeInt,
+						Optional: true,
+					},
+					"most_recently_pushed": {
+						Type:     schema.TypeInt,
+						Optional: true,
+					},
+					"always_retain": {
+						Type:     schema.TypeBool,
+						Optional: true,
+					},
+					"repo_matching": {
+						Type:     schema.TypeString,
+						Optional: true,
+					},
+					"repo_excluding": {
+						Type:     schema.TypeString,
+						Optional: true,
+					},
+					"tag_matching": {
+						Type:     schema.TypeString,
+						Optional: true,
+					},
+					"tag_excluding": {
+						Type:     schema.TypeString,
+						Optional: true,
+					},
 						"untagged_artifacts": {
 							Type:     schema.TypeBool,
 							Optional: true,
@@ -93,6 +90,9 @@ func resourceRetention() *schema.Resource {
 		Read:   resourceRetentionRead,
 		Update: resourceRetentionUpdate,
 		Delete: resourceRetentionDelete,
+		CustomizeDiff: customdiff.All(
+			retentionRuleParamValidation,
+		),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -275,4 +275,69 @@ func resolveRules(model models.Retention) []interface{} {
 	}
 
 	return make([]interface{}, 0)
+}
+
+func retentionRuleParamValidation(_ context.Context, d *schema.ResourceDiff, _ interface{}) error {
+	rules := d.Get("rule").([]interface{})
+	paramFields := []string{"n_days_since_last_pull", "n_days_since_last_push", "most_recently_pulled", "most_recently_pushed", "always_retain"}
+	repoFields := []string{"repo_matching", "repo_excluding"}
+	tagFields := []string{"tag_matching", "tag_excluding"}
+
+	for i, raw := range rules {
+		rule := raw.(map[string]interface{})
+
+		// exactly one retain param
+		count := 0
+		for _, field := range paramFields {
+			v, ok := rule[field]
+			if !ok {
+				continue
+			}
+			switch val := v.(type) {
+			case bool:
+				if val {
+					count++
+				}
+			case int:
+				if val != 0 {
+					count++
+				}
+			}
+		}
+		if count == 0 {
+			return fmt.Errorf("rule[%d]: exactly one of %v must be set", i, paramFields)
+		}
+		if count > 1 {
+			return fmt.Errorf("rule[%d]: only one of %v can be set, got %d", i, paramFields, count)
+		}
+
+		// exactly one repo param
+		repoCount := 0
+		for _, field := range repoFields {
+			if v, ok := rule[field].(string); ok && v != "" {
+				repoCount++
+			}
+		}
+		if repoCount == 0 {
+			return fmt.Errorf("rule[%d]: exactly one of %v must be set", i, repoFields)
+		}
+		if repoCount > 1 {
+			return fmt.Errorf("rule[%d]: only one of %v can be set", i, repoFields)
+		}
+
+		// exactly one tag param
+		tagCount := 0
+		for _, field := range tagFields {
+			if v, ok := rule[field].(string); ok && v != "" {
+				tagCount++
+			}
+		}
+		if tagCount == 0 {
+			return fmt.Errorf("rule[%d]: exactly one of %v must be set", i, tagFields)
+		}
+		if tagCount > 1 {
+			return fmt.Errorf("rule[%d]: only one of %v can be set", i, tagFields)
+		}
+	}
+	return nil
 }
