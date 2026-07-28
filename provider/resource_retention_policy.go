@@ -39,44 +39,44 @@ func resourceRetention() *schema.Resource {
 							Optional: true,
 							Default:  false,
 						},
-					"n_days_since_last_pull": {
-						Type:     schema.TypeInt,
-						Optional: true,
-						Default:  nil,
-					},
-					"n_days_since_last_push": {
-						Type:     schema.TypeInt,
-						Optional: true,
-						Default:  nil,
-					},
-					"most_recently_pulled": {
-						Type:     schema.TypeInt,
-						Optional: true,
-					},
-					"most_recently_pushed": {
-						Type:     schema.TypeInt,
-						Optional: true,
-					},
-					"always_retain": {
-						Type:     schema.TypeBool,
-						Optional: true,
-					},
-					"repo_matching": {
-						Type:     schema.TypeString,
-						Optional: true,
-					},
-					"repo_excluding": {
-						Type:     schema.TypeString,
-						Optional: true,
-					},
-					"tag_matching": {
-						Type:     schema.TypeString,
-						Optional: true,
-					},
-					"tag_excluding": {
-						Type:     schema.TypeString,
-						Optional: true,
-					},
+						"n_days_since_last_pull": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  nil,
+						},
+						"n_days_since_last_push": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  nil,
+						},
+						"most_recently_pulled": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"most_recently_pushed": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"always_retain": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"repo_matching": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"repo_excluding": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"tag_matching": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"tag_excluding": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"untagged_artifacts": {
 							Type:     schema.TypeBool,
 							Optional: true,
@@ -277,6 +277,47 @@ func resolveRules(model models.Retention) []interface{} {
 	return make([]interface{}, 0)
 }
 
+func countSetParamFields(rule map[string]interface{}, fields []string) int {
+	count := 0
+	for _, field := range fields {
+		v, ok := rule[field]
+		if !ok {
+			continue
+		}
+		switch val := v.(type) {
+		case bool:
+			if val {
+				count++
+			}
+		case int:
+			if val != 0 {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+func countSetStringFields(rule map[string]interface{}, fields []string) int {
+	count := 0
+	for _, field := range fields {
+		if v, ok := rule[field].(string); ok && v != "" {
+			count++
+		}
+	}
+	return count
+}
+
+func validateExactlyOne(count, index int, fields []string) error {
+	if count == 0 {
+		return fmt.Errorf("rule[%d]: exactly one of %v must be set", index, fields)
+	}
+	if count > 1 {
+		return fmt.Errorf("rule[%d]: only one of %v can be set, got %d", index, fields, count)
+	}
+	return nil
+}
+
 func retentionRuleParamValidation(_ context.Context, d *schema.ResourceDiff, _ interface{}) error {
 	rules := d.Get("rule").([]interface{})
 	paramFields := []string{"n_days_since_last_pull", "n_days_since_last_push", "most_recently_pulled", "most_recently_pushed", "always_retain"}
@@ -285,58 +326,17 @@ func retentionRuleParamValidation(_ context.Context, d *schema.ResourceDiff, _ i
 
 	for i, raw := range rules {
 		rule := raw.(map[string]interface{})
-
-		// exactly one retain param
-		count := 0
-		for _, field := range paramFields {
-			v, ok := rule[field]
-			if !ok {
-				continue
-			}
-			switch val := v.(type) {
-			case bool:
-				if val {
-					count++
-				}
-			case int:
-				if val != 0 {
-					count++
-				}
-			}
+		// check that exactly one of the param fields is set
+		if err := validateExactlyOne(countSetParamFields(rule, paramFields), i, paramFields); err != nil {
+			return err
 		}
-		if count == 0 {
-			return fmt.Errorf("rule[%d]: exactly one of %v must be set", i, paramFields)
+		// check that exactly one of the repo fields is set
+		if err := validateExactlyOne(countSetStringFields(rule, repoFields), i, repoFields); err != nil {
+			return err
 		}
-		if count > 1 {
-			return fmt.Errorf("rule[%d]: only one of %v can be set, got %d", i, paramFields, count)
-		}
-
-		// exactly one repo param
-		repoCount := 0
-		for _, field := range repoFields {
-			if v, ok := rule[field].(string); ok && v != "" {
-				repoCount++
-			}
-		}
-		if repoCount == 0 {
-			return fmt.Errorf("rule[%d]: exactly one of %v must be set", i, repoFields)
-		}
-		if repoCount > 1 {
-			return fmt.Errorf("rule[%d]: only one of %v can be set", i, repoFields)
-		}
-
-		// exactly one tag param
-		tagCount := 0
-		for _, field := range tagFields {
-			if v, ok := rule[field].(string); ok && v != "" {
-				tagCount++
-			}
-		}
-		if tagCount == 0 {
-			return fmt.Errorf("rule[%d]: exactly one of %v must be set", i, tagFields)
-		}
-		if tagCount > 1 {
-			return fmt.Errorf("rule[%d]: only one of %v can be set", i, tagFields)
+		// check that exactly one of the tag fields is set
+		if err := validateExactlyOne(countSetStringFields(rule, tagFields), i, tagFields); err != nil {
+			return err
 		}
 	}
 	return nil
