@@ -54,18 +54,27 @@ resource "harbor_retention_policy" "main" {
 
 ~> Multiple tags or repositories must be provided as a comma-separated list wrapped into curly brackets `{ }`. Otherwise, the value is interpreted as a single value.
 
-Optional:
+Required exactly one of retain parameters:
 
 - `always_retain` (Boolean) retain always.
-- `disabled` (Boolean) Specify if the rule is disable or not. Defaults to `false`
 - `most_recently_pulled` (Number) retain the most recently pulled n artifacts.
 - `most_recently_pushed` (Number) retain the most recently pushed n artifacts.
 - `n_days_since_last_pull` (Number) retains the artifacts pulled within the lasts n days.
 - `n_days_since_last_push` (Number) retains the artifacts pushed within the lasts n days.
+
+Required exactly one of repository parameters:
+
 - `repo_excluding` (String) For the repositories excluding.
 - `repo_matching` (String) For the repositories matching.
+
+Required exactly one of tag parameters:
+
 - `tag_excluding` (String) For the tag excluding.
 - `tag_matching` (String) For the tag matching.
+
+Optional:
+
+- `disabled` (Boolean) Specify if the rule is disable or not. Defaults to `false`
 - `untagged_artifacts` (Boolean) with untagged artifacts. Defaults to `true`
 
 ## Import

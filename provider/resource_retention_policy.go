@@ -1,13 +1,16 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -40,13 +43,11 @@ func resourceRetention() *schema.Resource {
 							Type:     schema.TypeInt,
 							Optional: true,
 							Default:  nil,
-							// ConflictsWith: []string{"n_days_since_last_push"},
 						},
 						"n_days_since_last_push": {
 							Type:     schema.TypeInt,
 							Optional: true,
 							Default:  nil,
-							// ConflictsWith: []string{"n_days_since_last_pull"},
 						},
 						"most_recently_pulled": {
 							Type:     schema.TypeInt,
@@ -63,22 +64,18 @@ func resourceRetention() *schema.Resource {
 						"repo_matching": {
 							Type:     schema.TypeString,
 							Optional: true,
-							// ConflictsWith: []string{".repo_excluding"},
 						},
 						"repo_excluding": {
 							Type:     schema.TypeString,
 							Optional: true,
-							// ConflictsWith: []string{".repo_matching"},
 						},
 						"tag_matching": {
 							Type:     schema.TypeString,
 							Optional: true,
-							// ConflictsWith: []string{".tag_excluding"},
 						},
 						"tag_excluding": {
 							Type:     schema.TypeString,
 							Optional: true,
-							// ConflictsWith: []string{".tag_matching"},
 						},
 						"untagged_artifacts": {
 							Type:     schema.TypeBool,
@@ -93,6 +90,9 @@ func resourceRetention() *schema.Resource {
 		Read:   resourceRetentionRead,
 		Update: resourceRetentionUpdate,
 		Delete: resourceRetentionDelete,
+		CustomizeDiff: customdiff.All(
+			retentionRuleParamValidation,
+		),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -275,4 +275,69 @@ func resolveRules(model models.Retention) []interface{} {
 	}
 
 	return make([]interface{}, 0)
+}
+
+func countSetParamFields(rule map[string]interface{}, fields []string) int {
+	count := 0
+	for _, field := range fields {
+		v, ok := rule[field]
+		if !ok {
+			continue
+		}
+		switch val := v.(type) {
+		case bool:
+			if val {
+				count++
+			}
+		case int:
+			if val != 0 {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+func countSetStringFields(rule map[string]interface{}, fields []string) int {
+	count := 0
+	for _, field := range fields {
+		if v, ok := rule[field].(string); ok && v != "" {
+			count++
+		}
+	}
+	return count
+}
+
+func validateExactlyOne(count, index int, fields []string) error {
+	if count == 0 {
+		return fmt.Errorf("rule[%d]: exactly one of %v must be set", index, fields)
+	}
+	if count > 1 {
+		return fmt.Errorf("rule[%d]: only one of %v can be set, got %d", index, fields, count)
+	}
+	return nil
+}
+
+func retentionRuleParamValidation(_ context.Context, d *schema.ResourceDiff, _ interface{}) error {
+	rules := d.Get("rule").([]interface{})
+	paramFields := []string{"n_days_since_last_pull", "n_days_since_last_push", "most_recently_pulled", "most_recently_pushed", "always_retain"}
+	repoFields := []string{"repo_matching", "repo_excluding"}
+	tagFields := []string{"tag_matching", "tag_excluding"}
+
+	for i, raw := range rules {
+		rule := raw.(map[string]interface{})
+		// check that exactly one of the param fields is set
+		if err := validateExactlyOne(countSetParamFields(rule, paramFields), i, paramFields); err != nil {
+			return err
+		}
+		// check that exactly one of the repo fields is set
+		if err := validateExactlyOne(countSetStringFields(rule, repoFields), i, repoFields); err != nil {
+			return err
+		}
+		// check that exactly one of the tag fields is set
+		if err := validateExactlyOne(countSetStringFields(rule, tagFields), i, tagFields); err != nil {
+			return err
+		}
+	}
+	return nil
 }
