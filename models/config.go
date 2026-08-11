@@ -36,7 +36,6 @@ type ConfigBodyAuthPost struct {
 	OidcGroupFilter              string `json:"oidc_group_filter,omitempty"`
 	OidcGroupsClaim              string `json:"oidc_groups_claim,omitempty"`
 	LdapScope                    int    `json:"ldap_scope"`
-	TokenExpiration              int    `json:"token_expiration,omitempty"`
 	LdapGroupSearchScope         int    `json:"ldap_group_search_scope"`
 	LdapVerifyCert               bool   `json:"ldap_verify_cert"`
 	LdapGroupGID                 string `json:"ldap_group_gid,omitempty"`
@@ -47,6 +46,8 @@ type ConfigBodySystemPost struct {
 	ProjectCreationRestriction string `json:"project_creation_restriction,omitempty"`
 	ReadOnly                   bool   `json:"read_only"`
 	RobotTokenDuration         int    `json:"robot_token_duration,omitempty"`
+	TokenExpiration            int    `json:"token_expiration,omitempty"`
+	SessionTimeout             int    `json:"session_timeout,omitempty"`
 	QuotaPerProjectEnable      bool   `json:"quota_per_project_enable"`
 	RobotNamePrefix            string `json:"robot_name_prefix,omitempty"`
 	StoragePerProject          int    `json:"storage_per_project,omitempty"`
@@ -185,10 +186,6 @@ type ConfigBodyResponse struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    int  `json:"value,omitempty"`
 	} `json:"ldap_scope,omitempty"`
-	TokenExpiration struct {
-		Editable bool `json:"editable,omitempty"`
-		Value    int  `json:"value,omitempty"`
-	} `json:"token_expiration,omitempty"`
 	LdapGroupSearchScope struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    int  `json:"value,omitempty"`
@@ -209,6 +206,14 @@ type ConfigBodyResponse struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    int  `json:"value,omitempty"`
 	} `json:"robot_token_duration,omitempty"`
+	TokenExpiration struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    int  `json:"value,omitempty"`
+	} `json:"token_expiration,omitempty"`
+	SessionTimeout struct {
+		Editable bool `json:"editable,omitempty"`
+		Value    int  `json:"value,omitempty"`
+	} `json:"session_timeout,omitempty"`
 	LdapVerifyCert struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`
