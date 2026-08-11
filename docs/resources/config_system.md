@@ -15,6 +15,8 @@ description: |-
 ```terraform
 resource "harbor_config_system" "main" {
   project_creation_restriction     = "adminonly"
+  session_timeout                  = 60
+  token_expiration                 = 30
   robot_token_expiration           = 30
   robot_name_prefix                = "harbor@"
   storage_per_project              = 100
@@ -31,6 +33,8 @@ resource "harbor_config_system" "main" {
 - `read_only` (Boolean) Whether or not the system is in read only mode.
 - `robot_name_prefix` (String) Robot account prefix.
 - `robot_token_expiration` (Number) The amount of time in days a robot account will expire.
+- `session_timeout` (Number) The session timeout for Harbor UI, in minutes. Defaults to 60.
+- `token_expiration` (Number) The expiration time of a token created by the token service, in minutes. Defaults to 30.
 - `scanner_skip_update_pulltime` (Boolean) Whether or not to skip update pull time for scanner.
 - `storage_per_project` (Number) Default quota space per project in GIB. Default is -1 (unlimited).
 - `audit_log_forward_endpoint` (String) The endpoint to forward audit logs to.
