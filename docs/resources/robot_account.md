@@ -164,7 +164,7 @@ The above example creates a project level robot account with permissions to
 ### Required
 
 - `level` (String) Level of the robot account, currently either `system` or `project`.
-- `name` (String) The name of the project that will be created in harbor.
+- `name` (String) The name of the robot account. Note that this is not the full robot account name : Harbor prefixes it with `robot$` (by default) and for project-level robots with the project name. See `full_name` for the complete name.
 - `permissions` (Block Set, Min: 1) (see [below for nested schema](#nestedblock--permissions))
 
 ### Optional
@@ -178,7 +178,7 @@ The above example creates a project level robot account with permissions to
 
 ### Read-Only
 
-- `full_name` (String)
+- `full_name` (String) The full name of the robot account, this includes the appropriate prefix
 - `id` (String) The ID of this resource.
 - `robot_id` (String)
 
