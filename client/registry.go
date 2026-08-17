@@ -56,7 +56,6 @@ func GetRegistryType(regType string) (regName string, err error) {
 		"huawei":          "huawei-SWR",
 		"jfrog":           "jfrog-artifactory",
 		"quay":            "quay",
-        "quay-io":          "quay",
 		// for reverse lookup
 		"ali-acr":           "alibaba",
 		"aws-ecr":           "aws",
