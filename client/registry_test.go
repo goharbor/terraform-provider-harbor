@@ -12,9 +12,9 @@ func TestGetRegistryAPIType(t *testing.T) {
 		wantErr bool
 	}{
 		{"provider_name", "azure", "azure-acr", false},
-		{"api_type", "azure-acr", "azure-acr", false},
-		{"unknown", "foo", "", true},
-	}
+        {"api_type", "azure-acr", "azure-acr", false},
+        {"quay-io alias", "quay-io", "quay", false}, // Add this line
+        {"unknown", "foo", "", true},
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := GetRegistryAPIType(tt.input)
