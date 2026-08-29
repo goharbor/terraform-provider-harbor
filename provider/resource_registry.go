@@ -16,6 +16,23 @@ func resourceRegistry() *schema.Resource {
                 Type:     schema.TypeString,
                 Required: true,
                 ForceNew: true,
+                DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+                    // Normalize both old (state) and new (config) values to their API type
+                    // to prevent perpetual diffs when equivalent types are used (e.g., "azure" vs "azure-acr").
+                    oldNorm, _ := client.GetRegistryAPIType(old)
+                    newNorm, _ := client.GetRegistryAPIType(new)
+                    return oldNorm == newNorm
+                },
+                ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+                    v, ok := val.(string)
+                    if !ok || v == "" {
+                        return
+                    }
+                    if _, err := client.GetRegistryAPIType(v); err != nil {
+                        errs = append(errs, err)
+                    }
+                    return
+                },
             },
             "name": {
                 Type:     schema.TypeString,
