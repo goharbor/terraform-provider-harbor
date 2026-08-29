@@ -26,14 +26,23 @@ var providerToAPI = map[string]string{
     "quay-io":         "quay",
 }
 
-// apiToProvider is the reverse map of providerToAPI, generated at init.
-var apiToProvider map[string]string
-
-func init() {
-    apiToProvider = make(map[string]string)
-    for provider, api := range providerToAPI {
-        apiToProvider[api] = provider
-    }
+// apiToProvider is the reverse map of providerToAPI, explicitly defined to guarantee
+// deterministic lookups (prevents state flapping for aliases like quay-io).
+var apiToProvider = map[string]string{
+    "ali-acr":           "alibaba",
+    "artifact-hub":      "artifact-hub",
+    "aws-ecr":           "aws",
+    "azure-acr":         "azure",
+    "docker-hub":        "docker-hub",
+    "docker-registry":   "docker-registry",
+    "gitlab":            "gitlab",
+    "github-ghcr":       "github",
+    "google-gcr":        "google",
+    "harbor":            "harbor",
+    "helm-hub":          "helm",
+    "huawei-SWR":        "huawei",
+    "jfrog-artifactory": "jfrog",
+    "quay":              "quay",
 }
 
 // GetRegistryBody populates the registry body from schema.
