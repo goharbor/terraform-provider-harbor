@@ -7,7 +7,7 @@ import (
     "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-// providerToAPI is the single source of truth for mapping Terraform provider names to Harbor API types.
+// providerToAPI defines the forward mapping (with aliases) from Terraform provider names to Harbor API types.
 var providerToAPI = map[string]string{
     "alibaba":         "ali-acr",
     "artifact-hub":    "artifact-hub",
@@ -26,8 +26,7 @@ var providerToAPI = map[string]string{
     "quay-io":         "quay",
 }
 
-// apiToProvider is the reverse map of providerToAPI, explicitly defined to guarantee
-// deterministic lookups (prevents state flapping for aliases like quay-io).
+// apiToProvider defines the canonical reverse mapping from Harbor API types back to Terraform provider names.
 var apiToProvider = map[string]string{
     "ali-acr":           "alibaba",
     "artifact-hub":      "artifact-hub",
