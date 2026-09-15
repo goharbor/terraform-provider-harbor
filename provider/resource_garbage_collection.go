@@ -57,9 +57,14 @@ func resourceGCRead(d *schema.ResourceData, m interface{}) error {
 	resp, _, respCode, err := apiClient.SendRequest("GET", models.PathGC, nil, 200)
 	if respCode == 404 && err != nil {
 		d.SetId("")
-		return fmt.Errorf("resource not found %s", d.Id())
+		return nil
 	} else if err != nil {
 		return err
+	}
+
+	if resp == "" {
+		d.SetId("")
+		return nil
 	}
 
 	var jsonData models.SystemBody
