@@ -41,6 +41,55 @@ resource "harbor_registry" "docker" {
 }
 ```
 
+### Proxy with Repository Filtering
+
+Requires Harbor `v2.16.0` or above. These examples reference the `harbor_registry.docker` resource in the Proxy example above. Patterns match repository names; only matching repositories will be proxied.
+
+#### Glob-style matching (`doublestar`)
+
+Allow repositories under `library/`, including nested paths, using `**`:
+
+```terraform
+resource "harbor_project" "filtered_glob" {
+  name                       = "filtered-glob"
+  registry_id                = harbor_registry.docker.registry_id
+  proxy_cache_filter_kind    = "doublestar"
+  proxy_cache_filter_pattern = "library/**"
+}
+```
+
+`doublestar` is the default, so `proxy_cache_filter_kind` can be omitted in this example.
+
+#### Allow two repositories with `doublestar`
+
+Use brace alternatives to allow only `library/nginx` and `library/redis`:
+
+```terraform
+resource "harbor_project" "filtered_glob_allowlist" {
+  name                       = "filtered-glob-allowlist"
+  registry_id                = harbor_registry.docker.registry_id
+  proxy_cache_filter_kind    = "doublestar"
+  proxy_cache_filter_pattern = "library/{nginx,redis}"
+}
+```
+
+The `{nginx,redis}` alternatives match either repository name. No wildcard is needed, and the filter does not restrict tags within those repositories.
+
+#### Regular expression matching (`regex`)
+
+Allow only the repositories `library/nginx` and `library/redis`. The anchors ensure the expression matches the entire repository name:
+
+```terraform
+resource "harbor_project" "filtered_regex" {
+  name                       = "filtered-regex"
+  registry_id                = harbor_registry.docker.registry_id
+  proxy_cache_filter_kind    = "regex"
+  proxy_cache_filter_pattern = "^library/(nginx|redis)$"
+}
+```
+
+An empty pattern (`""`) means allow all repositories in Harbor. This describes an empty value stored in Harbor; omitting a field from an update request is not necessarily equivalent to clearing an existing filter.
+
 ## Schema
 
 ### Required
@@ -64,10 +113,10 @@ resource "harbor_registry" "docker" {
 - `registry_id` (Number) To enable project as Proxy Cache.
 - `proxy_speed_kb` (Number) Proxy max speed KB (Default: `-1`)
 - `proxy_cache_local_on_not_found` (Boolean) When enabled, serve images from the local cache when they have been removed from the upstream registry. (Default: `false`) Requires Harbor `v2.15.1` or above.
-- `proxy_cache_filter_pattern` (String, Optional) Image pull allowlist filter pattern for a proxy-cache project. Requires Harbor `v2.16.0` or above and a project configured with `registry_id`. The value is passed directly to Harbor's `proxy_cache_filter_pattern` project metadata field and interpreted using `proxy_cache_filter_kind`. (Default: `""`)
-- `proxy_cache_filter_kind` (String, Optional) Pattern-matching kind used to interpret `proxy_cache_filter_pattern`. The value is passed directly to Harbor's `proxy_cache_filter_kind` project metadata field. Requires Harbor `v2.16.0` or above and a project configured with `registry_id`. (Default: `"doublestar"`)
+- `proxy_cache_filter_pattern` (String, Optional) Repository filter pattern for a proxy-cache project. Only repositories matching the pattern will be proxied. An empty pattern means allow all repositories. Interpreted using `proxy_cache_filter_kind`. Only applicable to proxy-cache projects configured with `registry_id`. Requires Harbor `v2.16.0` or above. (Default: `""`)
+- `proxy_cache_filter_kind` (String, Optional) Matching mode for `proxy_cache_filter_pattern`. Allowed values: `"doublestar"` (glob-style matching with `**` support) or `"regex"` (regular expression matching). Only applicable to proxy-cache projects configured with `registry_id`. Requires Harbor `v2.16.0` or above. (Default: `"doublestar"`)
 
-Use `proxy_cache_filter_pattern` to configure the image pull allowlist and `proxy_cache_filter_kind` to select how Harbor interprets the pattern. If you omit `proxy_cache_filter_kind`, the provider uses `"doublestar"`. Use a filter kind and matching pattern syntax supported by your Harbor version; the provider passes these strings through without validating their syntax.
+Use `proxy_cache_filter_pattern` to configure the repository allowlist and `proxy_cache_filter_kind` to select how Harbor interprets the pattern. If you omit `proxy_cache_filter_kind`, the provider uses `"doublestar"`.
 
 These settings are separate from `cve_allowlist`, which specifies vulnerability exceptions rather than image filters.
 
