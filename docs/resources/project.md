@@ -64,6 +64,12 @@ resource "harbor_registry" "docker" {
 - `registry_id` (Number) To enable project as Proxy Cache.
 - `proxy_speed_kb` (Number) Proxy max speed KB (Default: `-1`)
 - `proxy_cache_local_on_not_found` (Boolean) When enabled, serve images from the local cache when they have been removed from the upstream registry. (Default: `false`) Requires Harbor `v2.15.1` or above.
+- `proxy_cache_filter_pattern` (String, Optional) Image pull allowlist filter pattern for a proxy-cache project. Requires Harbor `v2.16.0` or above and a project configured with `registry_id`. The value is passed directly to Harbor's `proxy_cache_filter_pattern` project metadata field and interpreted using `proxy_cache_filter_kind`. (Default: `""`)
+- `proxy_cache_filter_kind` (String, Optional) Pattern-matching kind used to interpret `proxy_cache_filter_pattern`. The value is passed directly to Harbor's `proxy_cache_filter_kind` project metadata field. Requires Harbor `v2.16.0` or above and a project configured with `registry_id`. (Default: `"doublestar"`)
+
+Use `proxy_cache_filter_pattern` to configure the image pull allowlist and `proxy_cache_filter_kind` to select how Harbor interprets the pattern. If you omit `proxy_cache_filter_kind`, the provider uses `"doublestar"`. Use a filter kind and matching pattern syntax supported by your Harbor version; the provider passes these strings through without validating their syntax.
+
+These settings are separate from `cve_allowlist`, which specifies vulnerability exceptions rather than image filters.
 
 ### Read-Only
 

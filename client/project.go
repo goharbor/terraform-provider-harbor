@@ -42,6 +42,8 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	body.Metadata.AutoSbomGeneration = strconv.FormatBool(d.Get("auto_sbom_generation").(bool))
 	body.Metadata.ProxySpeedKb = strconv.Itoa(d.Get("proxy_speed_kb").(int))
 	body.Metadata.ProxyCacheLocalOnNotFound = strconv.FormatBool(d.Get("proxy_cache_local_on_not_found").(bool))
+	body.Metadata.ProxyCacheFilterPattern = d.Get("proxy_cache_filter_pattern").(string)
+	body.Metadata.ProxyCacheFilterKind = d.Get("proxy_cache_filter_kind").(string)
 
 	cveAllowList := d.Get("cve_allowlist").([]interface{})
 	log.Printf("[DEBUG] %v ", cveAllowList)
