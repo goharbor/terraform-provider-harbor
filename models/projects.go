@@ -27,6 +27,8 @@ type ProjectsBodyPost struct {
 		AutoSbomGeneration        string `json:"auto_sbom_generation,omitempty"`
 		ProxySpeedKb              string `json:"proxy_speed_kb,omitempty"`
 		ProxyCacheLocalOnNotFound string `json:"proxy_cache_local_on_not_found,omitempty"`
+		ProxyCacheFilterPattern   string `json:"proxy_cache_filter_pattern,omitempty"`
+		ProxyCacheFilterKind      string `json:"proxy_cache_filter_kind,omitempty"`
 	} `json:"metadata,omitempty"`
 }
 
@@ -64,6 +66,8 @@ type ProjectsBodyResponses struct {
 		AutoSbomGeneration        string `json:"auto_sbom_generation,omitempty"`
 		ProxySpeedKb              string `json:"proxy_speed_kb,omitempty"`
 		ProxyCacheLocalOnNotFound string `json:"proxy_cache_local_on_not_found,omitempty"`
+		ProxyCacheFilterPattern   string `json:"proxy_cache_filter_pattern,omitempty"`
+		ProxyCacheFilterKind      string `json:"proxy_cache_filter_kind,omitempty"`
 	} `json:"metadata"`
 }
 
