@@ -38,6 +38,42 @@ func TestAccRegistryBasic(t *testing.T) {
 	})
 }
 
+func TestAccRegistryWriteOnlySecret(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckRegistryDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckRegistryWriteOnlySecret("docker-hub-test-reg-wo", 1),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(harborRegistryMain),
+					resource.TestCheckResourceAttr(
+						harborRegistryMain, "name", "docker-hub-test-reg-wo"),
+					resource.TestCheckResourceAttr(
+						harborRegistryMain, "access_id", "registryUser"),
+					resource.TestCheckResourceAttr(
+						harborRegistryMain, "access_secret", ""),
+					resource.TestCheckNoResourceAttr(
+						harborRegistryMain, "access_secret_wo"),
+					resource.TestCheckResourceAttr(
+						harborRegistryMain, "access_secret_wo_version", "1"),
+				),
+			},
+			{
+				Config: testAccCheckRegistryWriteOnlySecret("docker-hub-test-reg-wo", 2),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(harborRegistryMain),
+					resource.TestCheckNoResourceAttr(
+						harborRegistryMain, "access_secret_wo"),
+					resource.TestCheckResourceAttr(
+						harborRegistryMain, "access_secret_wo_version", "2"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckRegistryDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
 
@@ -84,4 +120,18 @@ func testAccCheckRegistryUpdate() string {
 
 	`, endpoint)
 	return config
+}
+
+func testAccCheckRegistryWriteOnlySecret(name string, secretVersion int) string {
+	endpoint := "https://hub.docker.com"
+	return fmt.Sprintf(`
+	resource "harbor_registry" "main" {
+		provider_name            = "docker-hub"
+		name                     = "%s"
+		endpoint_url             = "%s"
+		access_id                = "registryUser"
+		access_secret_wo         = "registrySecret%d"
+		access_secret_wo_version = %d
+	  }
+	`, name, endpoint, secretVersion, secretVersion)
 }

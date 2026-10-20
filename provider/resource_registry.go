@@ -6,11 +6,16 @@ import (
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/goharbor/terraform-provider-harbor/models"
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceRegistry() *schema.Resource {
 	return &schema.Resource{
+		ValidateRawResourceConfigFuncs: []schema.ValidateRawResourceConfigFunc{
+			validation.PreferWriteOnlyAttribute(cty.GetAttrPath("access_secret"), cty.GetAttrPath("access_secret_wo")),
+		},
 		Schema: map[string]*schema.Schema{
 			"provider_name": {
 				Type:     schema.TypeString,
@@ -57,6 +62,32 @@ func resourceRegistry() *schema.Resource {
 				Sensitive: true,
 				Optional:  true,
 				Default:   "",
+				ConflictsWith: []string{
+					"access_secret_wo",
+					"access_secret_wo_version",
+				},
+			},
+			"access_secret_wo": {
+				Type:      schema.TypeString,
+				Optional:  true,
+				Sensitive: true,
+				WriteOnly: true,
+				RequiredWith: []string{
+					"access_secret_wo_version",
+				},
+				ConflictsWith: []string{
+					"access_secret",
+				},
+			},
+			"access_secret_wo_version": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				RequiredWith: []string{
+					"access_secret_wo",
+				},
+				ConflictsWith: []string{
+					"access_secret",
+				},
 			},
 			"insecure": {
 				Type:     schema.TypeBool,
@@ -93,6 +124,14 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	body, err := client.GetRegistryBody(d)
 	if err != nil {
 		return err
+	}
+
+	accessSecretWriteOnly, err := getWriteOnlyString(d, "access_secret_wo")
+	if err != nil {
+		return err
+	}
+	if accessSecretWriteOnly != "" {
+		body.Credential.AccessSecret = accessSecretWriteOnly
 	}
 
 	_, headers, _, err := apiClient.SendRequest("POST", models.PathRegistries, body, 201)
@@ -144,10 +183,33 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	body := client.GetRegistryUpdateBody(d)
-
-	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
+	oldAccessSecret, _ := d.GetChange("access_secret")
+	oldAccessSecretWOVersion, newAccessSecretWOVersion := d.GetChange("access_secret_wo_version")
+	accessSecretWriteOnly, err := getWriteOnlyString(d, "access_secret_wo")
 	if err != nil {
+		return err
+	}
+
+	if d.HasChange("access_secret_wo_version") && newAccessSecretWOVersion.(int) != 0 &&
+		accessSecretWriteOnly == "" && !d.HasChange("access_secret") {
+		_ = d.Set("access_secret_wo_version", oldAccessSecretWOVersion)
+		return fmt.Errorf("access_secret_wo must be configured when access_secret_wo_version changes")
+	}
+
+	body := client.GetRegistryUpdateBody(d)
+	// Harbor overwrites the stored secret with whatever is sent, so always send the write-only value when configured.
+	if accessSecretWriteOnly != "" {
+		body.AccessSecret = accessSecretWriteOnly
+	}
+
+	_, _, _, err = apiClient.SendRequest("PUT", d.Id(), body, 200)
+	if err != nil {
+		if d.HasChange("access_secret") {
+			_ = d.Set("access_secret", oldAccessSecret)
+		}
+		if d.HasChange("access_secret_wo_version") {
+			_ = d.Set("access_secret_wo_version", oldAccessSecretWOVersion)
+		}
 		return err
 	}
 
