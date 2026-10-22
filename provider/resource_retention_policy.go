@@ -104,8 +104,8 @@ func resourceRetentionCreate(d *schema.ResourceData, m interface{}) error {
 	body := client.GetRententionBody(d)
 	id := ""
 
-	_, headers, _, err := apiClient.SendRequest("POST", models.PathRetentions, body, 201)
-	if err != nil {
+	_, headers, _, createErr := apiClient.SendRequest("POST", models.PathRetentions, body, 201)
+	if createErr != nil {
 		project_id := strconv.Itoa(body.Scope.Ref)
 		resp, _, _, err := apiClient.SendRequest("GET", models.PathProjects+"/"+project_id, nil, 200)
 		if err != nil {
@@ -117,6 +117,11 @@ func resourceRetentionCreate(d *schema.ResourceData, m interface{}) error {
 
 		if err != nil {
 			return err
+		}
+		// Only a project that already has a retention policy can be updated. Without one the
+		// POST failed for another reason, such as an invalid payload, so report that error.
+		if jsonData.Metadata.RetentionId == "" {
+			return createErr
 		}
 		_, _, _, err = apiClient.SendRequest("PUT", models.PathRetentions+"/"+jsonData.Metadata.RetentionId, body, 200)
 		if err != nil {
