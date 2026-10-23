@@ -55,6 +55,10 @@ func resourceProject() *schema.Resource {
 				},
 				Optional: true,
 			},
+			"cve_allowlist_expires_at": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"enable_content_trust": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -246,6 +250,7 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		cveAllowlist[i] = item.CveID
 	}
 	d.Set("cve_allowlist", cveAllowlist)
+	d.Set("cve_allowlist_expires_at", jsonData.CveAllowlist.ExpiresAt)
 
 	if d.Get("vulnerability_scanner").(string) != "" {
 		scannerName, err := apiClient.GetProjectScanner(d.Id())

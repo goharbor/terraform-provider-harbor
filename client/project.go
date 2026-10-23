@@ -48,6 +48,7 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 	if len(cveAllowList) > 0 {
 		log.Printf("[DEBUG] %v ", expandCveAllowList(cveAllowList))
 		body.CveAllowlist.Items = expandCveAllowList(cveAllowList)
+		body.CveAllowlist.ExpiresAt = d.Get("cve_allowlist_expires_at").(int)
 		body.Metadata.ReuseSysCveAllowlist = "false"
 	} else {
 		body.Metadata.ReuseSysCveAllowlist = "true"
