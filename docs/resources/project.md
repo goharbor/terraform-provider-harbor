@@ -50,6 +50,7 @@ resource "harbor_registry" "docker" {
 ### Optional
 
 - `cve_allowlist` (List of String) Project allowlist allows vulnerabilities in this list to be ignored in this project when pushing and pulling images. Should be in the format or `["CVE-123", "CVE-145"]` or `["CVE-123"]`
+- `cve_allowlist_expires_at` (Number) The time for expiration of the project CVE allowlist, in the form of seconds since epoch. This is an optional attribute, if it's not set the CVE allowlist does not expire. Only used when `cve_allowlist` is set.
 - `deployment_security` (String) Prevent deployment of images with vulnerability severity equal or higher than the specified value. Images must be scanned before this takes effect. Possible values: `"critical"`, `"high"`, `"medium"`, `"low"`, `"none"`. (Default: null)
 - `enable_content_trust` (Boolean) Enables Content Trust for project. When enabled it queries the embedded docker notary server. (Default: `false`).
 - `enable_content_trust_cosign` (Boolean) Enables Content Trust Cosign for project. When enabled it queries Cosign. (Default: `false`)
