@@ -117,7 +117,7 @@ type ConfigBodyResponse struct {
 		Parameter struct {
 			DailyTime int `json:"daily_time,omitempty"`
 		} `json:"parameter,omitempty"`
-	} `json:"scan_all_policy",omitempty`
+	} `json:"scan_all_policy,omitempty"`
 	VerifyRemoteCert struct {
 		Editable bool `json:"editable,omitempty"`
 		Value    bool `json:"value,omitempty"`

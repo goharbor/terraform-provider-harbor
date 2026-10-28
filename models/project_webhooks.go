@@ -19,5 +19,5 @@ type WebHookTargets struct {
 	AuthHeader     string `json:"auth_header"`
 	SkipCertVerify bool   `json:"skip_cert_verify"`
 	Address        string `json:"address"`
-	PayloadFormat  string `json:"payload_format:omitempty"`
+	PayloadFormat  string `json:"payload_format,omitempty"`
 }
