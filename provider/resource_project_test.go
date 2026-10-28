@@ -11,7 +11,6 @@ import (
 
 const resourceHarborProjectMain = "harbor_project.main"
 const enableContentTrust = "enable_content_trust"
-const enableContentTrustCosign = "enable_content_trust_cosign"
 
 func testAccCheckProjectDestroy(s *terraform.State) error {
 	apiClient := testAccProvider.Meta().(*client.Client)
@@ -94,6 +93,30 @@ func TestAccProjectUpdate(t *testing.T) {
 	})
 }
 
+func TestAccProjectCVEAllowlist(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckProjectDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckProjectCVEAllowlist(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceHarborProjectMain),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "cve_allowlist.#", "2"),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "cve_allowlist.0", "CVE-2023-12345"),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "cve_allowlist.1", "CVE-2024-12345"),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "cve_allowlist_expires_at", "2000000000"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckProjectBasic() string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
@@ -114,4 +137,17 @@ func testAccCheckItemUpdate() string {
 		%v = true
 	  }
 `, enableContentTrust)
+}
+
+func testAccCheckProjectCVEAllowlist() string {
+	return `
+	resource "harbor_project" "main" {
+		name = "test_cve_allowlist"
+		cve_allowlist = [
+			"CVE-2023-12345",
+			"CVE-2024-12345",
+		]
+		cve_allowlist_expires_at = 2000000000
+	}
+	`
 }
