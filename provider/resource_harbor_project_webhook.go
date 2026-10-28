@@ -59,6 +59,7 @@ func resourceProjectWebhook() *schema.Resource {
 			"payload_format": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 		},
 		Create: resourceProjectWebhookCreate,
