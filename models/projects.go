@@ -13,7 +13,7 @@ type ProjectsBodyPost struct {
 		// } `json:"items,omitempty"`
 		ProjectID int `json:"project_id,omitempty"`
 		ID        int `json:"id,omitempty"`
-		ExpiresAt int `json:"expires_at,omitempty"`
+		ExpiresAt int `json:"expires_at"`
 	} `json:"cve_allowlist,omitempty"`
 	StorageLimit int `json:"storage_limit,omitempty"`
 	Metadata     struct {
