@@ -5,20 +5,20 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func ProjectMembersGroupBody(d *schema.ResourceData) models.ProjectMembersBodyPost {
-	body := models.ProjectMembersBodyPost{
-		RoleID: RoleType(d.Get("role").(string)),
+// ProjectMembersGroupBodyByID builds a project member POST/PUT body that
+// attaches an already-existing Harbor usergroup by its numeric id.
+//
+// This is the only shape the Harbor members API handles reliably: passing
+// ldap_group_dn here triggers a server-side 500 on Harbor versions that create
+// the backing usergroup as a side effect. Callers must resolve the DN to an id
+// first (see Client.ResolveOrCreateLdapGroup).
+func ProjectMembersGroupBodyByID(role string, groupID int) models.ProjectMembersBodyPost {
+	return models.ProjectMembersBodyPost{
+		RoleID: RoleType(role),
 		GroupMember: models.ProjectMembersBodyGroup{
-			GroupType: GroupType(d.Get("type").(string)),
-			GroupName: d.Get("group_name").(string),
-			GroupID:   d.Get("group_id").(int),
+			GroupID: groupID,
 		},
 	}
-
-	if v, ok := d.GetOk("ldap_group_dn"); ok {
-		body.GroupMember.LdapGroupDN = v.(string)
-	}
-	return body
 }
 
 func ProjectMembersUserBody(d *schema.ResourceData) models.ProjectMembersBodyPost {

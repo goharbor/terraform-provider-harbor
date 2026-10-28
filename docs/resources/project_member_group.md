@@ -3,7 +3,7 @@
 page_title: "harbor_project_member_group Resource - terraform-provider-harbor"
 subcategory: ""
 description: |-
-  
+
 ---
 
 # harbor_project_member_group (Resource)
@@ -12,18 +12,43 @@ description: |-
 
 ## Example Usage
 
+### OIDC / internal group
+
 ```terraform
 resource "harbor_project" "main" {
     name = "main"
 }
 
 resource "harbor_project_member_group" "main" {
-  project_id    = harbor_project.main.id
-  group_name    = "testing1"
-  role          = "projectadmin"
-  type          = "oidc"
+  project_id = harbor_project.main.id
+  group_name = "testing1"
+  role       = "projectadmin"
+  type       = "oidc"
 }
 ```
+
+### LDAP group
+
+For LDAP-backed members the recommended input is the group's distinguished
+name via `ldap_group_dn`. The provider will resolve the DN to an existing
+Harbor usergroup, or create one on the fly, and then attach the project
+member by numeric id. This avoids a known Harbor server-side failure mode in
+which passing `ldap_group_dn` directly to `POST /projects/{id}/members`
+creates the backing usergroup as a side effect but returns HTTP 500.
+
+```terraform
+resource "harbor_project_member_group" "ldap_users" {
+  project_id    = harbor_project.main.id
+  role          = "developer"
+  type          = "ldap"
+  ldap_group_dn = "cn=harbor_users,cn=groups,dc=example,dc=com"
+}
+```
+
+Older configurations that put the DN directly into `group_name` without an
+`ldap_group_dn` field keep working: the provider detects a DN shape and
+transparently routes it through the same resolver. A deprecation warning is
+emitted in the log; new configurations should use `ldap_group_dn`.
 
 ## Schema
 
@@ -31,28 +56,39 @@ resource "harbor_project_member_group" "main" {
 
 - `project_id` (String) The project id of the project that the entity will have access to.
 - `role` (String) The permissions that the entity will be granted.
-- `type` (String) The group type.  Can be set to `"ldap"`, `"internal"` or `"oidc"`.
+- `type` (String) The group type. Can be set to `"ldap"`, `"internal"` or `"oidc"`. Changing this forces a new resource.
 
 #### Notes
 `type` can only be `oidc` when used with harbor version v1.10.1 and above.
 
 ### Optional
 
-- `group_id` (Number) The numeric identifier of the group type. Valid values are `1`, `2`, or `3` :
-  - `1` = `ldap`
-  - `2` = `internal`
-  - `3` = `oidc`
-- `group_name` (String) The name of the group member entity.
-- `ldap_group_dn` (String) The distinguished name of the group within AD/LDAP.
+- `group_id` (Number) Numeric id of an existing Harbor usergroup. When set, the
+  provider skips the name/DN lookup entirely and attaches the member by id.
+- `group_name` (String) Name of the group member. For `internal` and `oidc`
+  types this is the identifying name. For `ldap` it is populated from the
+  backing usergroup after create/read and tracks whatever short name Harbor
+  returns; a distinguished name supplied here is accepted for back-compat.
+- `ldap_group_dn` (String) Distinguished name of the LDAP group. Preferred
+  input for `type = "ldap"`. The provider resolves the DN against
+  `/usergroups`, adopts an existing entry when present, and creates one when
+  absent. The backing usergroup is never deleted on resource destroy, since it
+  may be shared across projects.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `member_id` (Number)
+- `member_id` (Number) Numeric id of the project member.
 
 ## Import
-Import is supported using the following syntax with the `project` and `member` `id`'s:
+
+Import is supported using the following syntax with the `project` and `member`
+`id`'s:
 
 ```shell
 terraform import harbor_project_member_group.main /projects/10/members/200
 ```
+
+After import, the first `plan` is expected to be clean: `type`, `group_name`
+and `ldap_group_dn` are all derived from the backing usergroup, so no
+cosmetic drift is surfaced against a well-formed configuration.

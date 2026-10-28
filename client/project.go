@@ -107,6 +107,9 @@ func (client *Client) GetProjectScanner(projectPath string) (string, error) {
 		}
 		return "", err
 	}
+	if strings.TrimSpace(resp) == "" {
+		return "", nil
+	}
 
 	var scannerData models.ScannerBody
 	err = json.Unmarshal([]byte(resp), &scannerData)
