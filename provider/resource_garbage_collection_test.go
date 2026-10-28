@@ -59,6 +59,29 @@ func TestAccGCUpdate(t *testing.T) {
 						harborGCMain, "delete_untagged", "true"),
 				),
 			},
+			{
+				Config:             testAccCheckGCSchedulePresetLower(),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: false,
+			},
+			{
+				Config:             testAccCheckGCSchedulePresetUpper(),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: false,
+			},
+			{
+				Config:             testAccCheckGCScheduleCronMatchingPreset(),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: false,
+			},
+			{
+				Config: testAccCheckGCScheduleCustomCron(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(harborGCMain),
+					resource.TestCheckResourceAttr(
+						harborGCMain, "schedule", "0 5 4 * * *"),
+				),
+			},
 		},
 	})
 }
@@ -77,6 +100,46 @@ func testAccCheckGCUpdate() string {
 		schedule        = "Hourly"
 		delete_untagged = true
 		workers 			  = 2
+	}
+	`)
+}
+
+func testAccCheckGCSchedulePresetLower() string {
+	return fmt.Sprintf(`
+	resource "harbor_garbage_collection" "main" {
+		schedule        = "hourly"
+		delete_untagged = true
+		workers         = 2
+	}
+	`)
+}
+
+func testAccCheckGCSchedulePresetUpper() string {
+	return fmt.Sprintf(`
+	resource "harbor_garbage_collection" "main" {
+		schedule        = "HOURLY"
+		delete_untagged = true
+		workers         = 2
+	}
+	`)
+}
+
+func testAccCheckGCScheduleCronMatchingPreset() string {
+	return fmt.Sprintf(`
+	resource "harbor_garbage_collection" "main" {
+		schedule        = "0 0 * * * *"
+		delete_untagged = true
+		workers         = 2
+	}
+	`)
+}
+
+func testAccCheckGCScheduleCustomCron() string {
+	return fmt.Sprintf(`
+	resource "harbor_garbage_collection" "main" {
+		schedule        = "0 5 4 * * *"
+		delete_untagged = true
+		workers         = 2
 	}
 	`)
 }
