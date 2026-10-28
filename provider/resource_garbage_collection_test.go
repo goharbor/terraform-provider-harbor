@@ -1,6 +1,3 @@
-//go:build external_auth
-// +build external_auth
-
 package provider
 
 import (
@@ -87,59 +84,59 @@ func TestAccGCUpdate(t *testing.T) {
 }
 
 func testAccCheckGCBasic() string {
-	return fmt.Sprintf(`
+	return `
 	resource "harbor_garbage_collection" "main" {
 		schedule        = "Daily"
 	}
-	`)
+	`
 }
 
 func testAccCheckGCUpdate() string {
-	return fmt.Sprintf(`
+	return `
 	resource "harbor_garbage_collection" "main" {
 		schedule        = "Hourly"
 		delete_untagged = true
 		workers 			  = 2
 	}
-	`)
+	`
 }
 
 func testAccCheckGCSchedulePresetLower() string {
-	return fmt.Sprintf(`
+	return `
 	resource "harbor_garbage_collection" "main" {
 		schedule        = "hourly"
 		delete_untagged = true
 		workers         = 2
 	}
-	`)
+	`
 }
 
 func testAccCheckGCSchedulePresetUpper() string {
-	return fmt.Sprintf(`
+	return `
 	resource "harbor_garbage_collection" "main" {
 		schedule        = "HOURLY"
 		delete_untagged = true
 		workers         = 2
 	}
-	`)
+	`
 }
 
 func testAccCheckGCScheduleCronMatchingPreset() string {
-	return fmt.Sprintf(`
+	return `
 	resource "harbor_garbage_collection" "main" {
 		schedule        = "0 0 * * * *"
 		delete_untagged = true
 		workers         = 2
 	}
-	`)
+	`
 }
 
 func testAccCheckGCScheduleCustomCron() string {
-	return fmt.Sprintf(`
+	return `
 	resource "harbor_garbage_collection" "main" {
 		schedule        = "0 5 4 * * *"
 		delete_untagged = true
 		workers         = 2
 	}
-	`)
+	`
 }
