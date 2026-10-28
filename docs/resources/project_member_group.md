@@ -50,6 +50,13 @@ Older configurations that put the DN directly into `group_name` without an
 transparently routes it through the same resolver. A deprecation warning is
 emitted in the log; new configurations should use `ldap_group_dn`.
 
+If the LDAP group already exists in Harbor (for example, managed by
+`harbor_group`), you can also supply its short `group_name` alone. The provider
+looks up the existing LDAP usergroup by name and attaches it by numeric id.
+This does not create a group; use `ldap_group_dn` to resolve or create by DN.
+When creating the group in the same configuration, reference its `group_name`
+attribute to ensure Terraform creates the group before the membership.
+
 ## Schema
 
 ### Required
@@ -65,8 +72,9 @@ emitted in the log; new configurations should use `ldap_group_dn`.
 
 - `group_id` (Number) Numeric id of an existing Harbor usergroup. When set, the
   provider skips the name/DN lookup entirely and attaches the member by id.
-- `group_name` (String) Name of the group member. For `internal` and `oidc`
-  types this is the identifying name. For `ldap` it is populated from the
+- `group_name` (String) Name of the group member. A name alone identifies an
+  existing Harbor usergroup of the specified type, including `ldap`.
+  For `ldap` it is populated from the
   backing usergroup after create/read and tracks whatever short name Harbor
   returns; a distinguished name supplied here is accepted for back-compat.
 - `ldap_group_dn` (String) Distinguished name of the LDAP group. Preferred
