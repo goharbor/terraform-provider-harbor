@@ -43,6 +43,16 @@ func TestAccProjectWebhook(t *testing.T) {
 						harborProjectWebhook, "events_types.#", "3"),
 				),
 			},
+			{
+				Config: testAccCheckProjectWebhookCloudEvents(projectName),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(harborProjectWebhook),
+					resource.TestCheckResourceAttr(
+						harborProjectWebhook, "name", "acctest_webhook"),
+					resource.TestCheckResourceAttr(
+						harborProjectWebhook, "payload_format", "CloudEvents"),
+				),
+			},
 		},
 	})
 }
@@ -112,6 +122,30 @@ func testAccCheckProjectWebhookUpdate(projectName string) string {
 		  "PUSH_ARTIFACT",
 		]
 	  
+	}
+
+	resource "harbor_project" "main" {
+	  name = "%v"
+	}
+	`, projectName)
+}
+
+func testAccCheckProjectWebhookCloudEvents(projectName string) string {
+	return fmt.Sprintf(`
+
+	resource "harbor_project_webhook" "main" {
+		name           = "acctest_webhook"
+		address        = "https://webhook.domain.com"
+		project_id     = harbor_project.main.id
+		notify_type    = "http"
+		payload_format = "CloudEvents"
+
+		events_types = [
+		  "DELETE_ARTIFACT",
+		  "PULL_ARTIFACT",
+		  "PUSH_ARTIFACT",
+		]
+
 	}
 
 	resource "harbor_project" "main" {
