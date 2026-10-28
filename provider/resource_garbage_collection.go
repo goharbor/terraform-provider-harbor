@@ -13,8 +13,9 @@ func resourceGC() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"schedule": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:             schema.TypeString,
+				Required:         true,
+				DiffSuppressFunc: suppressScheduleDiff,
 			},
 			"delete_untagged": {
 				Type:     schema.TypeBool,
@@ -37,6 +38,15 @@ func resourceGC() *schema.Resource {
 		Update: resourceGCCreate,
 		Delete: resourceGCDelete,
 	}
+}
+
+// suppressScheduleDiff treats two schedule values as equal when they map to
+// the same Harbor schedule. Read stores the type Harbor returns ("Weekly"),
+// so without this a configured "weekly" or "0 0 0 * * 0" never converges.
+func suppressScheduleDiff(_, old, new string, _ *schema.ResourceData) bool {
+	oldType, oldCron := client.GetSchedule(old)
+	newType, newCron := client.GetSchedule(new)
+	return oldType == newType && oldCron == newCron
 }
 
 func resourceGCCreate(d *schema.ResourceData, m interface{}) error {
