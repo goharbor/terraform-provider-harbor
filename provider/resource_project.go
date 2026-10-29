@@ -104,6 +104,16 @@ func resourceProject() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"proxy_cache_filter_pattern": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "",
+			},
+			"proxy_cache_filter_kind": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "doublestar",
+			},
 		},
 		Create: resourceProjectCreate,
 		Read:   resourceProjectRead,
@@ -234,6 +244,9 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	proxyCacheFilterPattern := jsonData.Metadata.ProxyCacheFilterPattern
+	proxyCacheFilterKind := jsonData.Metadata.ProxyCacheFilterKind
+
 	d.Set("name", jsonData.Name)
 	d.Set("project_id", jsonData.ProjectID)
 	d.Set("registry_id", jsonData.RegistryID)
@@ -244,7 +257,8 @@ func resourceProjectRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("auto_sbom_generation", autoSbomGeneration)
 	d.Set("proxy_speed_kb", proxySpeedKb)
 	d.Set("proxy_cache_local_on_not_found", proxyCacheLocalOnNotFound)
-
+	d.Set("proxy_cache_filter_pattern", proxyCacheFilterPattern)
+	d.Set("proxy_cache_filter_kind", proxyCacheFilterKind)
 	cveAllowlist := make([]string, len(jsonData.CveAllowlist.Items))
 	for i, item := range jsonData.CveAllowlist.Items {
 		cveAllowlist[i] = item.CveID
