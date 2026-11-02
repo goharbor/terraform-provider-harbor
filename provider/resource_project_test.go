@@ -94,6 +94,53 @@ func TestAccProjectUpdate(t *testing.T) {
 	})
 }
 
+func TestAccProjectProxyCacheFilter(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckProjectDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckProjectProxyCacheFilter("doublestar", "library/{nginx,redis}"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceHarborProjectMain),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "proxy_cache_filter_kind", "doublestar"),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "proxy_cache_filter_pattern", "library/{nginx,redis}"),
+				),
+			},
+			{
+				Config: testAccCheckProjectProxyCacheFilter("regex", "^library/(nginx|redis)$"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckResourceExists(resourceHarborProjectMain),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "proxy_cache_filter_kind", "regex"),
+					resource.TestCheckResourceAttr(
+						resourceHarborProjectMain, "proxy_cache_filter_pattern", "^library/(nginx|redis)$"),
+				),
+			},
+		},
+	})
+}
+
+func testAccCheckProjectProxyCacheFilter(kind, pattern string) string {
+	return fmt.Sprintf(`
+	resource "harbor_registry" "main" {
+		provider_name = "docker-hub"
+		name          = "docker-hub-test-proxy-filter"
+		endpoint_url  = "https://hub.docker.com"
+	  }
+
+	resource "harbor_project" "main" {
+		name                       = "test_proxy_filter"
+		registry_id                = harbor_registry.main.registry_id
+		proxy_cache_filter_kind    = "%s"
+		proxy_cache_filter_pattern = %q
+	  }
+	`, kind, pattern)
+}
+
 func testAccCheckProjectBasic() string {
 	return fmt.Sprintf(`
 	resource "harbor_project" "main" {
