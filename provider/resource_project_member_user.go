@@ -90,6 +90,7 @@ func resourceMembersUserRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return fmt.Errorf("resource not found %s", d.Id())
 	}
+	d.Set("member_id", jsonData.ID)
 	d.Set("role", client.RoleTypeNumber(jsonData.RoleID))
 	d.Set("project_id", checkProjectid(strconv.Itoa(jsonData.ProjectID)))
 	d.Set("user_name", jsonData.EntityName)
@@ -103,7 +104,7 @@ func resourceMembersUserUpdate(d *schema.ResourceData, m interface{}) error {
 	body := client.ProjectMembersUserBody(d)
 	_, _, _, err := apiClient.SendRequest("PUT", d.Id(), body, 200)
 	if err != nil {
-		fmt.Println(err)
+		return fmt.Errorf("updating project member %s: %w", d.Id(), err)
 	}
 
 	return resourceMembersUserRead(d, m)
