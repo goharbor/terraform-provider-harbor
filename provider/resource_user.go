@@ -117,8 +117,11 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 
 func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
-	resp, _, _, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
-	if err != nil {
+	resp, _, respCode, err := apiClient.SendRequest("GET", d.Id(), nil, 200)
+	if respCode == 404 && err != nil {
+		d.SetId("")
+		return nil
+	} else if err != nil {
 		return err
 	}
 	var jsonData models.UserBody
