@@ -124,10 +124,34 @@ func resolveMemberGroupID(apiClient *client.Client, d *schema.ResourceData) (int
 	groupType := d.Get("type").(string)
 	groupName := d.Get("group_name").(string)
 	ldapDN := d.Get("ldap_group_dn").(string)
-	if groupType == "ldap" {
+	switch groupType {
+	case "ldap":
 		return resolveLdapMemberGroupID(apiClient, ldapDN, groupName)
+	case "oidc":
+		return resolveOidcMemberGroupID(apiClient, groupName)
 	}
 	return resolveNamedMemberGroupID(apiClient, groupType, groupName)
+}
+
+// resolveOidcMemberGroupID handles type=oidc by resolving or creating the
+// backing usergroup by name. Harbor cannot check OIDC groups against the
+// identity provider, so the usergroup may not exist yet when nobody from that
+// group has logged in. The usergroup is never deleted on resource destroy,
+// since it may be shared across projects.
+func resolveOidcMemberGroupID(apiClient *client.Client, groupName string) (int, error) {
+	if groupName == "" {
+		return 0, fmt.Errorf("type=oidc requires either group_id or group_name")
+	}
+	id, adopted, err := apiClient.ResolveOrCreateOidcGroup(groupName)
+	if err != nil {
+		return 0, err
+	}
+	action := "created"
+	if adopted {
+		action = "adopted existing"
+	}
+	log.Printf("[DEBUG] harbor_project_member_group: %s oidc usergroup id=%d name=%q", action, id, groupName)
+	return id, nil
 }
 
 // resolveLdapMemberGroupID handles type=ldap by resolving or creating the
@@ -154,22 +178,19 @@ func resolveLdapMemberGroupID(apiClient *client.Client, ldapDN, groupName string
 	return id, nil
 }
 
-// resolveNamedMemberGroupID handles type=internal and type=oidc by looking up
-// an existing Harbor usergroup by name. It does not create usergroups; callers
-// must manage them with harbor_group.
+// resolveNamedMemberGroupID handles type=internal by looking up an existing
+// Harbor usergroup by name. It does not create usergroups; callers must manage
+// them with harbor_group.
 func resolveNamedMemberGroupID(apiClient *client.Client, groupType, groupName string) (int, error) {
 	if groupName == "" {
 		return 0, fmt.Errorf("type=%s requires either group_id or group_name", groupType)
 	}
-	groups, err := apiClient.ListGroups()
+	id, err := apiClient.LookupGroupByName(client.GroupType(groupType), groupName)
 	if err != nil {
 		return 0, err
 	}
-	wantType := client.GroupType(groupType)
-	for _, g := range groups {
-		if g.GroupType == wantType && g.Groupname == groupName {
-			return g.ID, nil
-		}
+	if id != 0 {
+		return id, nil
 	}
 	return 0, fmt.Errorf("usergroup %q of type %q not found; create it first with harbor_group", groupName, groupType)
 }

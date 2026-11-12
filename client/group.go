@@ -140,6 +140,56 @@ func (c *Client) ResolveOrCreateLdapGroup(dn, name string) (id int, adopted bool
 	return 0, false, createErr
 }
 
+// ResolveOrCreateOidcGroup looks up an OIDC usergroup by its exact name,
+// creating it if absent. It returns the resolved numeric id and whether an
+// existing group was adopted (false means the group was just created).
+//
+// Harbor cannot validate OIDC groups against the identity provider: an OIDC
+// usergroup only exists once a member of that group has logged in, or once it
+// has been created explicitly. Before the members endpoint was switched to
+// numeric ids, POST /projects/{pid}/members with member_group.group_name and
+// group_type=3 made Harbor create the usergroup on the fly; this restores that
+// behaviour so a project can be granted to a group before anyone logged in.
+func (c *Client) ResolveOrCreateOidcGroup(name string) (id int, adopted bool, err error) {
+	if name == "" {
+		return 0, false, fmt.Errorf("oidc group name must not be empty")
+	}
+	if existing, err := c.LookupGroupByName(GroupTypeOIDC, name); err != nil {
+		return 0, false, err
+	} else if existing != 0 {
+		return existing, true, nil
+	}
+	id, createErr := c.CreateGroup(models.GroupBody{
+		Groupname: name,
+		GroupType: GroupTypeOIDC,
+	})
+	if createErr == nil {
+		return id, false, nil
+	}
+	// The same OIDC group is commonly granted on several projects, so a
+	// concurrent apply may have created it between our List and our Create.
+	// Re-list and try to adopt before surfacing the error.
+	if existing, lookupErr := c.LookupGroupByName(GroupTypeOIDC, name); lookupErr == nil && existing != 0 {
+		return existing, true, nil
+	}
+	return 0, false, createErr
+}
+
+// LookupGroupByName returns the id of the usergroup of the given type whose
+// name matches exactly, or 0 if no match is found.
+func (c *Client) LookupGroupByName(groupType int, name string) (int, error) {
+	groups, err := c.ListGroups()
+	if err != nil {
+		return 0, err
+	}
+	for _, g := range groups {
+		if g.GroupType == groupType && g.Groupname == name {
+			return g.ID, nil
+		}
+	}
+	return 0, nil
+}
+
 // lookupLdapGroupByDN returns the id of the LDAP-backed usergroup matching dn,
 // or 0 if no match is found. Comparison is case-insensitive.
 func (c *Client) lookupLdapGroupByDN(dn string) (int, error) {
