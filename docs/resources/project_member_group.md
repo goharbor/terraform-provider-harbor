@@ -27,6 +27,15 @@ resource "harbor_project_member_group" "main" {
 }
 ```
 
+For `type = "oidc"` the provider looks up the Harbor usergroup by its exact
+`group_name` and creates it when it does not exist yet. Harbor cannot check
+OIDC groups against the identity provider, so the usergroup otherwise only
+appears once a member of that group has logged in. The backing usergroup is
+never deleted on resource destroy, since it may be shared across projects.
+
+For `type = "internal"` the usergroup must already exist; manage it with
+`harbor_group`.
+
 ### LDAP group
 
 For LDAP-backed members the recommended input is the group's distinguished

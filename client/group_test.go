@@ -132,7 +132,7 @@ func (f *fakeHarbor) handler() http.Handler {
 func newTestClient(t *testing.T, f *fakeHarbor) (*Client, func()) {
 	t.Helper()
 	srv := httptest.NewServer(f.handler())
-	c := NewClient(srv.URL, "user", "pass", "", "", false, "")
+	c := NewClient(srv.URL, "user", "pass", "", "", false, "", nil)
 	return c, srv.Close
 }
 
@@ -204,12 +204,101 @@ func TestGetGroupByID(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := NewClient(srv.URL, "u", "p", "", "", false, "")
+	c := NewClient(srv.URL, "u", "p", "", "", false, "", nil)
 	got, err := c.GetGroupByID(25)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if got.ID != 25 || got.Groupname != want.Groupname || got.LdapGroupDn != want.LdapGroupDn {
 		t.Errorf("got %+v, want id=25 name=%s dn=%s", got, want.Groupname, want.LdapGroupDn)
+	}
+}
+
+func TestResolveOrCreateOidcGroup_Adopts(t *testing.T) {
+	f := &fakeHarbor{
+		nextID: 10,
+		groups: []models.GroupBody{
+			// Same name, other types: must not be picked.
+			{ID: 4, Groupname: "team.dev", GroupType: GroupTypeInternal},
+			{ID: 5, Groupname: "team.dev", GroupType: GroupTypeLDAP, LdapGroupDn: "cn=team.dev,dc=example,dc=com"},
+			{ID: 7, Groupname: "team.dev", GroupType: GroupTypeOIDC},
+		},
+	}
+	c, stop := newTestClient(t, f)
+	defer stop()
+
+	id, adopted, err := c.ResolveOrCreateOidcGroup("team.dev")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !adopted || id != 7 {
+		t.Errorf("got id=%d adopted=%v, want id=7 adopted=true", id, adopted)
+	}
+	if f.creates != 0 {
+		t.Errorf("should not have created a group, creates=%d", f.creates)
+	}
+}
+
+func TestResolveOrCreateOidcGroup_Creates(t *testing.T) {
+	f := &fakeHarbor{
+		nextID: 100,
+		// An OIDC group whose name only differs by case is a different group.
+		groups: []models.GroupBody{{ID: 3, Groupname: "TEAM.DEV", GroupType: GroupTypeOIDC}},
+	}
+	c, stop := newTestClient(t, f)
+	defer stop()
+
+	id, adopted, err := c.ResolveOrCreateOidcGroup("team.dev")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if adopted || id != 101 {
+		t.Errorf("got id=%d adopted=%v, want id=101 adopted=false", id, adopted)
+	}
+	if f.lastPost.Groupname != "team.dev" || f.lastPost.GroupType != GroupTypeOIDC || f.lastPost.LdapGroupDn != "" {
+		t.Errorf("unexpected create body: %+v", f.lastPost)
+	}
+}
+
+func TestResolveOrCreateOidcGroup_AdoptsAfterConflict(t *testing.T) {
+	// Simulates a concurrent apply: the first List sees nothing, the Create is
+	// rejected because the group now exists, the second List finds it.
+	lists := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodGet && r.URL.Path == "/usergroups":
+			groups := []models.GroupBody{}
+			if r.URL.Query().Get("page") == "1" {
+				lists++
+				if lists > 1 {
+					groups = append(groups, models.GroupBody{ID: 42, Groupname: "team.dev", GroupType: GroupTypeOIDC})
+				}
+			}
+			_ = json.NewEncoder(w).Encode(groups)
+		case r.Method == http.MethodPost && r.URL.Path == "/usergroups":
+			http.Error(w, `{"errors":[{"code":"CONFLICT","message":"already exist"}]}`, http.StatusConflict)
+		default:
+			t.Errorf("unexpected request: %s %s", r.Method, r.URL)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}))
+	defer srv.Close()
+	c := NewClient(srv.URL, "u", "p", "", "", false, "", nil)
+
+	id, adopted, err := c.ResolveOrCreateOidcGroup("team.dev")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !adopted || id != 42 {
+		t.Errorf("got id=%d adopted=%v, want id=42 adopted=true", id, adopted)
+	}
+}
+
+func TestResolveOrCreateOidcGroup_EmptyName(t *testing.T) {
+	f := &fakeHarbor{}
+	c, stop := newTestClient(t, f)
+	defer stop()
+	if _, _, err := c.ResolveOrCreateOidcGroup(""); err == nil {
+		t.Errorf("expected error for empty name")
 	}
 }
