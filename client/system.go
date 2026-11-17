@@ -25,6 +25,7 @@ func GetSystemBoby(d *schema.ResourceData, scheduleType string) models.SystemBod
 	body.Schedule.Cron = CronStr
 	if scheduleType == "gc" {
 		body.Parameters.DeleteUntagged = d.Get("delete_untagged").(bool)
+		body.Parameters.DeleteTag = d.Get("delete_tag").(bool)
 		body.Parameters.Workers = d.Get("workers").(int)
 	} else if scheduleType == "purgeaudit" {
 		body.Parameters.AuditRetentionHour = d.Get("audit_retention_hour").(int)
