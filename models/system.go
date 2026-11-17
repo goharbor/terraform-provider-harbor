@@ -10,6 +10,7 @@ var PathPurgeAudit = "/system/purgeaudit/schedule"
 
 type JobParameters struct {
 	DeleteUntagged     bool   `json:"delete_untagged,omitempty"`
+	DeleteTag          bool   `json:"delete_tag,omitempty"`
 	AuditRetentionHour int    `json:"audit_retention_hour,omitempty"`
 	IncludeOperations  string `json:"include_operations,omitempty"`
 	IncludeEventTypes  string `json:"include_event_types,omitempty"`
@@ -31,6 +32,7 @@ type SystemBody struct {
 	UpdateTime    time.Time `json:"update_time,omitempty"`
 	Parameters    struct {
 		DeleteUntagged     bool   `json:"delete_untagged,omitempty"`
+		DeleteTag          bool   `json:"delete_tag,omitempty"`
 		AuditRetentionHour int    `json:"audit_retention_hour,omitempty"`
 		IncludeOperations  string `json:"include_operations,omitempty"`
 		IncludeEventTypes  string `json:"include_event_types,omitempty"`
