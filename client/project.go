@@ -59,20 +59,28 @@ func ProjectBody(d *schema.ResourceData) models.ProjectsBodyPost {
 
 // GetScannerByName lists all scanners and returns the one matching the given name.
 func (client *Client) GetScannerByName(scanner string) (models.ScannerBody, error) {
-	resp, _, _, err := client.SendRequest("GET", models.PathScanners, nil, 0)
-	if err != nil {
-		return models.ScannerBody{}, err
-	}
+	// Harbor returns 10 scanners per page by default, so page through them.
+	const pageSize = 100
+	for page := 1; ; page++ {
+		resp, _, _, err := client.SendRequest("GET", fmt.Sprintf("%s?page=%d&page_size=%d", models.PathScanners, page, pageSize), nil, 0)
+		if err != nil {
+			return models.ScannerBody{}, err
+		}
 
-	var scanners []models.ScannerBody
-	err = json.Unmarshal([]byte(resp), &scanners)
-	if err != nil {
-		return models.ScannerBody{}, err
-	}
+		var scanners []models.ScannerBody
+		err = json.Unmarshal([]byte(resp), &scanners)
+		if err != nil {
+			return models.ScannerBody{}, err
+		}
 
-	for _, v := range scanners {
-		if strings.EqualFold(v.Name, scanner) {
-			return v, nil
+		for _, v := range scanners {
+			if strings.EqualFold(v.Name, scanner) {
+				return v, nil
+			}
+		}
+
+		if len(scanners) < pageSize {
+			break
 		}
 	}
 
