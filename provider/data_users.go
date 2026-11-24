@@ -3,6 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -69,10 +70,10 @@ func dataUsersRead(d *schema.ResourceData, m interface{}) error {
 
 	usersQueryPath := []string{}
 	if username != "" {
-		usersQueryPath = append(usersQueryPath, "username="+username)
+		usersQueryPath = append(usersQueryPath, "username="+url.QueryEscape(username))
 	}
 	if email != "" {
-		usersQueryPath = append(usersQueryPath, "email="+email)
+		usersQueryPath = append(usersQueryPath, "email="+url.QueryEscape(email))
 	}
 
 	page := 1
@@ -80,7 +81,9 @@ func dataUsersRead(d *schema.ResourceData, m interface{}) error {
 	for {
 		usersPath := models.PathUsers + "?page=" + strconv.Itoa(page)
 		if len(usersQueryPath) > 0 {
-			usersPath += "&q=" + strings.Join(usersQueryPath, ",")
+			// Harbor unescapes q once more after the query string is decoded
+			// (lib/q.Build), so the joined filter is escaped a second time.
+			usersPath += "&q=" + url.QueryEscape(strings.Join(usersQueryPath, ","))
 		}
 
 		resp, _, _, err := apiClient.SendRequest("GET", usersPath, nil, 200)
