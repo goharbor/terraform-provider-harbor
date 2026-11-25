@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -8,6 +9,48 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
+
+func TestAccConfigSystemBannerMessage(t *testing.T) {
+	const initialMessage = "Registry status: \"maintenance\"\nPlease retry later."
+	const updatedMessage = "Registry status: \"available\"\nAll services restored."
+	config := func(message string, closable bool, messageType string) string {
+		encoded, err := json.Marshal(message)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return fmt.Sprintf(`
+resource "harbor_config_system" "main" {
+  disabled_audit_log_event_types = "create_artifact,delete_artifact"
+  banner_message {
+    message   = %s
+    closable  = %t
+    type      = %q
+    from_date = "2026-11-01T00:00:00Z"
+    to_date   = "2026-11-08T00:00:00Z"
+  }
+}`, encoded, closable, messageType)
+	}
+	check := func(message, closable, messageType string) resource.TestCheckFunc {
+		return resource.ComposeTestCheckFunc(
+			testAccCheckResourceExists(resourceConfigSystemMain),
+			resource.TestCheckResourceAttr(resourceConfigSystemMain, "banner_message.#", "1"),
+			resource.TestCheckResourceAttr(resourceConfigSystemMain, "banner_message.0.message", message),
+			resource.TestCheckResourceAttr(resourceConfigSystemMain, "banner_message.0.closable", closable),
+			resource.TestCheckResourceAttr(resourceConfigSystemMain, "banner_message.0.type", messageType),
+			resource.TestCheckResourceAttr(resourceConfigSystemMain, "banner_message.0.from_date", "2026-11-01T00:00:00Z"),
+			resource.TestCheckResourceAttr(resourceConfigSystemMain, "banner_message.0.to_date", "2026-11-08T00:00:00Z"),
+		)
+	}
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckConfigSystemDestroy,
+		Steps: []resource.TestStep{
+			{Config: config(initialMessage, true, "warning"), Check: check(initialMessage, "true", "warning")},
+			{Config: config(updatedMessage, false, "info"), Check: check(updatedMessage, "false", "info")},
+		},
+	})
+}
 
 const resourceConfigSystemMain = "harbor_config_system.main"
 
