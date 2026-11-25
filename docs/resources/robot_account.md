@@ -159,6 +159,25 @@ The above example creates a project level robot account with permissions to
 - pull repository on project "main"
 - push repository on project "main"
 
+### Reading the Generated Secret
+
+If `secret` is not set, Harbor generates one and the provider stores it in the `secret` attribute. Because the attribute is sensitive, an output that exposes it has to be marked `sensitive = true`, and Terraform / OpenTofu prints `<sensitive>` instead of the value.
+
+```terraform
+output "robot_account_secret" {
+  value     = harbor_robot_account.project.secret
+  sensitive = true
+}
+```
+
+To read the value, ask for the output explicitly:
+
+```shell
+terraform output -raw robot_account_secret
+```
+
+Sensitive values are still stored in plain text in the state, so protect the state accordingly. To keep the secret out of the state altogether, use `secret_wo` as shown above.
+
 ## Schema
 
 ### Required
