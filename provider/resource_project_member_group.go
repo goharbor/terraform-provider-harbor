@@ -132,7 +132,8 @@ func resolveMemberGroupID(apiClient *client.Client, d *schema.ResourceData) (int
 
 // resolveLdapMemberGroupID handles type=ldap by resolving or creating the
 // backing usergroup and returning its numeric id. A DN supplied in group_name
-// is accepted for back-compat with older configurations.
+// is accepted for back-compat with older configurations. A short name resolves
+// an existing LDAP usergroup without creating one.
 func resolveLdapMemberGroupID(apiClient *client.Client, ldapDN, groupName string) (int, error) {
 	if ldapDN == "" && client.LooksLikeDN(groupName) {
 		log.Printf("[WARN] harbor_project_member_group: treating group_name %q as ldap_group_dn for back-compat; please move the DN to the ldap_group_dn field", groupName)
@@ -140,7 +141,10 @@ func resolveLdapMemberGroupID(apiClient *client.Client, ldapDN, groupName string
 		groupName = ""
 	}
 	if ldapDN == "" {
-		return 0, fmt.Errorf("type=ldap requires either group_id or ldap_group_dn")
+		if groupName == "" {
+			return 0, fmt.Errorf("type=ldap requires either group_id, group_name or ldap_group_dn")
+		}
+		return resolveNamedMemberGroupID(apiClient, "ldap", groupName)
 	}
 	id, adopted, err := apiClient.ResolveOrCreateLdapGroup(ldapDN, groupName)
 	if err != nil {
@@ -154,7 +158,7 @@ func resolveLdapMemberGroupID(apiClient *client.Client, ldapDN, groupName string
 	return id, nil
 }
 
-// resolveNamedMemberGroupID handles type=internal and type=oidc by looking up
+// resolveNamedMemberGroupID handles LDAP, internal and OIDC groups by looking up
 // an existing Harbor usergroup by name. It does not create usergroups; callers
 // must manage them with harbor_group.
 func resolveNamedMemberGroupID(apiClient *client.Client, groupType, groupName string) (int, error) {
@@ -166,12 +170,25 @@ func resolveNamedMemberGroupID(apiClient *client.Client, groupType, groupName st
 		return 0, err
 	}
 	wantType := client.GroupType(groupType)
+	var matches []models.GroupBody
 	for _, g := range groups {
 		if g.GroupType == wantType && g.Groupname == groupName {
-			return g.ID, nil
+			matches = append(matches, g)
 		}
 	}
-	return 0, fmt.Errorf("usergroup %q of type %q not found; create it first with harbor_group", groupName, groupType)
+	switch len(matches) {
+	case 1:
+		return matches[0].ID, nil
+	case 0:
+		return 0, fmt.Errorf("usergroup %q of type %q not found; create it first with harbor_group", groupName, groupType)
+	default:
+		// shortcut: same-name groups of the same type are rare; refuse rather than guess
+		hint := "group_id or ldap_group_dn"
+		if wantType != client.GroupTypeLDAP {
+			hint = "group_id"
+		}
+		return 0, fmt.Errorf("%d usergroups of type %q are named %q; disambiguate with %s", len(matches), groupType, groupName, hint)
+	}
 }
 
 func resourceMembersGroupCreate(d *schema.ResourceData, m interface{}) error {
