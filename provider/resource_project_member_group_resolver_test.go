@@ -83,6 +83,25 @@ func TestResolveMemberGroupID(t *testing.T) {
 	}
 }
 
+func TestResolveMemberGroupIDAmbiguousName(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var page []models.GroupBody
+		if r.URL.Query().Get("page") == "1" {
+			page = []models.GroupBody{
+				{ID: 7, Groupname: "team", GroupType: client.GroupTypeLDAP, LdapGroupDn: "cn=team,ou=a,dc=example,dc=com"},
+				{ID: 8, Groupname: "team", GroupType: client.GroupTypeLDAP, LdapGroupDn: "cn=team,ou=b,dc=example,dc=com"},
+			}
+		}
+		_ = json.NewEncoder(w).Encode(page)
+	}))
+	defer srv.Close()
+	api := client.NewClient(srv.URL, "u", "p", "", "", false, "", nil)
+	d := schema.TestResourceDataRaw(t, resourceMembersGroup().Schema, map[string]interface{}{"type": "ldap", "group_name": "team"})
+	if _, err := resolveMemberGroupID(api, d); err == nil || !strings.Contains(err.Error(), `2 usergroups of type "ldap" are named "team"`) {
+		t.Fatalf("got err=%v; want ambiguity error", err)
+	}
+}
+
 func TestMembersGroupCreateLDAPByName(t *testing.T) {
 	const dn = "cn=team,ou=groups,dc=example,dc=com"
 	group := models.GroupBody{ID: 7, Groupname: "team", GroupType: client.GroupTypeLDAP, LdapGroupDn: dn}

@@ -170,12 +170,21 @@ func resolveNamedMemberGroupID(apiClient *client.Client, groupType, groupName st
 		return 0, err
 	}
 	wantType := client.GroupType(groupType)
+	var matches []models.GroupBody
 	for _, g := range groups {
 		if g.GroupType == wantType && g.Groupname == groupName {
-			return g.ID, nil
+			matches = append(matches, g)
 		}
 	}
-	return 0, fmt.Errorf("usergroup %q of type %q not found; create it first with harbor_group", groupName, groupType)
+	switch len(matches) {
+	case 1:
+		return matches[0].ID, nil
+	case 0:
+		return 0, fmt.Errorf("usergroup %q of type %q not found; create it first with harbor_group", groupName, groupType)
+	default:
+		// shortcut: same-name groups of the same type are rare; refuse rather than guess
+		return 0, fmt.Errorf("%d usergroups of type %q are named %q; disambiguate with group_id or ldap_group_dn", len(matches), groupType, groupName)
+	}
 }
 
 func resourceMembersGroupCreate(d *schema.ResourceData, m interface{}) error {
