@@ -2,12 +2,21 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/goharbor/terraform-provider-harbor/models"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
+// bannerMessageBody is the shape Harbor expects inside the banner_message
+// setting, which it stores as a JSON string.
+type bannerMessageBody struct {
+	Closable bool   `json:"closable"`
+	Message  string `json:"message"`
+	Type     string `json:"type"`
+	FromDate string `json:"fromDate"`
+	ToDate   string `json:"toDate"`
+}
 
 func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 	var body models.ConfigBodySystemPost
@@ -20,12 +29,18 @@ func GetConfigSystem(d *schema.ResourceData) models.ConfigBodySystemPost {
 	if v, ok := d.GetOk("banner_message"); ok {
 		bannerMessageList := v.([]interface{})
 		bannerMessageMap := bannerMessageList[0].(map[string]interface{})
-		closable := bannerMessageMap["closable"].(bool)
-		message := bannerMessageMap["message"].(string)
-		messageType := bannerMessageMap["type"].(string)
-		fromDate := bannerMessageMap["from_date"].(string)
-		toDate := bannerMessageMap["to_date"].(string)
-		bannerMessage = fmt.Sprintf("{\"closable\":%t,\"message\":\"%s\",\"type\":\"%s\",\"fromDate\":\"%s\",\"toDate\":\"%s\"}", closable, message, messageType, fromDate, toDate)
+		encoded, err := json.Marshal(bannerMessageBody{
+			Closable: bannerMessageMap["closable"].(bool),
+			Message:  bannerMessageMap["message"].(string),
+			Type:     bannerMessageMap["type"].(string),
+			FromDate: bannerMessageMap["from_date"].(string),
+			ToDate:   bannerMessageMap["to_date"].(string),
+		})
+		if err != nil {
+			log.Printf("[ERROR] could not encode banner_message: %s\n", err)
+		} else {
+			bannerMessage = string(encoded)
+		}
 	}
 	body = models.ConfigBodySystemPost{
 		ProjectCreationRestriction: d.Get("project_creation_restriction").(string),
