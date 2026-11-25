@@ -54,6 +54,9 @@ If the LDAP group already exists in Harbor (for example, managed by
 `harbor_group`), you can also supply its short `group_name` alone. The provider
 looks up the existing LDAP usergroup by name and attaches it by numeric id.
 This does not create a group; use `ldap_group_dn` to resolve or create by DN.
+If several usergroups of the same type share the name, the provider returns an
+error instead of picking one — disambiguate with `group_id` (or `ldap_group_dn`
+for LDAP groups).
 When creating the group in the same configuration, reference its `group_name`
 attribute to ensure Terraform creates the group before the membership.
 

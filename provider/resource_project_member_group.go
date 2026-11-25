@@ -183,7 +183,11 @@ func resolveNamedMemberGroupID(apiClient *client.Client, groupType, groupName st
 		return 0, fmt.Errorf("usergroup %q of type %q not found; create it first with harbor_group", groupName, groupType)
 	default:
 		// shortcut: same-name groups of the same type are rare; refuse rather than guess
-		return 0, fmt.Errorf("%d usergroups of type %q are named %q; disambiguate with group_id or ldap_group_dn", len(matches), groupType, groupName)
+		hint := "group_id or ldap_group_dn"
+		if wantType != client.GroupTypeLDAP {
+			hint = "group_id"
+		}
+		return 0, fmt.Errorf("%d usergroups of type %q are named %q; disambiguate with %s", len(matches), groupType, groupName, hint)
 	}
 }
 
