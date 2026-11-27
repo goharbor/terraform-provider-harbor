@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/goharbor/terraform-provider-harbor/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func newRetentionResourceData(t *testing.T) *schema.ResourceData {
@@ -97,5 +99,60 @@ func TestRetentionCreateUpdatesTheExistingPolicy(t *testing.T) {
 	}
 	if d.Id() == "" {
 		t.Fatal("expected the existing policy id to be stored")
+	}
+}
+
+func TestRetentionScopeDiff(t *testing.T) {
+	cases := []struct {
+		name     string
+		state    string
+		config   string
+		wantDiff bool
+	}{
+		{"same prefixed scope", "/projects/7", "/projects/7", false},
+		{"plain project id", "/projects/7", "7", false},
+		{"other prefixed scope", "/projects/7", "/projects/8", true},
+		{"other plain project id", "/projects/7", "8", true},
+		{"project id sharing a prefix", "/projects/7", "70", true},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			state := &terraform.InstanceState{
+				ID: "/retentions/1",
+				Attributes: map[string]string{
+					"id":                            "/retentions/1",
+					"scope":                         tc.state,
+					"schedule":                      "",
+					"rule.#":                        "1",
+					"rule.0.n_days_since_last_pull": "5",
+					"rule.0.repo_matching":          "**",
+					"rule.0.tag_matching":           "latest",
+					"rule.0.disabled":               "false",
+					"rule.0.untagged_artifacts":     "true",
+				},
+			}
+			cfg := terraform.NewResourceConfigRaw(map[string]interface{}{
+				"scope": tc.config,
+				"rule": []interface{}{
+					map[string]interface{}{
+						"n_days_since_last_pull": 5,
+						"repo_matching":          "**",
+						"tag_matching":           "latest",
+					},
+				},
+			})
+			diff, err := resourceRetention().SimpleDiff(context.Background(), state, cfg, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := false
+			if diff != nil {
+				_, got = diff.Attributes["scope"]
+			}
+			if got != tc.wantDiff {
+				t.Errorf("scope %q -> %q: diff = %v, want %v", tc.state, tc.config, got, tc.wantDiff)
+			}
+		})
 	}
 }

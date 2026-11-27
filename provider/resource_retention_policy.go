@@ -22,9 +22,10 @@ func resourceRetention() *schema.Resource {
 				Optional: true,
 			},
 			"scope": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:             schema.TypeString,
+				Required:         true,
+				ForceNew:         true,
+				DiffSuppressFunc: suppressRetentionScopeDiff,
 			},
 			"rule": {
 				Type:     schema.TypeList,
@@ -218,6 +219,12 @@ func resourceRetentionDelete(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	return nil
+}
+
+// suppressRetentionScopeDiff treats "N" and "/projects/N" as the same scope.
+// Read always stores the "/projects/N" form, while the scope can be set to a plain project ID.
+func suppressRetentionScopeDiff(_, old, new string, _ *schema.ResourceData) bool {
+	return strings.TrimPrefix(old, models.PathProjects+"/") == strings.TrimPrefix(new, models.PathProjects+"/")
 }
 
 func resolveScope(model models.Retention) interface{} {
