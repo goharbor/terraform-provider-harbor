@@ -132,7 +132,7 @@ func (f *fakeHarbor) handler() http.Handler {
 func newTestClient(t *testing.T, f *fakeHarbor) (*Client, func()) {
 	t.Helper()
 	srv := httptest.NewServer(f.handler())
-	c := NewClient(srv.URL, "user", "pass", "", "", false, "")
+	c := NewClient(srv.URL, "user", "pass", "", "", false, "", nil)
 	return c, srv.Close
 }
 
@@ -204,7 +204,7 @@ func TestGetGroupByID(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := NewClient(srv.URL, "u", "p", "", "", false, "")
+	c := NewClient(srv.URL, "u", "p", "", "", false, "", nil)
 	got, err := c.GetGroupByID(25)
 	if err != nil {
 		t.Fatal(err)
