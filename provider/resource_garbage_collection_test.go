@@ -54,6 +54,8 @@ func TestAccGCUpdate(t *testing.T) {
 						harborGCMain, "schedule", "Hourly"),
 					resource.TestCheckResourceAttr(
 						harborGCMain, "delete_untagged", "true"),
+					resource.TestCheckResourceAttr(
+						harborGCMain, "delete_tag", "true"),
 				),
 			},
 			{
@@ -96,6 +98,7 @@ func testAccCheckGCUpdate() string {
 	resource "harbor_garbage_collection" "main" {
 		schedule        = "Hourly"
 		delete_untagged = true
+		delete_tag      = true
 		workers 			  = 2
 	}
 	`

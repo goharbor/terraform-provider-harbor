@@ -16,6 +16,7 @@ description: |-
 resource "harbor_garbage_collection" "main" {
   schedule        = "Daily"
   delete_untagged = true
+  delete_tag      = true
   workers         = 1
 }
 ```
@@ -28,6 +29,7 @@ resource "harbor_garbage_collection" "main" {
 
 ### Optional
 
+- `delete_tag` (Boolean) Delete the manifests of removed artifacts through the registry API, so that their tags leave the storage backend. This is the "delete tags" option of the Harbor garbage collection page. Harbor stores `false` when it is not sent.
 - `delete_untagged` (Boolean) Allow garbage collection on untagged artifacts.
 - `workers` (Number) Number of workers to run the garbage collection, value must be greater than or equal to one. Harbor limits the number of concurrent workers internally, setting this value higher than what Harbor supports will result in an error.
 
