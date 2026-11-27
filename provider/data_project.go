@@ -42,45 +42,57 @@ func dataProject() *schema.Resource {
 	}
 }
 
+// lookupPageSize is the page size used when a data source looks a resource up
+// by name. Harbor matches the name query as a substring and returns only 10
+// results per page by default, so the exact name can be on a later page.
+const lookupPageSize = 100
+
 func dataProjectRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	projectPath := models.PathProjects + "?name=" + name
 
-	resp, _, _, err := apiClient.SendRequest("GET", projectPath, nil, 200)
-	if err != nil {
-		return err
-	}
+	for page := 1; ; page++ {
+		projectPath := fmt.Sprintf("%s?name=%s&page=%d&page_size=%d", models.PathProjects, name, page, lookupPageSize)
 
-	var jsonData []models.ProjectsBodyResponses
-	err = json.Unmarshal([]byte(resp), &jsonData)
-	if err != nil {
-		return fmt.Errorf("unable to find the project named: %s", name)
-	}
+		resp, _, _, err := apiClient.SendRequest("GET", projectPath, nil, 200)
+		if err != nil {
+			return err
+		}
 
-	for _, v := range jsonData {
+		var jsonData []models.ProjectsBodyResponses
+		err = json.Unmarshal([]byte(resp), &jsonData)
+		if err != nil {
+			return fmt.Errorf("unable to find the project named: %s", name)
+		}
 
-		if v.Name == name {
-			id := models.PathProjects + "/" + strconv.Itoa(v.ProjectID)
-			public := getboolfromstring(v.Metadata.Public)
-			autoScan := getboolfromstring(v.Metadata.AutoScan)
-			project_type := getProjectType(v)
+		for _, v := range jsonData {
 
-			d.SetId(id)
-			d.Set("project_id", v.ProjectID)
-			d.Set("name", v.Name)
-			d.Set("public", public)
-			d.Set("vulnerability_scanning", autoScan)
-			d.Set("type", project_type)
+			if v.Name == name {
+				id := models.PathProjects + "/" + strconv.Itoa(v.ProjectID)
+				public := getboolfromstring(v.Metadata.Public)
+				autoScan := getboolfromstring(v.Metadata.AutoScan)
+				project_type := getProjectType(v)
 
-			scannerName, err := apiClient.GetProjectScanner(id)
-			if err != nil {
-				return err
+				d.SetId(id)
+				d.Set("project_id", v.ProjectID)
+				d.Set("name", v.Name)
+				d.Set("public", public)
+				d.Set("vulnerability_scanning", autoScan)
+				d.Set("type", project_type)
+
+				scannerName, err := apiClient.GetProjectScanner(id)
+				if err != nil {
+					return err
+				}
+				d.Set("vulnerability_scanner", scannerName)
+				return nil
 			}
-			d.Set("vulnerability_scanner", scannerName)
+		}
+
+		if len(jsonData) < lookupPageSize {
+			return nil
 		}
 	}
-	return nil
 }
 
 func getProjectType(project models.ProjectsBodyResponses) string {

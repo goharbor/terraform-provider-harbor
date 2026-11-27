@@ -54,33 +54,39 @@ func dataRegistry() *schema.Resource {
 func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(*client.Client)
 	name := d.Get("name").(string)
-	registryPath := models.PathRegistries + "?name=" + url.QueryEscape(name)
-	resp, _, _, err := apiClient.SendRequest("GET", registryPath, nil, 200)
-	if err != nil {
-		return err
-	}
 
-	var jsonData []models.RegistryBody
-	err = json.Unmarshal([]byte(resp), &jsonData)
-	if err != nil {
-		return fmt.Errorf("Unable to find the registry named: %s", name)
-	}
+	for page := 1; ; page++ {
+		registryPath := fmt.Sprintf("%s?name=%s&page=%d&page_size=%d", models.PathRegistries, url.QueryEscape(name), page, lookupPageSize)
+		resp, _, _, err := apiClient.SendRequest("GET", registryPath, nil, 200)
+		if err != nil {
+			return err
+		}
 
-	for _, v := range jsonData {
-		if v.Name == name {
-			id := models.PathProjects + "/" + strconv.Itoa(v.ID)
+		var jsonData []models.RegistryBody
+		err = json.Unmarshal([]byte(resp), &jsonData)
+		if err != nil {
+			return fmt.Errorf("Unable to find the registry named: %s", name)
+		}
 
-			d.SetId(id)
-			d.Set("registry_id", v.ID)
-			d.Set("name", v.Name)
-			d.Set("type", v.Type)
-			d.Set("description", v.Description)
-			d.Set("url", v.URL)
-			d.Set("insecure", v.Insecure)
-			d.Set("status", v.Status)
-			d.Set("ca_certificate", v.CACertificate)
+		for _, v := range jsonData {
+			if v.Name == name {
+				id := models.PathProjects + "/" + strconv.Itoa(v.ID)
+
+				d.SetId(id)
+				d.Set("registry_id", v.ID)
+				d.Set("name", v.Name)
+				d.Set("type", v.Type)
+				d.Set("description", v.Description)
+				d.Set("url", v.URL)
+				d.Set("insecure", v.Insecure)
+				d.Set("status", v.Status)
+				d.Set("ca_certificate", v.CACertificate)
+				return nil
+			}
+		}
+
+		if len(jsonData) < lookupPageSize {
+			return nil
 		}
 	}
-
-	return nil
 }
