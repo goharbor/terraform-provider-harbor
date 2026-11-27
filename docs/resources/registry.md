@@ -20,6 +20,40 @@ resource "harbor_registry" "main" {
 }
 ```
 
+### Write-only Access Secret
+
+```terraform
+resource "harbor_registry" "main" {
+  provider_name            = "docker-hub"
+  name                     = "test_docker_harbor"
+  endpoint_url             = "https://hub.docker.com"
+  access_id                = "dockerhub-user"
+  access_secret_wo         = "dockerhub-token"
+  access_secret_wo_version = 1
+}
+```
+
+### Write-only Access Secret from an Ephemeral Variable
+
+```terraform
+variable "registry_token" {
+  type      = string
+  sensitive = true
+  ephemeral = true
+}
+
+resource "harbor_registry" "main" {
+  provider_name            = "github"
+  name                     = "ghcr"
+  endpoint_url             = "https://ghcr.io"
+  access_id                = "github-user"
+  access_secret_wo         = var.registry_token
+  access_secret_wo_version = 1
+}
+```
+
+Write-only arguments require Terraform 1.11 or later and are never stored in the state. To rotate the secret, change `access_secret_wo` and increment `access_secret_wo_version`.
+
 ## Schema
 
 ### Required
@@ -47,7 +81,9 @@ resource "harbor_registry" "main" {
 ### Optional
 
 - `access_id` (String) The username / access ID for the external container register.
-- `access_secret` (String, Sensitive) The password / access key / token for the external container register.
+- `access_secret` (String, Sensitive) The password / access key / token for the external container register. Conflicts with `access_secret_wo` and `access_secret_wo_version`.
+- `access_secret_wo` (String, Sensitive, Write-only) Write-only alternative for `access_secret`. Must be used together with `access_secret_wo_version`.
+- `access_secret_wo_version` (Number) Rotation trigger for write-only access secret updates. Must be used together with `access_secret_wo`.
 - `description` (String) The description of the external container register.
 - `insecure` (Boolean) Verifies the certificate of the external container register. (Default: `false`)
 - `ca_certificate` (String) PEM-encoded CA certificate trusting the registry custom-signed certificate.
